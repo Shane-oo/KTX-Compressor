@@ -3,26 +3,21 @@
 
 #include "KTXCompressor.h"
 
-#include <ktx.h>
-#include <OpenImageIO/imageio.h>
+#include "Texture.h"
 
 using namespace std;
-using namespace OIIO;
 
 int main() {
+    const string woodDiffuseFileName = "textures/wood_diffuse_4096x4096.png";
 
-    const std::string fileName = "textures/wood_diffuse_4096x4096.png";
+    KTXCompressor::Texture texture = KTXCompressor::Texture(woodDiffuseFileName);
 
-    auto imageInput = ImageInput::open(fileName);
-    if (!imageInput) {
-        throw std::runtime_error("Could not open file with name" + fileName);
-    }
-
-    const ImageSpec &imageSpec = imageInput->spec();
-
-    std::cout << "image width: " << imageSpec.width << "image height: " << imageSpec.height << std::endl;
-
-    imageInput->close();
+    /*auto ktxTexture = texture.GetKtxTexture();
+    if (ktxTexture) {
+        cout << "Got A Ktx Texture!" << endl;
+    } else {
+        cout << "No Ktx Texture :(" << endl;
+    }*/
 
     return 0;
 }
