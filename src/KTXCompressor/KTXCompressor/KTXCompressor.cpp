@@ -8,16 +8,25 @@
 using namespace std;
 
 int main() {
-    const string woodDiffuseFileName = "textures/wood_diffuse_4096x4096.png";
+    try {
+        const string woodDiffuseFileName = "textures/wood_diffuse_4096x4096.png";
 
-    KTXCompressor::Texture texture = KTXCompressor::Texture(woodDiffuseFileName);
+        KTXCompressor::Texture texture = KTXCompressor::Texture(woodDiffuseFileName);
 
-    /*auto ktxTexture = texture.GetKtxTexture();
-    if (ktxTexture) {
-        cout << "Got A Ktx Texture!" << endl;
-    } else {
-        cout << "No Ktx Texture :(" << endl;
-    }*/
+        /*auto myKtxTexture = texture.GetKtxTexture();
+        if (myKtxTexture) {
+            cout << "Got A Ktx Texture!" << endl;
+        } else {
+            cout << "No Ktx Texture :(" << endl;
+        }*/
+    }
+    catch (const std::runtime_error &e) {
+        std::cerr << "Caught a runtime_error: " << e.what() << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << "Caught an exception: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "Caught an unknown exception" << std::endl;
+    }
 
     return 0;
 }
