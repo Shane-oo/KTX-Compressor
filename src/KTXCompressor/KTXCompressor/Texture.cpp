@@ -2,6 +2,7 @@
 // Created by shane on 29/06/2024.
 //
 
+#include <filesystem>
 #include "Texture.h"
 
 
@@ -98,11 +99,83 @@ namespace KTXCompressor {
     // #region Constructors 
 
     Texture::Texture(const string &fileName) {
+
         unique_ptr<ImageInput> imageInput;
         ImageSpec imageSpec;
         OpenImage(fileName, imageInput, imageSpec);
 
         CreateKtxTexture(*imageInput, imageSpec);
+
+        // UASTC Compression 
+        // note there exists an extended params version
+        int astcQuality = 0;
+        const auto compressAstcResult = ktxTexture2_CompressAstc(myKtxTexture, astcQuality);
+        if (compressAstcResult != KTX_SUCCESS) {
+            auto error = ktxErrorString(compressAstcResult);
+            throw std::runtime_error("ktxTexture2_CompressAstcEx: " + string(error));
+        }
+
+        cout << "Successfully Compressed using Astc" << endl;
+
+        // You are strongly encouraged to also specify --zstd to losslessly compress the UASTC data
+        // Supercompress the data with Zstandard. Cannot be used with ETC1S / BasisLZ format. Level range is [1,22]. 
+        // Lower levels give faster but worse compression. Values above 20 should be used with caution as they require more memory. 
+        int deflateZstdLevel = 5;
+        const auto deflateZstdResult = ktxTexture2_DeflateZstd(myKtxTexture, deflateZstdLevel);
+        if (deflateZstdResult != KTX_SUCCESS) {
+            auto error = ktxErrorString(deflateZstdResult);
+            throw std::runtime_error("ktxTexture2_DeflateZstd: " + string(error));
+        }
+
+        cout << "Successfully Deflated Astc Ktx Texture" << endl;
+
+        // have to do this?
+        // Add KTXwriterScParams metadata if ASTC encoding, BasisU encoding, or other supercompression was used
+        const auto writerScParams = fmt::format("{}{}", astcQuality, deflateZstdLevel);
+        if (!writerScParams.empty()) {
+            const auto addKvPairResult = ktxHashList_AddKVPair(&myKtxTexture->kvDataHead,
+                                                               KTX_WRITER_SCPARAMS_KEY,
+                                                               static_cast<uint32_t>(writerScParams.size()),
+                                                               writerScParams.c_str() +
+                                                               1); // +1 to exclude leading space
+            if (addKvPairResult != KTX_SUCCESS) {
+                auto error = ktxErrorString(addKvPairResult);
+                throw std::runtime_error("ktxHashList_AddKVPair: " + string(error));
+            }
+            cout << "Successfully wrote to Ktx Texture DataHead the metadata used" << endl;
+        }
+
+        cout << myKtxTexture->isCompressed << endl;
+
+        // Download
+
+        auto newPixels = std::unique_ptr<unsigned char[]>(new unsigned char[myKtxTexture->dataSize]);
+        unsigned char *rawPixels = newPixels.get();
+
+        ktx_size_t writtenSize;
+        const auto writeToMemoryResult = ktxTexture_WriteToMemory(ktxTexture(myKtxTexture),
+                                                                  &rawPixels,
+                                                                  &writtenSize);
+        if (writeToMemoryResult != KTX_SUCCESS) {
+            auto error = ktxErrorString(writeToMemoryResult);
+            throw std::runtime_error("ktxTexture_WriteToMemory: " + string(error));
+        }
+
+
+        // Open file for writing
+        std::ofstream outputFile("my_new_texture.ktx2", std::ios::binary);
+        if (!outputFile.is_open()) {
+            std::cerr << "Failed to open file for writing: " << "my_new_texture.ktx2" << std::endl;
+            return; // Error
+        }
+        // Write pixel data
+        outputFile.write(reinterpret_cast<const char *>(newPixels.get()), writtenSize);
+
+        // TODO: Does a Ktx viewer not exist? -> Make own, easy do in three js. This can be the base site for Ktx-Compressor
+        // am writing to my_new_texture.ktx2 and it has a bytes size of 5mb, so promising, however dont know if its
+        // actually working or not
+
+        outputFile.close();
 
         imageInput->close();
     }
