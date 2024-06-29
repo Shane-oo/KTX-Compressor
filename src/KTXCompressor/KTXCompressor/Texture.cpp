@@ -48,12 +48,23 @@ namespace KTXCompressor {
         return pixels;
     }
 
+    void Texture::WriteImage(const unique_ptr<unsigned char[]> &compressedPixels,
+                             ktx_size_t writtenSize,
+                             string newFileName) {
+        ofstream outputFile(newFileName, std::ios::binary);
+        if (!outputFile.is_open()) {
+            throw runtime_error("Failed to open file for writing: " + newFileName);
+        }
+
+        outputFile.write(reinterpret_cast<const char *>(compressedPixels.get()), (streamsize) writtenSize);
+        outputFile.close();
+    }
+
     void Texture::CreateKtxTexture(ImageInput &imageInput, const ImageSpec &imageSpec) {
         ktxTextureCreateInfo createInfo;
         // set all createInfo's bytes to 0, prevents uninitialized memory usage
         memset(&createInfo, 0, sizeof(createInfo));
 
-        // magic number 29 seems to be the one for R8G8B8_SRGB, which is diffuse im pretty sure
         createInfo.vkFormat = VK_FORMAT_R8G8B8_SRGB;
         createInfo.numFaces = 1; // 6 for cube maps, 1 otherwise
         createInfo.numLayers = 1;// number of array layers , will throw if 0
@@ -93,26 +104,13 @@ namespace KTXCompressor {
         cout << "Successfully Set Image From Memory" << endl;
     }
 
-
-    // #endregion
-
-    // #region Constructors 
-
-    Texture::Texture(const string &fileName) {
-
-        unique_ptr<ImageInput> imageInput;
-        ImageSpec imageSpec;
-        OpenImage(fileName, imageInput, imageSpec);
-
-        CreateKtxTexture(*imageInput, imageSpec);
-
-        // UASTC Compression 
-        // note there exists an extended params version
+    void Texture::CompressTexture() const {
+        // UASTC Compression note: there exists an extended params version
         int astcQuality = 0;
         const auto compressAstcResult = ktxTexture2_CompressAstc(myKtxTexture, astcQuality);
         if (compressAstcResult != KTX_SUCCESS) {
             auto error = ktxErrorString(compressAstcResult);
-            throw std::runtime_error("ktxTexture2_CompressAstcEx: " + string(error));
+            throw runtime_error("ktxTexture2_CompressAstcEx: " + string(error));
         }
 
         cout << "Successfully Compressed using Astc" << endl;
@@ -124,12 +122,11 @@ namespace KTXCompressor {
         const auto deflateZstdResult = ktxTexture2_DeflateZstd(myKtxTexture, deflateZstdLevel);
         if (deflateZstdResult != KTX_SUCCESS) {
             auto error = ktxErrorString(deflateZstdResult);
-            throw std::runtime_error("ktxTexture2_DeflateZstd: " + string(error));
+            throw runtime_error("ktxTexture2_DeflateZstd: " + string(error));
         }
 
         cout << "Successfully Deflated Astc Ktx Texture" << endl;
 
-        // have to do this?
         // Add KTXwriterScParams metadata if ASTC encoding, BasisU encoding, or other supercompression was used
         const auto writerScParams = fmt::format("{}{}", astcQuality, deflateZstdLevel);
         if (!writerScParams.empty()) {
@@ -140,45 +137,56 @@ namespace KTXCompressor {
                                                                1); // +1 to exclude leading space
             if (addKvPairResult != KTX_SUCCESS) {
                 auto error = ktxErrorString(addKvPairResult);
-                throw std::runtime_error("ktxHashList_AddKVPair: " + string(error));
+                throw runtime_error("ktxHashList_AddKVPair: " + string(error));
             }
             cout << "Successfully wrote to Ktx Texture DataHead the metadata used" << endl;
         }
+    }
 
-        cout << myKtxTexture->isCompressed << endl;
-
-        // Download
-
-        auto newPixels = std::unique_ptr<unsigned char[]>(new unsigned char[myKtxTexture->dataSize]);
+    unique_ptr<unsigned char[]> Texture::GetCompressedPixelsFromKtxTexture(ktx_size_t &writtenSize) const {
+        auto newPixels = unique_ptr<unsigned char[]>(new unsigned char[myKtxTexture->dataSize]);
         unsigned char *rawPixels = newPixels.get();
-
-        ktx_size_t writtenSize;
         const auto writeToMemoryResult = ktxTexture_WriteToMemory(ktxTexture(myKtxTexture),
                                                                   &rawPixels,
                                                                   &writtenSize);
         if (writeToMemoryResult != KTX_SUCCESS) {
             auto error = ktxErrorString(writeToMemoryResult);
-            throw std::runtime_error("ktxTexture_WriteToMemory: " + string(error));
+            throw runtime_error("ktxTexture_WriteToMemory: " + string(error));
         }
+        cout << "Successfully wrote ktx texture data to new pixels. Size in bytes: " << writtenSize << endl;
+
+        return newPixels;
+    }
 
 
-        // Open file for writing
-        std::ofstream outputFile("my_new_texture.ktx2", std::ios::binary);
-        if (!outputFile.is_open()) {
-            std::cerr << "Failed to open file for writing: " << "my_new_texture.ktx2" << std::endl;
-            return; // Error
-        }
-        // Write pixel data
-        outputFile.write(reinterpret_cast<const char *>(newPixels.get()), writtenSize);
+    // #endregion
+
+    // #region Constructors 
+
+    Texture::Texture(const string &fileName) {
+        unique_ptr<ImageInput> imageInput;
+        ImageSpec imageSpec;
+        OpenImage(fileName, imageInput, imageSpec);
+
+        CreateKtxTexture(*imageInput, imageSpec);
+
+        CompressTexture();
+
+        ktx_size_t writtenSize;
+        auto compressedPixels = GetCompressedPixelsFromKtxTexture(writtenSize);
+
+
+        WriteImage(compressedPixels, writtenSize, "myNewKtx2Texture.ktx2");
 
         // TODO: Does a Ktx viewer not exist? -> Make own, easy do in three js. This can be the base site for Ktx-Compressor
         // am writing to my_new_texture.ktx2 and it has a bytes size of 5mb, so promising, however dont know if its
         // actually working or not
+        // I doubt it is because I image writing an image is more trivial
 
-        outputFile.close();
 
         imageInput->close();
     }
+
 
     Texture::~Texture() {
         if (myKtxTexture) {

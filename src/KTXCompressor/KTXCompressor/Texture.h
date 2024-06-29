@@ -30,7 +30,14 @@ namespace KTXCompressor {
 
         std::unique_ptr<unsigned char[]> LoadInputImage(ImageInput &inputImage, ImageSpec imageSpec);
 
+        void
+        WriteImage(const unique_ptr<unsigned char[]> &compressedPixels, ktx_size_t writtenSize, string newFileName);
+
         void CreateKtxTexture(ImageInput &inputImage, const ImageSpec &imageSpec);
+
+        void CompressTexture() const;
+
+        unique_ptr<unsigned char[]> GetCompressedPixelsFromKtxTexture(ktx_size_t &writtenSize) const;
 
     public:
         ktxTexture2 *myKtxTexture = nullptr;
