@@ -75,6 +75,8 @@ namespace KTXCompressor {
         }
 
         fclose(file);
+
+        cout << "Successfully wrote new ktx2 texture " << newFileName << endl;
     }
 
     void Texture::CreateKtxTexture(ImageInput &imageInput, const ImageSpec &imageSpec) {
@@ -123,7 +125,7 @@ namespace KTXCompressor {
 
     void Texture::CompressTexture() const {
         // UASTC Compression note: there exists an extended params version
-        int astcQuality = 0;
+        int astcQuality = 4;
         const auto compressAstcResult = ktxTexture2_CompressAstc(myKtxTexture, astcQuality);
         if (compressAstcResult != KTX_SUCCESS) {
             auto error = ktxErrorString(compressAstcResult);
@@ -160,6 +162,7 @@ namespace KTXCompressor {
         }
     }
 
+    // unused
     unique_ptr<unsigned char[]> Texture::GetCompressedPixelsFromKtxTexture(ktx_size_t &writtenSize) const {
         auto newPixels = unique_ptr<unsigned char[]>(new unsigned char[myKtxTexture->dataSize]);
         unsigned char *rawPixels = newPixels.get();
@@ -189,19 +192,12 @@ namespace KTXCompressor {
 
         CompressTexture();
 
+        imageInput->close();
         //ktx_size_t writtenSize;
         //auto compressedPixels = GetCompressedPixelsFromKtxTexture(writtenSize);
 
+        WriteNewKtx2Image("myNewKtx2Texture1.ktx2");
 
-        WriteNewKtx2Image("myNewKtx2Texture.ktx2");
-
-        // TODO: Does a Ktx viewer not exist? -> Make own, easy do in three js. This can be the base site for Ktx-Compressor
-        // am writing to my_new_texture.ktx2 and it has a bytes size of 5mb, so promising, however dont know if its
-        // actually working or not
-        // I doubt it is because I image writing an image is more trivial
-
-
-        imageInput->close();
     }
 
 
