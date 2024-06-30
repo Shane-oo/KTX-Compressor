@@ -14,4 +14,4 @@ project ("KTXCompressor")
 # Include sub-projects.
 add_subdirectory ("KTXCompressor")
 
-#
+##

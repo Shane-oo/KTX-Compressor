@@ -13,3 +13,6 @@ https://github.com/KhronosGroup/KTX-Software/blob/main/tools/ktx/command_create.
 https://github.com/KhronosGroup/KTX-Software/blob/main/tools/ktx/command_create.cpp#L791
 
 https://github.com/KhronosGroup/3D-Formats-Guidelines/blob/main/KTXDeveloperGuide.md
+
+where output stream exits:
+https://github.dev/KhronosGroup/KTX-Software/blob/main/tools/ktx/command.cpp

@@ -48,16 +48,33 @@ namespace KTXCompressor {
         return pixels;
     }
 
-    void Texture::WriteImage(const unique_ptr<unsigned char[]> &compressedPixels,
-                             ktx_size_t writtenSize,
-                             string newFileName) {
-        ofstream outputFile(newFileName, std::ios::binary);
-        if (!outputFile.is_open()) {
-            throw runtime_error("Failed to open file for writing: " + newFileName);
+    void Texture::WriteNewKtx2Image(const string &newFileName) {
+        // Determine the length of the wide character string
+        size_t len = mbstowcs(nullptr, newFileName.c_str(), 0);
+        if (len == (size_t) (-1)) {
+            throw std::runtime_error("Invalid multi-byte sequence");
         }
 
-        outputFile.write(reinterpret_cast<const char *>(compressedPixels.get()), (streamsize) writtenSize);
-        outputFile.close();
+        // Allocate memory for the wide character string
+        auto *wNewFileName = new wchar_t[len + 1];
+
+        // Convert the narrow character string to a wide character string
+        mbstowcs(wNewFileName, newFileName.c_str(), len + 1);
+
+        FILE *file = _wfopen(wNewFileName, L"wb");
+        delete[] wNewFileName;  // Clean up
+
+        if (!file) {
+            throw std::runtime_error("Failed to open file for writing");
+        }
+
+        const auto ktxTextureWriteToFileResult = ktxTexture_WriteToStdioStream(ktxTexture(myKtxTexture), file);
+        if (ktxTextureWriteToFileResult != KTX_SUCCESS) {
+            auto error = ktxErrorString(ktxTextureWriteToFileResult);
+            throw runtime_error("ktxTexture_WriteToStdioStream: " + string(error));
+        }
+
+        fclose(file);
     }
 
     void Texture::CreateKtxTexture(ImageInput &imageInput, const ImageSpec &imageSpec) {
@@ -172,11 +189,11 @@ namespace KTXCompressor {
 
         CompressTexture();
 
-        ktx_size_t writtenSize;
-        auto compressedPixels = GetCompressedPixelsFromKtxTexture(writtenSize);
+        //ktx_size_t writtenSize;
+        //auto compressedPixels = GetCompressedPixelsFromKtxTexture(writtenSize);
 
 
-        WriteImage(compressedPixels, writtenSize, "myNewKtx2Texture.ktx2");
+        WriteNewKtx2Image("myNewKtx2Texture.ktx2");
 
         // TODO: Does a Ktx viewer not exist? -> Make own, easy do in three js. This can be the base site for Ktx-Compressor
         // am writing to my_new_texture.ktx2 and it has a bytes size of 5mb, so promising, however dont know if its
