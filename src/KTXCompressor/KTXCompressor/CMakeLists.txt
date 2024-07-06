@@ -5,13 +5,21 @@
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # Add source to this project's executable.
-add_executable (KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
+add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Texture.cpp
-        Texture.h)
+        Texture.h
+        Renderer/RendererApp.cpp
+        Renderer/RendererApp.h
+        Renderer/Window.cpp
+        Renderer/Window.h
+        Common.h
+        Renderer/Instance.cpp
+        Renderer/Instance.h
+)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET KTXCompressor PROPERTY CXX_STANDARD 20)
-endif()
+    set_property(TARGET KTXCompressor PROPERTY CXX_STANDARD 20)
+endif ()
 
 # Find ktx
 find_package(ktx CONFIG REQUIRED)
@@ -27,3 +35,13 @@ target_link_libraries(KTXCompressor PRIVATE OpenImageIO::OpenImageIO)
 find_package(Vulkan REQUIRED)
 # Link Vulkan
 target_link_libraries(KTXCompressor PRIVATE Vulkan::Vulkan)
+
+# Find GLFW package
+find_package(glfw3 REQUIRED)
+# Link GLFW Library
+target_link_libraries(KTXCompressor PRIVATE glfw)
+
+# Find GLM package
+find_package(glm REQUIRED)
+# Link GLM Library
+target_link_directories(KTXCompressor PRIVATE glm)

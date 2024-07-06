@@ -1,0 +1,16 @@
+//
+// Created by shane on 6/07/2024.
+//
+
+#ifndef KTXCOMPRESSOR_COMMON_H
+#define KTXCOMPRESSOR_COMMON_H
+
+// Include standard libraries
+#include <iostream>
+#include <vector>
+#include <string>
+
+// Use the standard namespace for commonly used components
+using namespace std;
+
+#endif //KTXCOMPRESSOR_COMMON_H
