@@ -7,21 +7,28 @@
 
 #include "../Common.h"
 #include "Window.h"
+#include "Instance.h"
 
+namespace KTXCompressor {
 
-class RendererApp {
-public:
-    void Run();
+    class RendererApp {
+    public:
+        ~RendererApp();
 
-private:
-    Window *window;
+    public:
+        void Run();
 
-    void InitVulkan();
+    private:
+        Window *window;
+        Instance *instance;
 
-    void MainLoop();
+        void InitVulkan();
 
-    void Destroy();
-};
+        void MainLoop();
+
+        void Destroy();
+    };
+} // KTXCompressor
 
 
 #endif //KTXCOMPRESSOR_RENDERERAPP_H

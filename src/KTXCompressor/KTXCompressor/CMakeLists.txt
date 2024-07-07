@@ -15,6 +15,9 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Common.h
         Renderer/Instance.cpp
         Renderer/Instance.h
+        Renderer/Debugger.cpp
+        Renderer/Debugger.h
+        Renderer/RendererConstants.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

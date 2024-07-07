@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <set>
 
 // Use the standard namespace for commonly used components
 using namespace std;

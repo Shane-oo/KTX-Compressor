@@ -5,57 +5,60 @@
 
 #include "Window.h"
 
-// #region Constants
+namespace KTXCompressor {
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 800;
+    // #region Constants
 
-// #endregion
+    static const uint32_t WIDTH = 800;
+    static const uint32_t HEIGHT = 800;
 
-
-// #region Private Methods 
-
-GLFWwindow *Window::CreateGLFWWindow() {
-    glfwInit();
-
-    // Do not create an OpenGL context
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-    // Disable window resize for now
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-    return glfwCreateWindow(WIDTH, HEIGHT, "KTX-Compressor", nullptr, nullptr);
-}
-
-// #endregion
-
-// #region Constructors
-
-Window::Window() {
-    glfwWindow = CreateGLFWWindow();
-}
-
-// #engregion
-
-// #region Destructors
+    // #endregion
 
 
-Window::~Window() {
-    glfwDestroyWindow(glfwWindow);
-    glfwTerminate();
-}
+    // #region Private Methods 
 
-// #endregion
+    GLFWwindow *Window::CreateGLFWWindow() {
+        glfwInit();
 
+        // Do not create an OpenGL context
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-// #region Public Methods
+        // Disable window resize for now
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-bool Window::GetWindowShouldClose() {
-    bool shouldClose = glfwWindowShouldClose(glfwWindow);
-    if (!shouldClose) {
-        glfwPollEvents();
+        return glfwCreateWindow(WIDTH, HEIGHT, "KTX-Compressor", nullptr, nullptr);
     }
-    return shouldClose;
-}
 
-// #endregion
+    // #endregion
+
+    // #region Constructors
+
+    Window::Window() {
+        glfwWindow = CreateGLFWWindow();
+    }
+
+    // #engregion
+
+    // #region Destructors
+
+
+    Window::~Window() {
+        glfwDestroyWindow(glfwWindow);
+        glfwTerminate();
+    }
+
+    // #endregion
+
+
+    // #region Public Methods
+
+    bool Window::GetWindowShouldClose() {
+        bool shouldClose = glfwWindowShouldClose(glfwWindow);
+        if (!shouldClose) {
+            glfwPollEvents();
+        }
+        return shouldClose;
+    }
+
+    // #endregion
+} // KTXCompressor

@@ -5,34 +5,41 @@
 
 #include "RendererApp.h"
 
+namespace KTXCompressor {
+    // #region Private Methods
 
-
-// #region Private Methods
-
-void RendererApp::InitVulkan() {
-    window = new Window();
-}
-
-void RendererApp::MainLoop() {
-    while (!window->GetWindowShouldClose()) {
-        cout << "We should be running" << endl;
+    void RendererApp::InitVulkan() {
+        window = new Window();
+        instance = new Instance();
     }
-}
+
+    void RendererApp::MainLoop() {
+        while (!window->GetWindowShouldClose()) {
+            cout << "We should be running" << endl;
+        }
+    }
 
 
 
-// #endregion
+    // #endregion
 
-// #region Public Methods
+    // #region Destructors
 
-void RendererApp::Run() {
-    InitVulkan();
-    MainLoop();
-}
+    RendererApp::~RendererApp() {
+        delete window;
+        delete instance;
+    }
+
+    // #endregion
+
+    // #region Public Methods
+
+    void RendererApp::Run() {
+        InitVulkan();
+        MainLoop();
+    }
 
 
+    // #endregion
 
-
-
-
-// #endregion
+} // KTXCompressor

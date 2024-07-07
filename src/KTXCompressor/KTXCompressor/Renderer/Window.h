@@ -10,21 +10,23 @@
 #include "../Common.h"
 #include <GLFW/glfw3.h>
 
-class Window {
-public:
-    Window();
+namespace KTXCompressor {
 
-    ~Window();
+    class Window {
+    public:
+        Window();
 
-private:
-    GLFWwindow *glfwWindow;
+        ~Window();
 
-public:
-    bool GetWindowShouldClose();
+    private:
+        GLFWwindow *glfwWindow;
 
-private:
-    static GLFWwindow *CreateGLFWWindow();
-};
+    public:
+        bool GetWindowShouldClose();
 
+    private:
+        static GLFWwindow *CreateGLFWWindow();
+    };
+} // KTXCompressor
 
 #endif //KTXCOMPRESSOR_WINDOW_H

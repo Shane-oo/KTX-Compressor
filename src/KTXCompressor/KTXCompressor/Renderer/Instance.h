@@ -5,21 +5,30 @@
 #ifndef KTXCOMPRESSOR_INSTANCE_H
 #define KTXCOMPRESSOR_INSTANCE_H
 
-
+#include "../Common.h"
 #include <vulkan/vulkan_core.h>
 
-class Instance {
-public:
-    Instance();
+namespace KTXCompressor {
 
-    ~Instance();
+    class Instance {
+    public:
+        Instance();
 
-private:
-    VkInstance instance;
+        ~Instance();
 
-private:
-    VkInstance CreateInstance();
-};
+    private:
+        VkInstance instance;
 
+    private:
+        void CreateInstance();
+
+        bool CheckValidationLayerSupport();
+
+        vector<const char *> GetRequiredExtensions();
+
+        static bool RequiredExtensionsMet(const char **requiredExtensions, uint32_t requiredExtensionsCount);
+    };
+
+} // KTXCompressor
 
 #endif //KTXCOMPRESSOR_INSTANCE_H
