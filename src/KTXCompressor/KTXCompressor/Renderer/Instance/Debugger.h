@@ -14,27 +14,26 @@ namespace KTXCompressor {
 
     class Debugger {
     public:
-        Debugger();
+        Debugger(VkInstance vkInstance);
 
         ~Debugger();
 
     public:
-
+        static VkDebugUtilsMessengerCreateInfoEXT GetDebugMessengerCreateInfo();
 
     private:
         VkDebugUtilsMessengerEXT debugMessenger;
+        VkInstance vulkanInstance;
 
-    public:
+    private:
         static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
                                                             VkDebugUtilsMessageTypeFlagsEXT messageType,
                                                             const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
                                                             void *pUserData);
 
-        VkDebugUtilsMessengerCreateInfoEXT GetDebugMessengerCreateInfo();
+        VkDebugUtilsMessengerEXT CreateDebugMessenger();
 
-        void CreateDebugMessengerForVkInstance(VkInstance vkInstance);
-
-        void DestroyDebugMessengerForVkInstance(VkInstance vkInstance);
+        void DestroyDebugMessenger();
     };
 
 

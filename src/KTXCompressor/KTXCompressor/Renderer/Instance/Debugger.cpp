@@ -48,10 +48,46 @@ namespace KTXCompressor {
 
     // #endregion
 
+    // #region Private Methods
+
+    VkDebugUtilsMessengerEXT Debugger::CreateDebugMessenger() {
+        auto createInfo = GetDebugMessengerCreateInfo();
+
+        auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT)
+                vkGetInstanceProcAddr(vulkanInstance,
+                                      "vkCreateDebugUtilsMessengerEXT");
+        if (createFunc != nullptr) {
+            VkDebugUtilsMessengerEXT messenger{};
+            VkResult createMessengerResult = createFunc(vulkanInstance,
+                                                        &createInfo,
+                                                        nullptr,
+                                                        &messenger);
+            if (createMessengerResult == VK_SUCCESS) {
+                cout << "Successfully created Debug Messenger " << endl;
+
+                return messenger;
+            }
+        }
+
+        throw runtime_error("Failed to Create Debug Messenger");
+    }
+
+    void Debugger::DestroyDebugMessenger() {
+        auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(vulkanInstance,
+                                                                                       "vkDestroyDebugUtilsMessengerEXT");
+        if (destroyFunc != nullptr) {
+            destroyFunc(vulkanInstance, debugMessenger, nullptr);
+        }
+
+    }
+
+    // #endregion
 
     // #region Constructors
 
-    Debugger::Debugger() {
+    Debugger::Debugger(VkInstance vkInstance) {
+        vulkanInstance = vkInstance;
+        debugMessenger = CreateDebugMessenger();
     }
 
     // #endregion
@@ -59,12 +95,12 @@ namespace KTXCompressor {
     // #region Destructors
 
     Debugger::~Debugger() {
-
+        DestroyDebugMessenger();
     }
 
     // #endregion
 
-    // #region Public Methods
+    // #region Public Static Methods
 
     VkDebugUtilsMessengerCreateInfoEXT Debugger::GetDebugMessengerCreateInfo() {
         VkDebugUtilsMessengerCreateInfoEXT createInfo{};
@@ -80,37 +116,6 @@ namespace KTXCompressor {
 
         return createInfo;
     }
-
-    void Debugger::CreateDebugMessengerForVkInstance(VkInstance vkInstance) {
-        auto createInfo = GetDebugMessengerCreateInfo();
-
-        auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT)
-                vkGetInstanceProcAddr(vkInstance,
-                                      "vkCreateDebugUtilsMessengerEXT");
-        if (createFunc != nullptr) {
-            VkResult createMessengerResult = createFunc(vkInstance,
-                                                        &createInfo,
-                                                        nullptr,
-                                                        &debugMessenger);
-            if (createMessengerResult == VK_SUCCESS) {
-                cout << "Successfully created Debug Messenger " << endl;
-
-                return;
-            }
-        }
-
-        throw runtime_error("Failed to Create Debug Messenger");
-    }
-
-    void Debugger::DestroyDebugMessengerForVkInstance(VkInstance vkInstance) {
-        auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(vkInstance,
-                                                                                       "vkDestroyDebugUtilsMessengerEXT");
-        if (destroyFunc != nullptr) {
-            destroyFunc(vkInstance, debugMessenger, nullptr);
-        }
-
-    }
-
 
     // #endregion
 

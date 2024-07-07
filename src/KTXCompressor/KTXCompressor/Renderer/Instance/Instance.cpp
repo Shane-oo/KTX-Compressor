@@ -42,11 +42,11 @@ namespace KTXCompressor {
         createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
         createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
-        if (RendererConstants::enableValidationLayers && debugger) {
+        if (RendererConstants::enableValidationLayers) {
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
-            auto debugCreateInfo = debugger->GetDebugMessengerCreateInfo();
+            auto debugCreateInfo = KTXCompressor::Debugger::GetDebugMessengerCreateInfo();
             createInfo.pNext = &debugCreateInfo;
         } else {
             createInfo.enabledLayerCount = 0;
@@ -59,10 +59,6 @@ namespace KTXCompressor {
         }
 
         cout << "Successfully Created Instance" << endl;
-
-        if (RendererConstants::enableValidationLayers && debugger) {
-            debugger->CreateDebugMessengerForVkInstance(vkInstance);
-        }
 
         return vkInstance;
     }
@@ -140,10 +136,11 @@ namespace KTXCompressor {
     // #region Constructors
 
     Instance::Instance() {
-        if (RendererConstants::enableValidationLayers) {
-            debugger = new Debugger();
-        }
         vulkanInstance = CreateVulkanInstance();
+
+        if (RendererConstants::enableValidationLayers) {
+            debugger = new Debugger(vulkanInstance);
+        }
     }
 
     // #endregion 
@@ -152,9 +149,9 @@ namespace KTXCompressor {
 
     Instance::~Instance() {
         if (RendererConstants::enableValidationLayers) {
-            debugger->DestroyDebugMessengerForVkInstance(vulkanInstance);
             delete debugger;
         }
+
         vkDestroyInstance(vulkanInstance, nullptr);
     }
 
