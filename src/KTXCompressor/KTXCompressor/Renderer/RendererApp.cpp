@@ -15,19 +15,17 @@ namespace KTXCompressor {
 
     void RendererApp::MainLoop() {
         while (!window->GetWindowShouldClose()) {
-            cout << "We should be running" << endl;
+            //cout << "We should be running" << endl;
         }
     }
-
-
 
     // #endregion
 
     // #region Destructors
 
     RendererApp::~RendererApp() {
-        delete window;
         delete instance;
+        delete window;
     }
 
     // #endregion

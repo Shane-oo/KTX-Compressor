@@ -5,7 +5,8 @@
 #ifndef KTXCOMPRESSOR_INSTANCE_H
 #define KTXCOMPRESSOR_INSTANCE_H
 
-#include "../Common.h"
+#include "../../Common.h"
+#include "Debugger.h"
 #include <vulkan/vulkan_core.h>
 
 namespace KTXCompressor {
@@ -17,16 +18,22 @@ namespace KTXCompressor {
         ~Instance();
 
     private:
-        VkInstance instance;
+        VkInstance vulkanInstance;
+        Debugger *debugger;
 
     private:
-        void CreateInstance();
+        VkInstance CreateVulkanInstance();
 
         bool CheckValidationLayerSupport();
 
         vector<const char *> GetRequiredExtensions();
 
-        static bool RequiredExtensionsMet(const char **requiredExtensions, uint32_t requiredExtensionsCount);
+        static bool RequiredExtensionsMet(const char **requiredExtensions, size_t requiredExtensionsCount);
+
+    public:
+/*        [[nodiscard]] VkInstance GetVkInstance() {
+            return vkInstance;
+        }*/
     };
 
 } // KTXCompressor

@@ -7,22 +7,23 @@
 #include "Renderer/RendererApp.h"
 
 using namespace std;
-namespace KTXCompressor {
 
-    int main() {
-        RendererApp rendererApp;
-        try {
-            /*
-             * const string woodDiffuseFileName = "textures/wood_diffuse_4096x4096.png";
-             * KTXCompressor::Texture texture = KTXCompressor::Texture(woodDiffuseFileName);
-             */
-            rendererApp.Run();
-        }
-        catch (const exception &e) {
-            cerr << "An Exception Happened: " << e.what() << endl;
-            return EXIT_FAILURE;
-        }
-
-        return EXIT_SUCCESS;
+int main() {
+    auto *rendererApp = new KTXCompressor::RendererApp();
+    try {
+        /*
+         * const string woodDiffuseFileName = "textures/wood_diffuse_4096x4096.png";
+         * KTXCompressor::Texture texture = KTXCompressor::Texture(woodDiffuseFileName);
+         */
+        rendererApp->Run();
     }
-} // KTXCompressor
+    catch (const exception &e) {
+        cerr << "An Exception Happened: " << e.what() << endl;
+        return EXIT_FAILURE;
+    }
+
+    delete rendererApp;
+
+    return EXIT_SUCCESS;
+}
+

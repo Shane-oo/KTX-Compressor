@@ -10,13 +10,13 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Texture.h
         Renderer/RendererApp.cpp
         Renderer/RendererApp.h
-        Renderer/Window.cpp
-        Renderer/Window.h
+        Renderer/Presentation/Window.cpp
+        Renderer/Presentation/Window.h
         Common.h
-        Renderer/Instance.cpp
-        Renderer/Instance.h
-        Renderer/Debugger.cpp
-        Renderer/Debugger.h
+        Renderer/Instance/Instance.cpp
+        Renderer/Instance/Instance.h
+        Renderer/Instance/Debugger.cpp
+        Renderer/Instance/Debugger.h
         Renderer/RendererConstants.h
 )
 

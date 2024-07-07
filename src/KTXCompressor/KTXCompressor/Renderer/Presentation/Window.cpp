@@ -41,7 +41,6 @@ namespace KTXCompressor {
 
     // #region Destructors
 
-
     Window::~Window() {
         glfwDestroyWindow(glfwWindow);
         glfwTerminate();

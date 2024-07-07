@@ -6,8 +6,9 @@
 #define KTXCOMPRESSOR_RENDERERAPP_H
 
 #include "../Common.h"
-#include "Window.h"
-#include "Instance.h"
+#include "Presentation/Window.h"
+#include "Instance/Instance.h"
+#include "Instance/Debugger.h"
 
 namespace KTXCompressor {
 
@@ -25,8 +26,6 @@ namespace KTXCompressor {
         void InitVulkan();
 
         void MainLoop();
-
-        void Destroy();
     };
 } // KTXCompressor
 

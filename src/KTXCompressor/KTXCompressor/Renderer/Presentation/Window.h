@@ -7,7 +7,7 @@
 
 #define GLFW_INCLUDE_VULKAN
 
-#include "../Common.h"
+#include "../../Common.h"
 #include <GLFW/glfw3.h>
 
 namespace KTXCompressor {

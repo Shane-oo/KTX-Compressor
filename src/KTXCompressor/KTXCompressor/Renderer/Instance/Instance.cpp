@@ -4,7 +4,7 @@
 
 #include <GLFW/glfw3.h>
 #include "Instance.h"
-#include "RendererConstants.h"
+#include "../RendererConstants.h"
 
 namespace KTXCompressor {
 
@@ -19,7 +19,7 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
-    void Instance::CreateInstance() {
+    VkInstance Instance::CreateVulkanInstance() {
         if (!CheckValidationLayerSupport()) {
             throw runtime_error("Validation Layers Not Supported");
         }
@@ -42,18 +42,29 @@ namespace KTXCompressor {
         createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
         createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
-        if (RendererConstants::enableValidationLayers) {
+        if (RendererConstants::enableValidationLayers && debugger) {
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
+
+            auto debugCreateInfo = debugger->GetDebugMessengerCreateInfo();
+            createInfo.pNext = &debugCreateInfo;
         } else {
             createInfo.enabledLayerCount = 0;
         }
 
-        VkResult createInstanceResult = vkCreateInstance(&createInfo, nullptr, &instance);
+        VkInstance vkInstance;
+        VkResult createInstanceResult = vkCreateInstance(&createInfo, nullptr, &vkInstance);
         if (createInstanceResult != VK_SUCCESS) {
-            throw runtime_error("Failed To Create instance");
+            throw runtime_error("Failed To Create vkInstance");
         }
+
         cout << "Successfully Created Instance" << endl;
+
+        if (RendererConstants::enableValidationLayers && debugger) {
+            debugger->CreateDebugMessengerForVkInstance(vkInstance);
+        }
+
+        return vkInstance;
     }
 
     bool Instance::CheckValidationLayerSupport() {
@@ -102,7 +113,7 @@ namespace KTXCompressor {
         return requiredExtensions;
     }
 
-    bool Instance::RequiredExtensionsMet(const char **requiredExtensions, uint32_t requiredExtensionsCount) {
+    bool Instance::RequiredExtensionsMet(const char **requiredExtensions, size_t requiredExtensionsCount) {
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
@@ -114,7 +125,7 @@ namespace KTXCompressor {
             availableExtensions.insert(extension.extensionName);
         }
 
-        for (int i = 0; i < requiredExtensionsCount; i++) {
+        for (size_t i = 0; i < requiredExtensionsCount; i++) {
             if (!availableExtensions.contains(requiredExtensions[i])) {
                 cout << "Missing " << requiredExtensions[i] << endl;
                 return false;
@@ -129,7 +140,10 @@ namespace KTXCompressor {
     // #region Constructors
 
     Instance::Instance() {
-        CreateInstance();
+        if (RendererConstants::enableValidationLayers) {
+            debugger = new Debugger();
+        }
+        vulkanInstance = CreateVulkanInstance();
     }
 
     // #endregion 
@@ -137,7 +151,11 @@ namespace KTXCompressor {
     // #region Destructors
 
     Instance::~Instance() {
-        vkDestroyInstance(instance, nullptr);
+        if (RendererConstants::enableValidationLayers) {
+            debugger->DestroyDebugMessengerForVkInstance(vulkanInstance);
+            delete debugger;
+        }
+        vkDestroyInstance(vulkanInstance, nullptr);
     }
 
     // #endregion
