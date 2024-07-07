@@ -15,8 +15,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Common.h
         Renderer/Instance/Instance.cpp
         Renderer/Instance/Instance.h
-        Renderer/Instance/Debugger.cpp
-        Renderer/Instance/Debugger.h
+        Renderer/Instance/Debug/Debugger.cpp
+        Renderer/Instance/Debug/Debugger.h
         Renderer/RendererConstants.h
         Renderer/Instance/PhysicalDevice/PhysicalDevice.cpp
         Renderer/Instance/PhysicalDevice/PhysicalDevice.h

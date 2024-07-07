@@ -3,7 +3,7 @@
 //
 
 #include "Debugger.h"
-#include "../RendererConstants.h"
+#include "../../RendererConstants.h"
 
 
 namespace KTXCompressor {

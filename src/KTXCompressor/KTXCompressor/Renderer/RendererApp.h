@@ -8,7 +8,7 @@
 #include "../Common.h"
 #include "Presentation/Window.h"
 #include "Instance/Instance.h"
-#include "Instance/Debugger.h"
+#include "Instance/Debug/Debugger.h"
 
 namespace KTXCompressor {
 

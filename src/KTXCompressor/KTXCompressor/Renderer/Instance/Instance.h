@@ -6,7 +6,7 @@
 #define KTXCOMPRESSOR_INSTANCE_H
 
 #include "../../Common.h"
-#include "Debugger.h"
+#include "Debug/Debugger.h"
 #include <vulkan/vulkan_core.h>
 
 namespace KTXCompressor {

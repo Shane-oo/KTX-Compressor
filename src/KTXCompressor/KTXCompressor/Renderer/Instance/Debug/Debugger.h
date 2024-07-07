@@ -6,7 +6,7 @@
 #define KTXCOMPRESSOR_DEBUGGER_H
 
 
-#include "../../Common.h"
+#include "../../../Common.h"
 #include <vulkan/vk_platform.h>
 #include <vulkan/vulkan_core.h>
 
