@@ -14,6 +14,8 @@ namespace KTXCompressor {
 
     class RendererApp {
     public:
+        RendererApp();
+
         ~RendererApp();
 
     public:
@@ -22,8 +24,6 @@ namespace KTXCompressor {
     private:
         Window *window;
         Instance *instance;
-
-        void InitVulkan();
 
         void MainLoop();
     };

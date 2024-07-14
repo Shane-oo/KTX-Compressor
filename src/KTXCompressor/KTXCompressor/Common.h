@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <optional>
 
 // Use the standard namespace for commonly used components
 using namespace std;

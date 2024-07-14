@@ -6,17 +6,22 @@
 #include "RendererApp.h"
 
 namespace KTXCompressor {
-    // #region Private Methods
 
-    void RendererApp::InitVulkan() {
-        window = new Window();
-        instance = new Instance();
-    }
+    // #region Private Methods
 
     void RendererApp::MainLoop() {
         while (!window->GetWindowShouldClose()) {
             //cout << "We should be running" << endl;
         }
+    }
+
+    // #endregion
+
+    // #region Constructors
+
+    RendererApp::RendererApp() {
+        window = new Window();
+        instance = new Instance();
     }
 
     // #endregion
@@ -33,7 +38,6 @@ namespace KTXCompressor {
     // #region Public Methods
 
     void RendererApp::Run() {
-        InitVulkan();
         MainLoop();
     }
 

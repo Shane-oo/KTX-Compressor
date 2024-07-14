@@ -141,6 +141,8 @@ namespace KTXCompressor {
         if (RendererConstants::enableValidationLayers) {
             debugger = new Debugger(vulkanInstance);
         }
+
+        physicalDevice = new PhysicalDevice(vulkanInstance);
     }
 
     // #endregion 
@@ -151,6 +153,7 @@ namespace KTXCompressor {
         if (RendererConstants::enableValidationLayers) {
             delete debugger;
         }
+        delete physicalDevice;
 
         vkDestroyInstance(vulkanInstance, nullptr);
     }

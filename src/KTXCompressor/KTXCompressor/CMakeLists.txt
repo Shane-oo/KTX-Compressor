@@ -18,8 +18,10 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Instance/Debug/Debugger.cpp
         Renderer/Instance/Debug/Debugger.h
         Renderer/RendererConstants.h
-        Renderer/Instance/PhysicalDevice/PhysicalDevice.cpp
-        Renderer/Instance/PhysicalDevice/PhysicalDevice.h
+        Renderer/Instance/Devices/PhysicalDevice.cpp
+        Renderer/Instance/Devices/PhysicalDevice.h
+        Renderer/Instance/Devices/Queues/QueueFamily.cpp
+        Renderer/Instance/Devices/Queues/QueueFamily.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -35,6 +37,8 @@ target_link_libraries(KTXCompressor PRIVATE KTX::ktx)
 find_package(OpenImageIO CONFIG REQUIRED)
 # Link OpenImageIo
 target_link_libraries(KTXCompressor PRIVATE OpenImageIO::OpenImageIO)
+
+
 
 #Find Vulkan
 find_package(Vulkan REQUIRED)
