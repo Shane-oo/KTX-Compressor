@@ -51,6 +51,7 @@ namespace KTXCompressor {
 
     PhysicalDevice::PhysicalDevice(VkInstance vulkanInstance) {
         vulkanPhysicalDevice = PickPhysicalDevice(vulkanInstance);
+        queueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(vulkanPhysicalDevice);
     }
 
     // #endregion

@@ -22,6 +22,10 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Instance/Devices/PhysicalDevice.h
         Renderer/Instance/Devices/Queues/QueueFamily.cpp
         Renderer/Instance/Devices/Queues/QueueFamily.h
+        Renderer/Instance/Devices/LogicalDevice.cpp
+        Renderer/Instance/Devices/LogicalDevice.h
+        Renderer/Instance/Devices/Queues/GraphicsQueue.cpp
+        Renderer/Instance/Devices/Queues/GraphicsQueue.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

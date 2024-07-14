@@ -8,6 +8,7 @@
 #include "../../Common.h"
 #include "Debug/Debugger.h"
 #include "Devices/PhysicalDevice.h"
+#include "Devices/LogicalDevice.h"
 #include <vulkan/vulkan_core.h>
 
 namespace KTXCompressor {
@@ -22,6 +23,7 @@ namespace KTXCompressor {
         VkInstance vulkanInstance;
         Debugger *debugger;
         PhysicalDevice *physicalDevice;
+        LogicalDevice *logicalDevice;
 
     private:
         VkInstance CreateVulkanInstance();
