@@ -39,6 +39,10 @@ namespace KTXCompressor {
         VkPhysicalDeviceFeatures enabledDeviceFeatures = physicalDevice->GetRequiredPhysicalDeviceFeatures();
         createInfo.pEnabledFeatures = &enabledDeviceFeatures;
 
+        // Enable device extensions
+        createInfo.enabledExtensionCount = static_cast<uint32_t>(RendererConstants::requiredDeviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = RendererConstants::requiredDeviceExtensions.data();
+
         VkDevice logicalDevice;
         VkResult createLogicalDeviceResult = vkCreateDevice(physicalDevice->GetVulkanPhysicalDevice(),
                                                             &createInfo,

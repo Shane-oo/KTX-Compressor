@@ -4,9 +4,9 @@
 
 #include "PhysicalDevice.h"
 #include "Queues/QueueFamily.h"
+#include "../../RendererConstants.h"
 
 namespace KTXCompressor {
-
     // #region Private Methods
 
     // Look for and select a graphics card in the system that supports the features we need
@@ -35,19 +35,40 @@ namespace KTXCompressor {
     }
 
     bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice device) {
-        VkPhysicalDeviceProperties deviceProperties;
-        vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
         VkPhysicalDeviceFeatures deviceFeatures;
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-        bool QueueFamilyIndicesComplete = queueFamily->FindQueueFamiliesForPhysicalDevice(device)
+        bool queueFamilyIndicesComplete = queueFamily->FindQueueFamiliesForPhysicalDevice(device)
                 .IsComplete();
 
-        cout << "Device " << deviceProperties.deviceName << " Is Suitable" << endl;
+        bool suitable = queueFamilyIndicesComplete && CheckDeviceExtensionsSupported(device);
+        if (suitable) {
+            VkPhysicalDeviceProperties deviceProperties;
+            vkGetPhysicalDeviceProperties(device, &deviceProperties);
 
-        return QueueFamilyIndicesComplete;
+            cout << "Device " << deviceProperties.deviceName << " Is Suitable" << endl;
+        }
+
+        return suitable;
     }
 
+    bool PhysicalDevice::CheckDeviceExtensionsSupported(VkPhysicalDevice device) {
+        uint32_t extensionCount;
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+        vector<VkExtensionProperties> availableExtensions(extensionCount);
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+        set<string> requiredExtensions(RendererConstants::requiredDeviceExtensions.begin(),
+                                       RendererConstants::requiredDeviceExtensions.end());
+
+        for (const auto &extension: availableExtensions) {
+            requiredExtensions.erase(extension.extensionName);
+        }
+
+        return requiredExtensions.empty();
+    }
 
     // #endregion
 
@@ -67,6 +88,7 @@ namespace KTXCompressor {
         delete queueFamily;
         // no need to clean up vulkanPhysicalDevice - will be destroyed when vulkanInstance is destroyed
     }
+
 
 
     // #endregion 

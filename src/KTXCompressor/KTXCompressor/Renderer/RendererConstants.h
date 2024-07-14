@@ -5,6 +5,8 @@
 #ifndef KTXCOMPRESSOR_RENDERERCONSTANTS_H
 #define KTXCOMPRESSOR_RENDERERCONSTANTS_H
 
+#include "../Common.h"
+
 namespace KTXCompressor {
 
     class RendererConstants {
@@ -14,6 +16,7 @@ namespace KTXCompressor {
 #else
         static const bool enableValidationLayers = true;
 #endif
+        static const vector<const char *> requiredDeviceExtensions;
     };
 
 } // KTXCompressor
