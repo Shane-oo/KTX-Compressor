@@ -141,10 +141,6 @@ namespace KTXCompressor {
         if (RendererConstants::enableValidationLayers) {
             debugger = new Debugger(vulkanInstance);
         }
-
-        physicalDevice = new PhysicalDevice(vulkanInstance);
-        // todo Logical Device should potentially live inside Physcial device? "Logical devices don’t interact directly with instance"
-        logicalDevice = new LogicalDevice(physicalDevice);
     }
 
     // #endregion 
@@ -152,12 +148,11 @@ namespace KTXCompressor {
     // #region Destructors
 
     Instance::~Instance() {
+        cout << "Destroy Instance " << endl;
+
         if (RendererConstants::enableValidationLayers) {
             delete debugger;
         }
-        delete physicalDevice;
-        delete logicalDevice;
-
         vkDestroyInstance(vulkanInstance, nullptr);
     }
 

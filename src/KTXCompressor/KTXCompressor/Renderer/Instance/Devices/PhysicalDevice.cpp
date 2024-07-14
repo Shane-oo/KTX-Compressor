@@ -23,6 +23,10 @@ namespace KTXCompressor {
 
         for (const auto &device: devices) {
             if (IsDeviceSuitable(device)) {
+
+                auto queueFamilyIndices = queueFamily->FindQueueFamiliesForPhysicalDevice(device);
+                queueFamily->SetSelectedQueueFamilyIndices(queueFamilyIndices);
+
                 return device;
             }
         }
@@ -36,7 +40,7 @@ namespace KTXCompressor {
         VkPhysicalDeviceFeatures deviceFeatures;
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-        bool QueueFamilyIndicesComplete = QueueFamilyIndices::FindQueueFamilies(device)
+        bool QueueFamilyIndicesComplete = queueFamily->FindQueueFamiliesForPhysicalDevice(device)
                 .IsComplete();
 
         cout << "Device " << deviceProperties.deviceName << " Is Suitable" << endl;
@@ -49,9 +53,9 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    PhysicalDevice::PhysicalDevice(VkInstance vulkanInstance) {
+    PhysicalDevice::PhysicalDevice(VkInstance vulkanInstance, QueueFamily *queueFamily) {
+        this->queueFamily = queueFamily;
         vulkanPhysicalDevice = PickPhysicalDevice(vulkanInstance);
-        queueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(vulkanPhysicalDevice);
     }
 
     // #endregion
@@ -59,6 +63,8 @@ namespace KTXCompressor {
     // #region Destructors
 
     PhysicalDevice::~PhysicalDevice() {
+        cout << "Destroy Physical Device" << endl;
+        delete queueFamily;
         // no need to clean up vulkanPhysicalDevice - will be destroyed when vulkanInstance is destroyed
     }
 

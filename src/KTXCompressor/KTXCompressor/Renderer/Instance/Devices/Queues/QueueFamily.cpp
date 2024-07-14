@@ -5,9 +5,19 @@
 #include "QueueFamily.h"
 
 namespace KTXCompressor {
-    // #region Private Static Methods
 
-    QueueFamilyIndices QueueFamilyIndices::FindQueueFamilies(VkPhysicalDevice vulkanPhysicalDevice) {
+
+    // #region Constructor
+    QueueFamily::QueueFamily(VkSurfaceKHR vulkanSurface) {
+        this->vulkanSurface = vulkanSurface;
+    }
+
+    // #endregion
+
+    // #region Public Methods
+    QueueFamily::QueueFamilyIndices
+    QueueFamily::FindQueueFamiliesForPhysicalDevice(VkPhysicalDevice vulkanPhysicalDevice) {
+
         QueueFamilyIndices indices;
 
         uint32_t queueFamilyCount = 0;
@@ -22,24 +32,26 @@ namespace KTXCompressor {
             if (queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamilyIndex = i;
             }
+
+            // Look for a queue family that has capability of presenting to our window surface
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(vulkanPhysicalDevice, i, vulkanSurface, &presentSupport);
+
+            if (presentSupport) {
+                indices.presentFamilyIndex = i;
+            }
+
+
             if (indices.IsComplete()) {
-                // Found what we are looking for
+                // Found all we are looking for
                 break;
             }
 
             i++;
         }
 
-
         return indices;
     }
-    // #endregion
-
-
-    // #region Private Methods
-
-
-    // #endregion
-
+// #endregion
 
 } // KTXCompressor

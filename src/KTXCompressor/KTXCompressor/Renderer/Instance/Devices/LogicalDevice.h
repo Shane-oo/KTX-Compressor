@@ -23,7 +23,7 @@ namespace KTXCompressor {
         GraphicsQueue *graphicsQueue;
 
     private :
-        VkDevice CreateLogicalDevice(PhysicalDevice *physicalDevice);
+        VkDevice CreateLogicalVulkanDevice(PhysicalDevice *physicalDevice);
 
         VkQueue RetrieveQueue(uint32_t queueFamilyIndex);
     };

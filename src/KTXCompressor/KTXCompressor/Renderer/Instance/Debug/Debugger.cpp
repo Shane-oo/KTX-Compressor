@@ -95,6 +95,8 @@ namespace KTXCompressor {
     // #region Destructors
 
     Debugger::~Debugger() {
+        cout << "Destroy Debugger" << endl;
+
         DestroyDebugMessenger();
     }
 

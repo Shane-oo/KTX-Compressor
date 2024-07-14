@@ -29,12 +29,30 @@ namespace KTXCompressor {
         return glfwCreateWindow(WIDTH, HEIGHT, "KTX-Compressor", nullptr, nullptr);
     }
 
+    VkSurfaceKHR Window::CreateSurface() {
+        VkSurfaceKHR surface;
+        VkResult createSurfaceResult = glfwCreateWindowSurface(instance->GetVulkanInstance(),
+                                                               glfwWindow,
+                                                               nullptr,
+                                                               &surface);
+        if (createSurfaceResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Create Window Surface");
+        }
+
+        cout << "Successfully Created Window Surface" << endl;
+
+        return surface;
+    }
+
     // #endregion
 
     // #region Constructors
 
     Window::Window() {
         glfwWindow = CreateGLFWWindow();
+
+        vulkanSurface = VK_NULL_HANDLE;
+        instance = nullptr;
     }
 
     // #engregion
@@ -42,8 +60,11 @@ namespace KTXCompressor {
     // #region Destructors
 
     Window::~Window() {
+        cout << "Destroy Window" << endl;
+
         glfwDestroyWindow(glfwWindow);
         glfwTerminate();
+        vkDestroySurfaceKHR(instance->GetVulkanInstance(), vulkanSurface, nullptr);
     }
 
     // #endregion
@@ -59,5 +80,11 @@ namespace KTXCompressor {
         return shouldClose;
     }
 
+    void Window::SetInstance(Instance *pInstance) {
+        instance = pInstance;
+        vulkanSurface = CreateSurface();
+    }
+
     // #endregion
+
 } // KTXCompressor

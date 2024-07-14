@@ -8,6 +8,7 @@
 #define GLFW_INCLUDE_VULKAN
 
 #include "../../Common.h"
+#include "../Instance/Instance.h"
 #include <GLFW/glfw3.h>
 
 namespace KTXCompressor {
@@ -20,12 +21,24 @@ namespace KTXCompressor {
 
     private:
         GLFWwindow *glfwWindow;
+        Instance *instance;
+        VkSurfaceKHR vulkanSurface;
 
     public:
         bool GetWindowShouldClose();
 
     private:
         static GLFWwindow *CreateGLFWWindow();
+
+        VkSurfaceKHR CreateSurface();
+
+    public:
+        void SetInstance(Instance *pInstance);
+
+
+        VkSurfaceKHR GetVulkanSurface() {
+            return vulkanSurface;
+        }
     };
 } // KTXCompressor
 

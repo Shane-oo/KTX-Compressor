@@ -10,14 +10,11 @@
 namespace KTXCompressor {
     // #region Private Methods
 
-    VkDevice LogicalDevice::CreateLogicalDevice(PhysicalDevice *physicalDevice) {
-
-        QueueFamilyIndices indices = physicalDevice->GetQueueFamilyIndices();
-
+    VkDevice LogicalDevice::CreateLogicalVulkanDevice(PhysicalDevice *physicalDevice) {
         // number of queues we want for a single queue family
         VkDeviceQueueCreateInfo deviceQueueCreateInfo{};
         deviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        deviceQueueCreateInfo.queueFamilyIndex = indices.graphicsFamilyIndex.value();
+        deviceQueueCreateInfo.queueFamilyIndex = physicalDevice->GetGraphicsFamilyIndex();
         deviceQueueCreateInfo.queueCount = 1;
 
         // vulkan lets you assign prioritizes to queues to influence scheduling of command buffer execution
@@ -65,9 +62,9 @@ namespace KTXCompressor {
     // #region Constructors
 
     LogicalDevice::LogicalDevice(PhysicalDevice *physicalDevice) {
-        vulkanDevice = CreateLogicalDevice(physicalDevice);
+        vulkanDevice = CreateLogicalVulkanDevice(physicalDevice);
 
-        uint32_t graphicsFamilyIndex = physicalDevice->GetQueueFamilyIndices().graphicsFamilyIndex.value();
+        uint32_t graphicsFamilyIndex = physicalDevice->GetGraphicsFamilyIndex();
         graphicsQueue = new GraphicsQueue(RetrieveQueue(graphicsFamilyIndex));
     }
 
@@ -76,6 +73,8 @@ namespace KTXCompressor {
     // #region Destructors
 
     LogicalDevice::~LogicalDevice() {
+        cout << "Destroy Logical Device " << endl;
+
         vkDestroyDevice(vulkanDevice, nullptr);
 
         delete graphicsQueue;

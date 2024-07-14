@@ -22,8 +22,6 @@ namespace KTXCompressor {
     private:
         VkInstance vulkanInstance;
         Debugger *debugger;
-        PhysicalDevice *physicalDevice;
-        LogicalDevice *logicalDevice;
 
     private:
         VkInstance CreateVulkanInstance();
@@ -35,9 +33,9 @@ namespace KTXCompressor {
         static bool RequiredExtensionsMet(const char **requiredExtensions, size_t requiredExtensionsCount);
 
     public:
-/*        [[nodiscard]] VkInstance GetVkInstance() {
-            return vkInstance;
-        }*/
+        [[nodiscard]] VkInstance GetVulkanInstance() {
+            return vulkanInstance;
+        }
     };
 
 } // KTXCompressor

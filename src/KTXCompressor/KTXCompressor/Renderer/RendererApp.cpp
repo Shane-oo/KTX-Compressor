@@ -22,6 +22,15 @@ namespace KTXCompressor {
     RendererApp::RendererApp() {
         window = new Window();
         instance = new Instance();
+        window->SetInstance(instance);
+
+        auto *queueFamily = new QueueFamily(window->GetVulkanSurface());
+        physicalDevice = new PhysicalDevice(instance->GetVulkanInstance(), queueFamily);
+
+        // todo Logical Device should potentially live inside Physcial device? "Logical devices don’t interact directly with instance"
+        logicalDevice = new LogicalDevice(physicalDevice);
+
+
     }
 
     // #endregion
@@ -29,8 +38,12 @@ namespace KTXCompressor {
     // #region Destructors
 
     RendererApp::~RendererApp() {
-        delete instance;
+        cout << "Destroy RendererApp" << endl;
+
+        delete logicalDevice;
+        delete physicalDevice;
         delete window;
+        delete instance;
     }
 
     // #endregion

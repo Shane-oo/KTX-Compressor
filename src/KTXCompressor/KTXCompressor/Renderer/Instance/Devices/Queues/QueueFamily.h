@@ -9,25 +9,40 @@
 #include <vulkan/vulkan_core.h>
 
 namespace KTXCompressor {
-    struct QueueFamilyIndices {
-        optional<uint32_t> graphicsFamilyIndex;
-
-        static QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice vulkanPhysicalDevice);
-
-        bool IsComplete() {
-            return graphicsFamilyIndex.has_value();
-        }
-    };
-
 
     class QueueFamily {
 
+    public:
+        QueueFamily(VkSurfaceKHR vulkanSurface);
+
 
     private:
+        VkSurfaceKHR vulkanSurface;
+
+        struct QueueFamilyIndices {
+            optional<uint32_t> graphicsFamilyIndex;
+            optional<uint32_t> presentFamilyIndex;
 
 
-    private:
+            [[nodiscard]] bool IsComplete() const {
+                return graphicsFamilyIndex.has_value() && presentFamilyIndex.has_value();
+            }
+        };
 
+        QueueFamilyIndices selectedQueueFamilyIndices;
+
+
+    public:
+        QueueFamilyIndices FindQueueFamiliesForPhysicalDevice(VkPhysicalDevice vulkanPhysicalDevice);
+
+    public:
+        QueueFamilyIndices GetSelectedQueueFamilyIndices() const {
+            return selectedQueueFamilyIndices;
+        }
+
+        void SetSelectedQueueFamilyIndices(QueueFamilyIndices selectedQueueFamilyIndices) {
+            this->selectedQueueFamilyIndices = selectedQueueFamilyIndices;
+        }
     };
 
 } // KTXCompressor

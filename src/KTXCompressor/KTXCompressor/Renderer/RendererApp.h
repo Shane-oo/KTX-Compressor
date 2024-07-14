@@ -24,6 +24,8 @@ namespace KTXCompressor {
     private:
         Window *window;
         Instance *instance;
+        PhysicalDevice *physicalDevice;
+        LogicalDevice *logicalDevice;
 
         void MainLoop();
     };

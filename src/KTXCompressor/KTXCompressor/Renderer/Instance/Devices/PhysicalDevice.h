@@ -14,13 +14,13 @@ namespace KTXCompressor {
     class PhysicalDevice {
 
     public:
-        PhysicalDevice(VkInstance vulkanInstance);
+        PhysicalDevice(VkInstance vulkanInstance, QueueFamily *queueFamily);
 
         ~PhysicalDevice();
 
     private:
         VkPhysicalDevice vulkanPhysicalDevice;
-        QueueFamilyIndices queueFamilyIndices;
+        QueueFamily *queueFamily;
 
     private:
         VkPhysicalDevice PickPhysicalDevice(VkInstance vulkanInstance);
@@ -28,8 +28,9 @@ namespace KTXCompressor {
         bool IsDeviceSuitable(VkPhysicalDevice device);
 
     public:
-        QueueFamilyIndices GetQueueFamilyIndices() {
-            return queueFamilyIndices;
+
+        uint32_t GetGraphicsFamilyIndex() {
+            return queueFamily->GetSelectedQueueFamilyIndices().graphicsFamilyIndex.value();
         }
 
         [[nodiscard]] VkPhysicalDevice GetVulkanPhysicalDevice() const {
