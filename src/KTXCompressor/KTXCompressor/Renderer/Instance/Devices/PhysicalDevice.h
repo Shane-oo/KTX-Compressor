@@ -33,6 +33,10 @@ namespace KTXCompressor {
             return queueFamily->GetSelectedQueueFamilyIndices().graphicsFamilyIndex.value();
         }
 
+        uint32_t GetPresentFamilyIndex() {
+            return queueFamily->GetSelectedQueueFamilyIndices().presentFamilyIndex.value();
+        }
+
         [[nodiscard]] VkPhysicalDevice GetVulkanPhysicalDevice() const {
             return vulkanPhysicalDevice;
         }

@@ -11,24 +11,31 @@ namespace KTXCompressor {
     // #region Private Methods
 
     VkDevice LogicalDevice::CreateLogicalVulkanDevice(PhysicalDevice *physicalDevice) {
-        // number of queues we want for a single queue family
-        VkDeviceQueueCreateInfo deviceQueueCreateInfo{};
-        deviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        deviceQueueCreateInfo.queueFamilyIndex = physicalDevice->GetGraphicsFamilyIndex();
-        deviceQueueCreateInfo.queueCount = 1;
 
+        vector<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
+        set<uint32_t> uniqueQueueFamilies = {
+                physicalDevice->GetGraphicsFamilyIndex(),
+                physicalDevice->GetPresentFamilyIndex()
+        };
         // vulkan lets you assign prioritizes to queues to influence scheduling of command buffer execution
         // this is required even if there is only a single queue
         float queuePriority = 1.0f;
-        deviceQueueCreateInfo.pQueuePriorities = &queuePriority;
+        for (uint32_t queueFamilyIndex: uniqueQueueFamilies) {
+            VkDeviceQueueCreateInfo deviceQueueCreateInfo{};
+            deviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            deviceQueueCreateInfo.queueFamilyIndex = queueFamilyIndex;
+            deviceQueueCreateInfo.queueCount = 1;
+            deviceQueueCreateInfo.pQueuePriorities = &queuePriority;
 
+            deviceQueueCreateInfos.push_back(deviceQueueCreateInfo);
+        }
 
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
-        createInfo.queueCreateInfoCount = 1;
+        createInfo.queueCreateInfoCount = static_cast<uint32_t>(deviceQueueCreateInfos.size());
+        createInfo.pQueueCreateInfos = deviceQueueCreateInfos.data();
 
-        // Specify used device features  (TODO could move this to the Physical Device class itself...)
+        // Specify used device features 
         VkPhysicalDeviceFeatures enabledDeviceFeatures = physicalDevice->GetRequiredPhysicalDeviceFeatures();
         createInfo.pEnabledFeatures = &enabledDeviceFeatures;
 
@@ -54,6 +61,10 @@ namespace KTXCompressor {
                          0,
                          &queue);
 
+        if (!queue) {
+            throw runtime_error("Failed to Retrieve Queue with queueFamilyIndex: " + to_string(queueFamilyIndex));
+        }
+
         return queue;
     }
 
@@ -66,6 +77,9 @@ namespace KTXCompressor {
 
         uint32_t graphicsFamilyIndex = physicalDevice->GetGraphicsFamilyIndex();
         graphicsQueue = new GraphicsQueue(RetrieveQueue(graphicsFamilyIndex));
+
+        uint32_t presentFamilyIndex = physicalDevice->GetPresentFamilyIndex();
+        presentQueue = new PresentQueue(RetrieveQueue(presentFamilyIndex));
     }
 
     // #endregion
@@ -78,6 +92,7 @@ namespace KTXCompressor {
         vkDestroyDevice(vulkanDevice, nullptr);
 
         delete graphicsQueue;
+        delete presentQueue;
     }
 
 
