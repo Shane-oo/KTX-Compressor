@@ -8,6 +8,7 @@
 #include <vulkan/vulkan_core.h>
 #include "../../Common.h"
 #include "Window.h"
+#include "ImageView.h"
 
 
 namespace KTXCompressor {
@@ -21,6 +22,7 @@ namespace KTXCompressor {
     private:
         Window *window;
         LogicalDevice *logicalDevice;
+        vector<ImageView *> *imageViews;
         VkSwapchainKHR vulkanSwapChain;
         vector<VkImage> images;
         VkFormat imageFormat;
@@ -35,6 +37,8 @@ namespace KTXCompressor {
                 return !formats.empty() && !presentModes.empty();
             }
         };
+
+        vector<ImageView *> *CreateImageViews();
 
         void RetrieveSwapChainImages();
 

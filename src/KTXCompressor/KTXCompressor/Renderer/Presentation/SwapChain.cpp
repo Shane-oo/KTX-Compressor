@@ -137,10 +137,21 @@ namespace KTXCompressor {
 
         vkGetSwapchainImagesKHR(logicalDevice->GetVulkanDevice(), vulkanSwapChain, &imageCount, images.data());
 
-        cout << "Retrieved " << images.size() << " Image Views From Swap Chain" << endl;
+        cout << "Retrieved " << images.size() << " Images From Swap Chain" << endl;
     }
 
-    // #endregion                                                .
+    vector<ImageView *> *SwapChain::CreateImageViews() {
+        auto *views = new vector<ImageView *>();
+
+        for (auto &image: images) {
+            views->push_back(new ImageView(logicalDevice->GetVulkanDevice(), image, imageFormat));
+        }
+
+        return views;
+    }
+
+
+    // #endregion
 
     // #region Constructors
 
@@ -149,6 +160,7 @@ namespace KTXCompressor {
         this->logicalDevice = logicalDevice;
         vulkanSwapChain = CreateVulkanSwapChain(physicalDevice);
         RetrieveSwapChainImages();
+        imageViews = CreateImageViews();
     }
 
 
@@ -158,6 +170,11 @@ namespace KTXCompressor {
 
     SwapChain::~SwapChain() {
         cout << "Destroy Swap Chain" << endl;
+
+        for (auto imageView: *imageViews) {
+            delete imageView;
+        }
+        delete imageViews;
 
         vkDestroySwapchainKHR(logicalDevice->GetVulkanDevice(), vulkanSwapChain, nullptr);
     }
@@ -197,6 +214,7 @@ namespace KTXCompressor {
 
         return details;
     }
+
 
 
 
