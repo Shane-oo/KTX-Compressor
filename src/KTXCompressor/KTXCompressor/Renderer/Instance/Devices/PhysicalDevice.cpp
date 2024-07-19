@@ -5,6 +5,7 @@
 #include "PhysicalDevice.h"
 #include "Queues/QueueFamily.h"
 #include "../../RendererConstants.h"
+#include "../../Presentation/SwapChain.h"
 
 namespace KTXCompressor {
     // #region Private Methods
@@ -35,19 +36,25 @@ namespace KTXCompressor {
     }
 
     bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice device) {
-
         VkPhysicalDeviceFeatures deviceFeatures;
         vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-        bool queueFamilyIndicesComplete = queueFamily->FindQueueFamiliesForPhysicalDevice(device)
-                .IsComplete();
+        bool suitable = false;
+        if (CheckDeviceExtensionsSupported(device)) {
+            bool queueFamilyIndicesComplete = queueFamily->FindQueueFamiliesForPhysicalDevice(device).IsComplete();
 
-        bool suitable = queueFamilyIndicesComplete && CheckDeviceExtensionsSupported(device);
-        if (suitable) {
-            VkPhysicalDeviceProperties deviceProperties;
-            vkGetPhysicalDeviceProperties(device, &deviceProperties);
+            bool swapChainAdequate = SwapChain::QuerySwapChainSupport(device,
+                                                                      queueFamily->GetVulkanSurface())
+                    .IsAdequate();
 
-            cout << "Device " << deviceProperties.deviceName << " Is Suitable" << endl;
+            suitable = queueFamilyIndicesComplete && swapChainAdequate;
+            if (suitable) {
+                VkPhysicalDeviceProperties deviceProperties;
+                vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+                cout << "Device " << deviceProperties.deviceName << " Is Suitable" << endl;
+            }
+
         }
 
         return suitable;

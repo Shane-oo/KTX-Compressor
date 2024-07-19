@@ -39,6 +39,10 @@ namespace KTXCompressor {
         VkSurfaceKHR GetVulkanSurface() {
             return vulkanSurface;
         }
+
+        GLFWwindow *GetGlfwWindow() {
+            return glfwWindow;
+        }
     };
 } // KTXCompressor
 

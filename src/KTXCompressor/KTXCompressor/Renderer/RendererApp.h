@@ -9,6 +9,7 @@
 #include "Presentation/Window.h"
 #include "Instance/Instance.h"
 #include "Instance/Debug/Debugger.h"
+#include "Presentation/SwapChain.h"
 
 namespace KTXCompressor {
 
@@ -26,6 +27,7 @@ namespace KTXCompressor {
         Instance *instance;
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
+        SwapChain *swapChain;
 
         void MainLoop();
     };

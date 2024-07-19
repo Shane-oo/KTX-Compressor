@@ -30,7 +30,7 @@ namespace KTXCompressor {
         // todo Logical Device should potentially live inside Physcial device? "Logical devices don’t interact directly with instance"
         logicalDevice = new LogicalDevice(physicalDevice);
 
-
+        swapChain = new SwapChain(physicalDevice, window, logicalDevice);
     }
 
     // #endregion
@@ -40,6 +40,7 @@ namespace KTXCompressor {
     RendererApp::~RendererApp() {
         cout << "Destroy RendererApp" << endl;
 
+        delete swapChain;
         delete logicalDevice;
         delete physicalDevice;
         delete window;

@@ -36,6 +36,10 @@ namespace KTXCompressor {
         QueueFamilyIndices FindQueueFamiliesForPhysicalDevice(VkPhysicalDevice vulkanPhysicalDevice);
 
     public:
+        VkSurfaceKHR GetVulkanSurface() {
+            return vulkanSurface;
+        }
+
         QueueFamilyIndices GetSelectedQueueFamilyIndices() const {
             return selectedQueueFamilyIndices;
         }

@@ -8,6 +8,7 @@ namespace KTXCompressor {
 
 
     // #region Constructor
+
     QueueFamily::QueueFamily(VkSurfaceKHR vulkanSurface) {
         this->vulkanSurface = vulkanSurface;
     }

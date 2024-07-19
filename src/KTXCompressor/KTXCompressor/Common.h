@@ -11,6 +11,7 @@
 #include <string>
 #include <set>
 #include <optional>
+#include <algorithm>
 
 // Use the standard namespace for commonly used components
 using namespace std;

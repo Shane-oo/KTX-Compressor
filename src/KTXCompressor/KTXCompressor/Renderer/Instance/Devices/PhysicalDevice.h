@@ -26,7 +26,7 @@ namespace KTXCompressor {
         VkPhysicalDevice PickPhysicalDevice(VkInstance vulkanInstance);
 
         bool IsDeviceSuitable(VkPhysicalDevice device);
-        
+
         bool CheckDeviceExtensionsSupported(VkPhysicalDevice device);
 
     public:

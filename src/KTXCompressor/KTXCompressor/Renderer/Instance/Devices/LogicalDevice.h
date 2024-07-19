@@ -28,6 +28,11 @@ namespace KTXCompressor {
         VkDevice CreateLogicalVulkanDevice(PhysicalDevice *physicalDevice);
 
         VkQueue RetrieveQueue(uint32_t queueFamilyIndex);
+
+    public:
+        VkDevice GetVulkanDevice() {
+            return vulkanDevice;
+        }
     };
 
 } // KTXCompressor
