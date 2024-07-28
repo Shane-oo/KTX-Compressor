@@ -33,7 +33,7 @@ namespace KTXCompressor {
 
         swapChain = new SwapChain(physicalDevice, window, logicalDevice);
 
-        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice->GetVulkanDevice());
+        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice->GetVulkanDevice(), swapChain);
     }
 
     // #endregion

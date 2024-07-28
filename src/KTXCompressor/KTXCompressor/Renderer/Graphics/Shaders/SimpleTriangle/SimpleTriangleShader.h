@@ -12,11 +12,13 @@ namespace KTXCompressor {
     class SimpleTriangleShader : public Shader {
     public:
         SimpleTriangleShader(VkDevice device);
-        
+
     public:
-        const char * GetVertexEntryPointName() override;
-        
-        const char * GetFragmentEntryPointName() override;
+        const char *GetVertexEntryPointName() override;
+
+        const char *GetFragmentEntryPointName() override;
+
+        VkPipelineLayout CreatePipelineLayout() override;
     };
 
 } // KTXCompressor

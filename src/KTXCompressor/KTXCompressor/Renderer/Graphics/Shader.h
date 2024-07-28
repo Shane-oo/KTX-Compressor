@@ -14,21 +14,29 @@ namespace KTXCompressor {
     public:
         Shader(VkDevice device, const string &vertexFileName, const string &fragmentFileName);
 
-        ~Shader();
-        
+        virtual ~Shader();
+
+    protected:
+        VkDevice vulkanDevice;
+        VkPipelineLayout vulkanPipelineLayout = nullptr;
+
+        virtual VkPipelineLayout CreatePipelineLayout() = 0;
+
     private:
         static vector<char> ReadFile(const string &fileName);
 
         VkShaderModule CreateShaderModule(const string &fileName);
-        
+
     public:
-        virtual const char * GetVertexEntryPointName() = 0;
-        virtual const char * GetFragmentEntryPointName() = 0;
+        virtual const char *GetVertexEntryPointName() = 0;
+
+        virtual const char *GetFragmentEntryPointName() = 0;
+
 
     private:
-        VkDevice vulkanDevice;
         VkShaderModule vertexShaderModule;
         VkShaderModule fragmentShaderModule;
+
     public:
         VkShaderModule GetVertexShaderModule() {
             return vertexShaderModule;
@@ -37,6 +45,10 @@ namespace KTXCompressor {
         VkShaderModule GetFragmentShaderModule() {
             return fragmentShaderModule;
         }
+
+        VkPipelineLayout GetVulkanPipelineLayout();
+
+        void CleanUpShaderModules();
     };
 
 } // KTXCompressor

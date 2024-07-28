@@ -59,8 +59,6 @@ namespace KTXCompressor {
 
         vertexShaderModule = CreateShaderModule(vertexFileName);
         fragmentShaderModule = CreateShaderModule(fragmentFileName);
-        
-        // ...
     }
 
     // #endregion
@@ -69,11 +67,26 @@ namespace KTXCompressor {
 
     Shader::~Shader() {
         cout << "Destroy Shader" << endl;
+        vkDestroyPipelineLayout(vulkanDevice, vulkanPipelineLayout, nullptr);
+    }
 
+
+    // #endregion
+
+    // #region Public Methods
+
+    VkPipelineLayout Shader::GetVulkanPipelineLayout() {
+        if (!vulkanPipelineLayout) {
+            vulkanPipelineLayout = CreatePipelineLayout();
+        }
+        return vulkanPipelineLayout;
+    }
+
+    void Shader::CleanUpShaderModules() {
+        cout << "Destroy Shader Modules" << endl;
         vkDestroyShaderModule(vulkanDevice, fragmentShaderModule, nullptr);
         vkDestroyShaderModule(vulkanDevice, vertexShaderModule, nullptr);
     }
-
 
     // #endregion
 

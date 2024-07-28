@@ -54,6 +54,14 @@ namespace KTXCompressor {
         static SwapChainSupportDetails
         QuerySwapChainSupport(VkPhysicalDevice vulkanPhysicalDevice, VkSurfaceKHR vulkanSurface);
 
+    public:
+        VkExtent2D GetExtent() {
+            return extent;
+        }
+
+        VkFormat GetImageFormat() {
+            return imageFormat;
+        }
     };
 
 } // KTXCompressor
