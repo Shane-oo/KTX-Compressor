@@ -4,6 +4,23 @@
 # Copy the textures folder to the build and binary directory
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+# SHADERS
+
+# Copy All Shaders to the build and binary directory
+set(SHADERS_FOLDER Renderer/Graphics/Shaders)
+set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_FOLDER})
+
+# Recursively find all .spv files in the shaders directory
+file(GLOB_RECURSE SPV_SHADERS ${SHADERS_DIR}/*.spv)
+
+# Copy the .spv files to the top-level directory in the build directory
+foreach(SPV_SHADER ${SPV_SHADERS})
+    get_filename_component(SPV_SHADER_NAME ${SPV_SHADER} NAME)
+    file(COPY ${SPV_SHADER} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()
+
+# END_SHADERS
+
 # Add source to this project's executable.
 add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Texture.cpp
@@ -33,6 +50,14 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Presentation/SwapChain.h
         Renderer/Presentation/ImageView.cpp
         Renderer/Presentation/ImageView.h
+        Renderer/Graphics/GraphicsPipeline.cpp
+        Renderer/Graphics/GraphicsPipeline.h
+        Renderer/Graphics/Shader.cpp
+        Renderer/Graphics/Shader.h
+        Renderer/Graphics/Shaders/SimpleTriangle/SimpleTriangleShader.cpp
+        Renderer/Graphics/Shaders/SimpleTriangle/SimpleTriangleShader.h
+        Renderer/Graphics/Shaders/SimpleTriangle/SimpleTriangleGraphicsPipeline.cpp
+        Renderer/Graphics/Shaders/SimpleTriangle/SimpleTriangleGraphicsPipeline.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

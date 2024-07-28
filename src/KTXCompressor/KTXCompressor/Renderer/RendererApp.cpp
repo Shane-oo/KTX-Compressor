@@ -4,6 +4,7 @@
 
 
 #include "RendererApp.h"
+#include "Graphics/Shaders/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
 
 namespace KTXCompressor {
 
@@ -27,10 +28,12 @@ namespace KTXCompressor {
         auto *queueFamily = new QueueFamily(window->GetVulkanSurface());
         physicalDevice = new PhysicalDevice(instance->GetVulkanInstance(), queueFamily);
 
-        // todo Logical Device should potentially live inside Physcial device? "Logical devices don’t interact directly with instance"
+        // todo Logical Device should potentially live inside Physcial vulkanDevice? "Logical devices don’t interact directly with instance"
         logicalDevice = new LogicalDevice(physicalDevice);
 
         swapChain = new SwapChain(physicalDevice, window, logicalDevice);
+
+        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice->GetVulkanDevice());
     }
 
     // #endregion
@@ -40,6 +43,7 @@ namespace KTXCompressor {
     RendererApp::~RendererApp() {
         cout << "Destroy RendererApp" << endl;
 
+        delete graphicsPipeline;
         delete swapChain;
         delete logicalDevice;
         delete physicalDevice;

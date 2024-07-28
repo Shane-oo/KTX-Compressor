@@ -141,6 +141,7 @@ namespace KTXCompressor {
     }
 
     vector<ImageView *> *SwapChain::CreateImageViews() {
+        RetrieveSwapChainImages();
         auto *views = new vector<ImageView *>();
 
         for (auto &image: images) {
@@ -159,7 +160,6 @@ namespace KTXCompressor {
         this->window = window;
         this->logicalDevice = logicalDevice;
         vulkanSwapChain = CreateVulkanSwapChain(physicalDevice);
-        RetrieveSwapChainImages();
         imageViews = CreateImageViews();
     }
 
