@@ -5,7 +5,7 @@
 #ifndef KTXCOMPRESSOR_SIMPLETRIANGLESHADER_H
 #define KTXCOMPRESSOR_SIMPLETRIANGLESHADER_H
 
-#include "../../Shader.h"
+#include "../Shader.h"
 
 namespace KTXCompressor {
 

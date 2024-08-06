@@ -10,7 +10,6 @@
 #include "Instance/Instance.h"
 #include "Instance/Debug/Debugger.h"
 #include "Presentation/SwapChain.h"
-#include "Graphics/Shaders/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
 
 namespace KTXCompressor {
 
@@ -32,6 +31,8 @@ namespace KTXCompressor {
         GraphicsPipeline *graphicsPipeline;
 
         void MainLoop();
+        
+        void DrawFrame();
     };
 } // KTXCompressor
 

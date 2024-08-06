@@ -14,7 +14,6 @@ namespace KTXCompressor {
     }
 
 
-
     void SimpleTriangleGraphicsPipeline::SetRasterizationStateCreateInfo(
             VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) {
         rasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -30,18 +29,29 @@ namespace KTXCompressor {
         rasterizationStateCreateInfo.depthBiasSlopeFactor = 0.0f; // Optional
     }
 
+
+    void SimpleTriangleGraphicsPipeline::Render() {
+        vkCmdDraw(drawCommand->GetVulkanCommandBuffer(), 3, 1, 0, 0);
+    }
+
+
     // #endregion
 
     // #region Constructors 
 
 
-    SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(VkDevice device, SwapChain *swapChain)
-            : GraphicsPipeline(device, swapChain) {
+    SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(VkDevice device,
+                                                                   SwapChain *swapChain,
+                                                                   uint32_t graphicsFamilyIndex)
+            : GraphicsPipeline(device, swapChain, graphicsFamilyIndex) {
         Init();
     }
 
 
 
+    // #endregion
+
+    // #region Public Methods
 
     // #endregion
 

@@ -72,6 +72,26 @@ namespace KTXCompressor {
         vkDestroyRenderPass(vulkanDevice, vulkanRenderPass, nullptr);
     }
 
+    void RenderPass::Begin(VkCommandBuffer vulkanCommandBuffer, VkFramebuffer vulkanFrameBuffer, VkExtent2D extent) {
+        VkRenderPassBeginInfo renderPassBeginInfo = {};
+        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassBeginInfo.renderPass = vulkanRenderPass;
+        renderPassBeginInfo.framebuffer = vulkanFrameBuffer;
+
+        renderPassBeginInfo.renderArea.offset = {0, 0};
+        renderPassBeginInfo.renderArea.extent = extent;
+
+        VkClearValue clearColour = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+        renderPassBeginInfo.clearValueCount = 1;
+        renderPassBeginInfo.pClearValues = &clearColour;
+
+        vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+    }
+
+    void RenderPass::End(VkCommandBuffer vulkanCommandBuffer) {
+        vkCmdEndRenderPass(vulkanCommandBuffer);
+    }
+
 
     // #endregion
 

@@ -4,7 +4,7 @@
 
 
 #include "RendererApp.h"
-#include "Graphics/Shaders/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
+#include "Graphics/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
 
 namespace KTXCompressor {
 
@@ -12,8 +12,12 @@ namespace KTXCompressor {
 
     void RendererApp::MainLoop() {
         while (!window->GetWindowShouldClose()) {
-            //cout << "We should be running" << endl;
+            DrawFrame();
         }
+    }
+
+    void RendererApp::DrawFrame() {
+
     }
 
     // #endregion
@@ -33,7 +37,9 @@ namespace KTXCompressor {
 
         swapChain = new SwapChain(physicalDevice, window, logicalDevice);
 
-        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice->GetVulkanDevice(), swapChain);
+        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice->GetVulkanDevice(),
+                                                              swapChain,
+                                                              physicalDevice->GetGraphicsFamilyIndex());
 
         swapChain->SetGraphicsPipeline(graphicsPipeline);
     }

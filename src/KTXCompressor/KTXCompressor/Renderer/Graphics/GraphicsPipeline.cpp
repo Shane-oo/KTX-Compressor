@@ -147,10 +147,11 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    GraphicsPipeline::GraphicsPipeline(VkDevice device, SwapChain *swapChain) {
+    GraphicsPipeline::GraphicsPipeline(VkDevice device, SwapChain *swapChain, uint32_t graphicsFamilyIndex) {
         vulkanDevice = device;
         this->swapChain = swapChain;
         renderPass = new RenderPass(vulkanDevice, swapChain->GetImageFormat());
+        drawCommand = new DrawCommand(vulkanDevice, graphicsFamilyIndex);
     }
 
     // #endregion
@@ -163,6 +164,7 @@ namespace KTXCompressor {
         delete renderPass;
         vkDestroyPipeline(vulkanDevice, vulkanGraphicsPipeline, nullptr);
         delete shader;
+        delete drawCommand;
     }
 
     // #endregion
@@ -176,8 +178,50 @@ namespace KTXCompressor {
 
         // no longer need shader modules
         shader->CleanUpShaderModules();
+
+
     }
 
+
+    // #endregion
+
+    // #region Public Methods
+
+    void GraphicsPipeline::Draw(VkFramebuffer vulkanFrameBuffer) {
+        drawCommand->Begin();
+
+        auto vulkanCommandBuffer = drawCommand->GetVulkanCommandBuffer();
+
+        auto extent = swapChain->GetExtent();
+        renderPass->Begin(vulkanCommandBuffer,
+                          vulkanFrameBuffer,
+                          extent);
+
+        vkCmdBindPipeline(vulkanCommandBuffer,
+                          VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          vulkanGraphicsPipeline);
+
+        // Dynamic viewport and scissor
+        VkViewport viewport = {};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(extent.width);
+        viewport.height = static_cast<float>(extent.height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(vulkanCommandBuffer, 0, 1, &viewport);
+
+        VkRect2D scissor = {};
+        scissor.offset = {0, 0};
+        scissor.extent = extent;
+        vkCmdSetScissor(vulkanCommandBuffer, 0, 1, &scissor);
+
+        Render();
+        
+        renderPass->End(vulkanCommandBuffer);
+        
+        drawCommand->End();
+    }
 
     // #endregion
 

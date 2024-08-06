@@ -23,6 +23,10 @@ namespace KTXCompressor {
         VkRenderPass CreateVulkanRenderPass(VkFormat swapChainImageFormat);
 
     public:
+        void Begin(VkCommandBuffer vulkanCommandBuffer, VkFramebuffer vulkanFrameBuffer, VkExtent2D extent);
+        
+        void End(VkCommandBuffer vulkanCommandBuffer);
+        
         VkRenderPass GetVulkanRenderPass() {
             return vulkanRenderPass;
         }

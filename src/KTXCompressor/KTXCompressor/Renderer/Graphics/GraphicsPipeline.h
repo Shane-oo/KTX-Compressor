@@ -9,14 +9,17 @@
 #include "Shader.h"
 #include "../Presentation/SwapChain.h"
 #include "RenderPass.h"
+#include "../Commands/DrawCommand.h"
 
 namespace KTXCompressor {
 
     class GraphicsPipeline {
     public:
-        GraphicsPipeline(VkDevice device, SwapChain *swapChain);
+        GraphicsPipeline(VkDevice device, SwapChain *swapChain, uint32_t graphicsFamilyIndex);
 
         ~GraphicsPipeline();
+
+        void Draw(VkFramebuffer vulkanFrameBuffer);
 
     private:
         VkPipeline CreateVulkanGraphicsPipeline();
@@ -25,11 +28,11 @@ namespace KTXCompressor {
     protected:
         VkDevice vulkanDevice;
         SwapChain *swapChain;
-
         RenderPass *renderPass;
+        DrawCommand *drawCommand;
         VkPipeline vulkanGraphicsPipeline;
 
-    protected:
+
         virtual Shader *CreateShader() = 0;
 
         void Init();
@@ -37,9 +40,15 @@ namespace KTXCompressor {
         virtual void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) = 0;
 
+        virtual void Render() = 0;
+
     public:
         RenderPass *GetRenderPass() {
             return renderPass;
+        }
+
+        VkPipeline GetVulkanGraphicsPipeline() {
+            return vulkanGraphicsPipeline;
         }
     };
 
