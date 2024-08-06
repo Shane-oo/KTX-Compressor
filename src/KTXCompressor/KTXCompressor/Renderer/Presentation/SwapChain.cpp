@@ -173,9 +173,9 @@ namespace KTXCompressor {
     }
 
     void SwapChain::RecreateVulkanSwapChain() {
-        cout << "Recreating Vulkan Swap Chain" << endl;
-
         while (window->IsMinimised()) {}
+
+        cout << "Recreating Vulkan Swap Chain" << endl;
 
         vkDeviceWaitIdle(logicalDevice->GetVulkanDevice());
 
