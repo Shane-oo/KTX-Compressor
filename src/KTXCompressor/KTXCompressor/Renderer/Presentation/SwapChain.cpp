@@ -68,7 +68,7 @@ namespace KTXCompressor {
         }
     }
 
-    VkSwapchainKHR SwapChain::CreateVulkanSwapChain(PhysicalDevice *physicalDevice) {
+    VkSwapchainKHR SwapChain::CreateVulkanSwapChain() {
         SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(physicalDevice->GetVulkanPhysicalDevice(),
                                                                          this->window->GetVulkanSurface());
 
@@ -172,26 +172,21 @@ namespace KTXCompressor {
         return fBuffers;
     }
 
+    void SwapChain::RecreateVulkanSwapChain() {
+        cout << "Recreating Vulkan Swap Chain" << endl;
 
-    // #endregion
+        while (window->IsMinimised()) {}
 
-    // #region Constructors
+        vkDeviceWaitIdle(logicalDevice->GetVulkanDevice());
 
-    SwapChain::SwapChain(PhysicalDevice *physicalDevice, Window *window, LogicalDevice *logicalDevice) {
-        this->window = window;
-        this->logicalDevice = logicalDevice;
-        vulkanSwapChain = CreateVulkanSwapChain(physicalDevice);
+        CleanUpVulkanSwapChain();
+
+        vulkanSwapChain = CreateVulkanSwapChain();
         imageViews = CreateImageViews();
+        frameBuffers = CreateFrameBuffers();
     }
 
-
-    // #endregion
-
-    // #region Destructors
-
-    SwapChain::~SwapChain() {
-        cout << "Destroy Swap Chain" << endl;
-
+    void SwapChain::CleanUpVulkanSwapChain() {
         for (auto frameBuffer: *frameBuffers) {
             delete frameBuffer;
         }
@@ -203,6 +198,28 @@ namespace KTXCompressor {
         delete imageViews;
 
         vkDestroySwapchainKHR(logicalDevice->GetVulkanDevice(), vulkanSwapChain, nullptr);
+    }
+
+    // #endregion
+
+    // #region Constructors
+
+    SwapChain::SwapChain(PhysicalDevice *physicalDevice, Window *window, LogicalDevice *logicalDevice) {
+        this->window = window;
+        this->logicalDevice = logicalDevice;
+        this->physicalDevice = physicalDevice;
+        vulkanSwapChain = CreateVulkanSwapChain();
+        imageViews = CreateImageViews();
+    }
+
+    // #endregion
+
+    // #region Destructors
+
+    SwapChain::~SwapChain() {
+        cout << "Destroy Swap Chain" << endl;
+
+        CleanUpVulkanSwapChain();
     }
 
     // #endregion
@@ -247,13 +264,21 @@ namespace KTXCompressor {
     }
 
     VkFramebuffer SwapChain::NextImage(VkSemaphore imageAvailableSemaphore) {
-        vkAcquireNextImageKHR(logicalDevice->GetVulkanDevice(),
-                              vulkanSwapChain,
-                              UINT64_MAX,
-                              imageAvailableSemaphore,
-                              VK_NULL_HANDLE,
-                              &imageIndex);
+        VkResult acquireNextImageResult = vkAcquireNextImageKHR(logicalDevice->GetVulkanDevice(),
+                                                                vulkanSwapChain,
+                                                                UINT64_MAX,
+                                                                imageAvailableSemaphore,
+                                                                VK_NULL_HANDLE,
+                                                                &imageIndex);
 
+        if (acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) {
+            RecreateVulkanSwapChain();
+            return nullptr;
+        }
+
+        if (acquireNextImageResult != VK_SUCCESS && acquireNextImageResult != VK_SUBOPTIMAL_KHR) {
+            throw runtime_error("Failed to Acquire Swap Chain Image!");
+        }
 
         return (*frameBuffers)[imageIndex]->GetVulkanFrameBuffer();
     }
@@ -276,10 +301,19 @@ namespace KTXCompressor {
         auto presentQueue = logicalDevice->GetPresentQueue();
         VkResult presentResult = vkQueuePresentKHR(presentQueue->GetVulkanQueue(), &presentInfo);
 
+        if (presentResult == VK_ERROR_OUT_OF_DATE_KHR
+            || presentResult == VK_SUBOPTIMAL_KHR
+            || window->GetFrameBufferResized()) {
+
+            window->SetFrameBufferResized(false);
+            RecreateVulkanSwapChain();
+            return;
+        }
         if (presentResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Present Queue");
+            throw runtime_error("Failed to Present Swap Chain Image");
         }
     }
+
 
     // #endregion
 

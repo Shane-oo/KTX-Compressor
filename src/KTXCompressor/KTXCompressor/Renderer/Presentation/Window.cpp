@@ -24,9 +24,14 @@ namespace KTXCompressor {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         // Disable window resize for now
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        return glfwCreateWindow(WIDTH, HEIGHT, "KTX-Compressor", nullptr, nullptr);
+        auto window = glfwCreateWindow(WIDTH, HEIGHT, "KTX-Compressor", nullptr, nullptr);
+
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, FrameBufferResizeCallback);
+
+        return window;
     }
 
     VkSurfaceKHR Window::CreateSurface() {
@@ -42,6 +47,11 @@ namespace KTXCompressor {
         cout << "Successfully Created Window Surface" << endl;
 
         return surface;
+    }
+
+    void Window::FrameBufferResizeCallback(GLFWwindow *window, int width, int height) {
+        auto app = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+        app->SetFrameBufferResized(true);
     }
 
     // #endregion
@@ -84,6 +94,16 @@ namespace KTXCompressor {
         instance = pInstance;
         vulkanSurface = CreateSurface();
     }
+
+    bool Window::IsMinimised() {
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(glfwWindow, &width, &height);
+
+        glfwWaitEvents();
+        
+        return width == 0 || height == 0;
+    }
+
 
     // #endregion
 

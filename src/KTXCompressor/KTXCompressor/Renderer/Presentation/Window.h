@@ -23,14 +23,17 @@ namespace KTXCompressor {
         GLFWwindow *glfwWindow;
         Instance *instance;
         VkSurfaceKHR vulkanSurface;
+        bool frameBufferResized = false;
 
     public:
         bool GetWindowShouldClose();
 
     private:
-        static GLFWwindow *CreateGLFWWindow();
+        GLFWwindow *CreateGLFWWindow();
 
         VkSurfaceKHR CreateSurface();
+        
+        static void FrameBufferResizeCallback(GLFWwindow* window, int width, int height);
 
     public:
         void SetInstance(Instance *pInstance);
@@ -43,6 +46,16 @@ namespace KTXCompressor {
         GLFWwindow *GetGlfwWindow() {
             return glfwWindow;
         }
+
+        bool GetFrameBufferResized() {
+            return frameBufferResized;
+        }
+
+        void SetFrameBufferResized(bool resized) {
+            frameBufferResized = resized;
+        }
+        
+        bool IsMinimised();
     };
 } // KTXCompressor
 

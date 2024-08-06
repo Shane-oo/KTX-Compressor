@@ -16,6 +16,10 @@ namespace KTXCompressor {
 
         ~Synchronization();
 
+        void WaitForFence(uint32_t currentFrame);
+        
+        void ResetFence(uint32_t currentFrame);
+
     private:
         VkDevice vulkanDevice;
         vector<VkSemaphore> imageAvailableSemaphores;
@@ -38,9 +42,6 @@ namespace KTXCompressor {
         VkFence GetInFlightFence(uint32_t currentFrame) {
             return inFlightFences[currentFrame];
         }
-
-    public:
-        void WaitForFences(uint32_t currentFrame);
     };
 
 } // KTXCompressor

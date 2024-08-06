@@ -50,7 +50,7 @@ namespace KTXCompressor {
                 throw runtime_error("Failed to Create Fences");
             }
 
-            cout << "Successfully Created Fence" << i << endl;
+            cout << "Successfully Created Fence " << i << endl;
 
         }
 
@@ -91,10 +91,12 @@ namespace KTXCompressor {
 
     // #region Public Methods
 
-    void Synchronization::WaitForFences(uint32_t currentFrame) {
+    void Synchronization::WaitForFence(uint32_t currentFrame) {
         // waits on the host for all fences to finish 
         vkWaitForFences(vulkanDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+    }
 
+    void Synchronization::ResetFence(uint32_t currentFrame) {
         // reset to the unsignaled state
         vkResetFences(vulkanDevice, 1, &inFlightFences[currentFrame]);
     }

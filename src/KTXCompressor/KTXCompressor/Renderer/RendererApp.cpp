@@ -20,9 +20,15 @@ namespace KTXCompressor {
     }
 
     void RendererApp::DrawFrame() {
-        synchronization->WaitForFences(currentFrame);
+        synchronization->WaitForFence(currentFrame);
 
         auto vulkanFrameBuffer = swapChain->NextImage(synchronization->GetWaitSemaphore(currentFrame));
+
+        if (!vulkanFrameBuffer) {
+            return;
+        }
+
+        synchronization->ResetFence(currentFrame);
 
         graphicsPipeline->Draw(vulkanFrameBuffer, currentFrame);
 
@@ -32,7 +38,7 @@ namespace KTXCompressor {
 
         currentFrame = (currentFrame + 1) % RendererConstants::MAX_FRAMES_IN_FLIGHT;
 
-        cout << currentFrame << endl;
+        //cout << currentFrame << endl;
     }
 
     // #endregion

@@ -26,6 +26,7 @@ namespace KTXCompressor {
     private:
         Window *window;
         LogicalDevice *logicalDevice;
+        PhysicalDevice *physicalDevice;
         GraphicsPipeline *graphicsPipeline;
         vector<ImageView *> *imageViews;
         vector<FrameBuffer *> *frameBuffers;
@@ -51,7 +52,7 @@ namespace KTXCompressor {
 
         void RetrieveSwapChainImages();
 
-        VkSwapchainKHR CreateVulkanSwapChain(PhysicalDevice *physicalDevice);
+        VkSwapchainKHR CreateVulkanSwapChain();
 
         VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const vector<VkSurfaceFormatKHR> &availableFormats);
 
@@ -59,12 +60,16 @@ namespace KTXCompressor {
 
         VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
+        void RecreateVulkanSwapChain();
+
+        void CleanUpVulkanSwapChain();
+
     public:
         static SwapChainSupportDetails
         QuerySwapChainSupport(VkPhysicalDevice vulkanPhysicalDevice, VkSurfaceKHR vulkanSurface);
 
         VkFramebuffer NextImage(VkSemaphore imageAvailableSemaphore);
-        
+
         void Present(Synchronization *synchronization, uint32_t currentFrame);
 
     public:
