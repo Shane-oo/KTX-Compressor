@@ -258,12 +258,12 @@ namespace KTXCompressor {
         return (*frameBuffers)[imageIndex]->GetVulkanFrameBuffer();
     }
 
-    void SwapChain::Present(Synchronization *synchronization) {
+    void SwapChain::Present(Synchronization *synchronization, uint32_t currentFrame) {
         VkPresentInfoKHR presentInfo = {};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
 
-        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore()};
+        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore(currentFrame)};
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = signalSemaphores;
 

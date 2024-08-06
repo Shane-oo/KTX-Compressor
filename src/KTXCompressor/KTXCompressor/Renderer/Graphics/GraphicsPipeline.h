@@ -20,9 +20,9 @@ namespace KTXCompressor {
 
         ~GraphicsPipeline();
 
-        void Draw(VkFramebuffer vulkanFrameBuffer);
+        void Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame);
 
-        void Submit(Synchronization *synchronization);
+        void Submit(Synchronization *synchronization, uint32_t currentFrame);
 
     private:
         VkPipeline CreateVulkanGraphicsPipeline();
@@ -32,7 +32,7 @@ namespace KTXCompressor {
         LogicalDevice *logicalDevice;
         SwapChain *swapChain;
         RenderPass *renderPass;
-        DrawCommand *drawCommand;
+        DrawCommand *drawCommands;
         VkPipeline vulkanGraphicsPipeline;
 
 

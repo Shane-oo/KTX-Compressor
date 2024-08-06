@@ -153,7 +153,8 @@ namespace KTXCompressor {
         this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
         renderPass = new RenderPass(logicalDevice->GetVulkanDevice(), swapChain->GetImageFormat());
-        drawCommand = new DrawCommand(logicalDevice->GetVulkanDevice(), graphicsFamilyIndex);
+        
+        drawCommands = new DrawCommand(logicalDevice->GetVulkanDevice(), graphicsFamilyIndex);
     }
 
     // #endregion
@@ -166,7 +167,7 @@ namespace KTXCompressor {
         delete renderPass;
         vkDestroyPipeline(logicalDevice->GetVulkanDevice(), vulkanGraphicsPipeline, nullptr);
         delete shader;
-        delete drawCommand;
+        delete drawCommands;
     }
 
     // #endregion
@@ -189,10 +190,10 @@ namespace KTXCompressor {
 
     // #region Public Methods
 
-    void GraphicsPipeline::Draw(VkFramebuffer vulkanFrameBuffer) {
-        drawCommand->Begin();
+    void GraphicsPipeline::Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) {
+        drawCommands->Begin(currentFrame);
 
-        auto vulkanCommandBuffer = drawCommand->GetVulkanCommandBuffer();
+        auto vulkanCommandBuffer = drawCommands->GetVulkanCommandBuffer(currentFrame);
 
         auto extent = swapChain->GetExtent();
         renderPass->Begin(vulkanCommandBuffer,
@@ -222,24 +223,24 @@ namespace KTXCompressor {
 
         renderPass->End(vulkanCommandBuffer);
 
-        drawCommand->End();
+        drawCommands->End(currentFrame);
     }
 
-    void GraphicsPipeline::Submit(Synchronization *synchronization) {
+    void GraphicsPipeline::Submit(Synchronization *synchronization, uint32_t currentFrame) {
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-        VkSemaphore waitSemaphores[] = {synchronization->GetWaitSemaphore()};
+        VkSemaphore waitSemaphores[] = {synchronization->GetWaitSemaphore(currentFrame)};
         VkPipelineStageFlags waitStages[]{VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
 
-        auto commandBuffer = drawCommand->GetVulkanCommandBuffer();
+        auto commandBuffer = drawCommands->GetVulkanCommandBuffer(currentFrame);
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &commandBuffer;
 
-        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore()};
+        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore(currentFrame)};
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -247,7 +248,7 @@ namespace KTXCompressor {
         VkResult queueSubmitResult = vkQueueSubmit(graphicsQueue->GetVulkanQueue(),
                                                    1,
                                                    &submitInfo,
-                                                   synchronization->GetInFlightFence());
+                                                   synchronization->GetInFlightFence(currentFrame));
 
         if (queueSubmitResult != VK_SUCCESS) {
             throw runtime_error("Failed to Submit Draw Command Buffer");

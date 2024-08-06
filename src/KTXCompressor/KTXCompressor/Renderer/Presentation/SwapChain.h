@@ -65,7 +65,7 @@ namespace KTXCompressor {
 
         VkFramebuffer NextImage(VkSemaphore imageAvailableSemaphore);
         
-        void Present(Synchronization *synchronization);
+        void Present(Synchronization *synchronization, uint32_t currentFrame);
 
     public:
         VkExtent2D GetExtent() {

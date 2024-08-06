@@ -4,6 +4,7 @@
 
 #include "DrawCommand.h"
 #include "../Graphics/GraphicsPipeline.h"
+#include "../RendererConstants.h"
 
 namespace KTXCompressor {
 
@@ -31,25 +32,29 @@ namespace KTXCompressor {
         return commandPool;
     }
 
-    VkCommandBuffer DrawCommand::CreateVulkanCommandBuffer() {
+    vector<VkCommandBuffer> DrawCommand::CreateVulkanCommandBuffers() {
         VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
         commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         commandBufferAllocateInfo.commandPool = vulkanCommandPool;
         commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         commandBufferAllocateInfo.commandBufferCount = 1;
 
-        VkCommandBuffer commandBuffer;
-        VkResult allocateCommandBuffersResult = vkAllocateCommandBuffers(vulkanDevice,
-                                                                         &commandBufferAllocateInfo,
-                                                                         &commandBuffer);
+        vector<VkCommandBuffer> commandBuffers;
+        commandBuffers.resize(RendererConstants::MAX_FRAMES_IN_FLIGHT);
 
-        if (allocateCommandBuffersResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Allocate Command Buffers For Draw Command");
+        for (size_t i = 0; i < RendererConstants::MAX_FRAMES_IN_FLIGHT; i++) {
+            VkResult allocateCommandBuffersResult = vkAllocateCommandBuffers(vulkanDevice,
+                                                                             &commandBufferAllocateInfo,
+                                                                             &commandBuffers[i]);
+
+            if (allocateCommandBuffersResult != VK_SUCCESS) {
+                throw runtime_error("Failed to Allocate Command Buffers For Draw Command");
+            }
+
+            cout << "Successfully Allocated Draw Command Buffer " << i << endl;
         }
 
-        cout << "Successfully Allocated Draw Command Buffer" << endl;
-
-        return commandBuffer;
+        return commandBuffers;
     }
 
     // #endregion
@@ -59,7 +64,7 @@ namespace KTXCompressor {
     DrawCommand::DrawCommand(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex) {
         this->vulkanDevice = vulkanDevice;
         vulkanCommandPool = CreateVulkanCommandPool(graphicsFamilyIndex);
-        vulkanCommandBuffer = CreateVulkanCommandBuffer();
+        vulkanCommandBuffers = CreateVulkanCommandBuffers();
     }
 
     // #endregion
@@ -76,27 +81,28 @@ namespace KTXCompressor {
 
     // #region Public Methods
 
-    void DrawCommand::Begin() {
+    void DrawCommand::Begin(uint32_t currentFrame) {
         // reset to make sure it can be recorded to
-        vkResetCommandBuffer(vulkanCommandBuffer, 0);
+        vkResetCommandBuffer(vulkanCommandBuffers[currentFrame], 0);
 
         VkCommandBufferBeginInfo commandBufferBeginInfo = {};
         commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         commandBufferBeginInfo.flags = 0; // Optional
         commandBufferBeginInfo.pInheritanceInfo = nullptr; // Optional
 
-        VkResult beginCommandBufferResult = vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo);
+        VkResult beginCommandBufferResult = vkBeginCommandBuffer(vulkanCommandBuffers[currentFrame],
+                                                                 &commandBufferBeginInfo);
 
         if (beginCommandBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Begin Recording Draw Command Buffer");
+            throw runtime_error("Failed to Begin Recording Draw Command Buffer " + to_string(currentFrame));
         }
     }
 
-    void DrawCommand::End() {
-        VkResult endCommandBufferResult = vkEndCommandBuffer(vulkanCommandBuffer);
+    void DrawCommand::End(uint32_t currentFrame) {
+        VkResult endCommandBufferResult = vkEndCommandBuffer(vulkanCommandBuffers[currentFrame]);
 
         if (endCommandBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed To End Command Buffer!");
+            throw runtime_error("Failed To End Command Buffer " + to_string(currentFrame));
         }
 
         //cout << "Successfully Ended Command Buffer" << endl;

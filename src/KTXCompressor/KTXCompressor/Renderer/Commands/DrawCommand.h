@@ -22,20 +22,20 @@ namespace KTXCompressor {
     private:
         VkDevice vulkanDevice;
         VkCommandPool vulkanCommandPool;
-        VkCommandBuffer vulkanCommandBuffer;
+        vector<VkCommandBuffer> vulkanCommandBuffers;
 
 
         VkCommandPool CreateVulkanCommandPool(uint32_t graphicsFamilyIndex);
 
-        VkCommandBuffer CreateVulkanCommandBuffer();
+        vector<VkCommandBuffer> CreateVulkanCommandBuffers();
 
     public:
-        void Begin();
-        
-        void End();
+        void Begin(uint32_t currentFrame);
 
-        VkCommandBuffer GetVulkanCommandBuffer() {
-            return vulkanCommandBuffer;
+        void End(uint32_t currentFrame);
+
+        VkCommandBuffer GetVulkanCommandBuffer(uint32_t currentFrame) {
+            return vulkanCommandBuffers[currentFrame];
         }
     };
 

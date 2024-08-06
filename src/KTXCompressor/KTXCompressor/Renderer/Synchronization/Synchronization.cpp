@@ -3,41 +3,58 @@
 //
 
 #include "Synchronization.h"
+#include "../RendererConstants.h"
 
 namespace KTXCompressor {
     // #region Private Methods
 
-    VkSemaphore Synchronization::CreateSemaphore() {
+    vector<VkSemaphore> Synchronization::CreateSemaphores() {
         VkSemaphoreCreateInfo semaphoreCreateInfo = {};
         semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-        VkSemaphore semaphore;
-        VkResult createSemaphoreResult = vkCreateSemaphore(vulkanDevice, &semaphoreCreateInfo, nullptr, &semaphore);
+        vector<VkSemaphore> semaphores;
+        semaphores.resize(RendererConstants::MAX_FRAMES_IN_FLIGHT);
 
-        if (createSemaphoreResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create Semaphore");
+        for (size_t i = 0; i < RendererConstants::MAX_FRAMES_IN_FLIGHT; i++) {
+            VkResult createSemaphoreResult = vkCreateSemaphore(vulkanDevice,
+                                                               &semaphoreCreateInfo,
+                                                               nullptr,
+                                                               &semaphores[i]);
+
+            if (createSemaphoreResult != VK_SUCCESS) {
+                throw runtime_error("Failed to Create Semaphores");
+            }
+
+            cout << "Successfully Created Semaphore " << i << endl;
+
         }
 
-        cout << "Successfully Created Semaphore" << endl;
-
-        return semaphore;
+        return semaphores;
     }
 
-    VkFence Synchronization::CreateFence() {
+    vector<VkFence> Synchronization::CreateFences() {
         VkFenceCreateInfo fenceCreateInfo = {};
         fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        VkFence fence;
-        VkResult createFenceResult = vkCreateFence(vulkanDevice, &fenceCreateInfo, nullptr, &fence);
+        vector<VkFence> fences;
+        fences.resize(RendererConstants::MAX_FRAMES_IN_FLIGHT);
 
-        if (createFenceResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create Fence");
+        for (size_t i = 0; i < RendererConstants::MAX_FRAMES_IN_FLIGHT; i++) {
+            VkResult createFenceResult = vkCreateFence(vulkanDevice,
+                                                       &fenceCreateInfo,
+                                                       nullptr,
+                                                       &fences[i]);
+
+            if (createFenceResult != VK_SUCCESS) {
+                throw runtime_error("Failed to Create Fences");
+            }
+
+            cout << "Successfully Created Fence" << i << endl;
+
         }
 
-        cout << "Successfully Created Fence" << endl;
-
-        return fence;
+        return fences;
     }
 
     // #endregion
@@ -47,9 +64,9 @@ namespace KTXCompressor {
     Synchronization::Synchronization(VkDevice vulkanDevice) {
         this->vulkanDevice = vulkanDevice;
 
-        imageAvailableSemaphore = CreateSemaphore();
-        renderFinishedSemaphore = CreateSemaphore();
-        inFlightFence = CreateFence();
+        imageAvailableSemaphores = CreateSemaphores();
+        renderFinishedSemaphores = CreateSemaphores();
+        inFlightFences = CreateFences();
     }
 
     // #endregion
@@ -59,21 +76,27 @@ namespace KTXCompressor {
     Synchronization::~Synchronization() {
         cout << "Destroy Synchronization" << endl;
 
-        vkDestroySemaphore(vulkanDevice, imageAvailableSemaphore, nullptr);
-        vkDestroySemaphore(vulkanDevice, renderFinishedSemaphore, nullptr);
-        vkDestroyFence(vulkanDevice, inFlightFence, nullptr);
+        for (auto imageAvailableSemaphore: imageAvailableSemaphores) {
+            vkDestroySemaphore(vulkanDevice, imageAvailableSemaphore, nullptr);
+        }
+        for (auto renderFinishedSemaphore: renderFinishedSemaphores) {
+            vkDestroySemaphore(vulkanDevice, renderFinishedSemaphore, nullptr);
+        }
+        for (auto inFlightFence: inFlightFences) {
+            vkDestroyFence(vulkanDevice, inFlightFence, nullptr);
+        }
     }
 
     // #endregion
 
     // #region Public Methods
 
-    void Synchronization::WaitForFences() {
+    void Synchronization::WaitForFences(uint32_t currentFrame) {
         // waits on the host for all fences to finish 
-        vkWaitForFences(vulkanDevice, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+        vkWaitForFences(vulkanDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
         // reset to the unsignaled state
-        vkResetFences(vulkanDevice, 1, &inFlightFence);
+        vkResetFences(vulkanDevice, 1, &inFlightFences[currentFrame]);
     }
 
     // #endregion

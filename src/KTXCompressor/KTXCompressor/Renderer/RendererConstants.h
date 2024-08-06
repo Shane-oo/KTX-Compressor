@@ -12,11 +12,13 @@ namespace KTXCompressor {
     class RendererConstants {
     public:
 #ifdef NDEBUG
-        static const bool enableValidationLayers = false;
+        static const bool ENABLE_VALIDATION_LAYERS = false;
 #else
-        static const bool enableValidationLayers = true;
+        static const bool ENABLE_VALIDATION_LAYERS = true;
 #endif
-        static const vector<const char *> requiredDeviceExtensions;
+        static const vector<const char *> REQUIRED_DEVICE_EXTENSION;
+
+        static const int MAX_FRAMES_IN_FLIGHT = 2;
     };
 
 } // KTXCompressor

@@ -31,6 +31,7 @@ namespace KTXCompressor {
         SwapChain *swapChain;
         GraphicsPipeline *graphicsPipeline;
         Synchronization *synchronization;
+        uint32_t currentFrame = 0;
 
         void MainLoop();
 

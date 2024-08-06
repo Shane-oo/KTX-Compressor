@@ -67,8 +67,8 @@ namespace KTXCompressor {
         vector<VkExtensionProperties> availableExtensions(extensionCount);
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-        set<string> requiredExtensions(RendererConstants::requiredDeviceExtensions.begin(),
-                                       RendererConstants::requiredDeviceExtensions.end());
+        set<string> requiredExtensions(RendererConstants::REQUIRED_DEVICE_EXTENSION.begin(),
+                                       RendererConstants::REQUIRED_DEVICE_EXTENSION.end());
 
         for (const auto &extension: availableExtensions) {
             requiredExtensions.erase(extension.extensionName);

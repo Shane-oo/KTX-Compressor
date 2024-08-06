@@ -5,6 +5,7 @@
 
 #include "RendererApp.h"
 #include "Graphics/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
+#include "RendererConstants.h"
 
 namespace KTXCompressor {
 
@@ -19,15 +20,19 @@ namespace KTXCompressor {
     }
 
     void RendererApp::DrawFrame() {
-        synchronization->WaitForFences();
+        synchronization->WaitForFences(currentFrame);
 
-        auto vulkanFrameBuffer = swapChain->NextImage(synchronization->GetWaitSemaphore());
+        auto vulkanFrameBuffer = swapChain->NextImage(synchronization->GetWaitSemaphore(currentFrame));
 
-        graphicsPipeline->Draw(vulkanFrameBuffer);
+        graphicsPipeline->Draw(vulkanFrameBuffer, currentFrame);
 
-        graphicsPipeline->Submit(synchronization);
+        graphicsPipeline->Submit(synchronization, currentFrame);
 
-        swapChain->Present(synchronization);
+        swapChain->Present(synchronization, currentFrame);
+
+        currentFrame = (currentFrame + 1) % RendererConstants::MAX_FRAMES_IN_FLIGHT;
+
+        cout << currentFrame << endl;
     }
 
     // #endregion

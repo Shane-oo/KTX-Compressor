@@ -18,29 +18,29 @@ namespace KTXCompressor {
 
     private:
         VkDevice vulkanDevice;
-        VkSemaphore imageAvailableSemaphore;
-        VkSemaphore renderFinishedSemaphore;
-        VkFence inFlightFence;
+        vector<VkSemaphore> imageAvailableSemaphores;
+        vector<VkSemaphore> renderFinishedSemaphores;
+        vector<VkFence> inFlightFences;
 
-        VkSemaphore CreateSemaphore();
+        vector<VkSemaphore> CreateSemaphores();
 
-        VkFence CreateFence();
-
-    public:
-        VkSemaphore GetWaitSemaphore() {
-            return imageAvailableSemaphore;
-        }
-
-        VkSemaphore GetSignalSemaphore() {
-            return renderFinishedSemaphore;
-        }
-
-        VkFence GetInFlightFence() {
-            return inFlightFence;
-        }
+        vector<VkFence> CreateFences();
 
     public:
-        void WaitForFences();
+        VkSemaphore GetWaitSemaphore(uint32_t currentFrame) {
+            return imageAvailableSemaphores[currentFrame];
+        }
+
+        VkSemaphore GetSignalSemaphore(uint32_t currentFrame) {
+            return renderFinishedSemaphores[currentFrame];
+        }
+
+        VkFence GetInFlightFence(uint32_t currentFrame) {
+            return inFlightFences[currentFrame];
+        }
+
+    public:
+        void WaitForFences(uint32_t currentFrame);
     };
 
 } // KTXCompressor
