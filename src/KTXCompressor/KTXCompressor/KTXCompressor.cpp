@@ -14,6 +14,8 @@ int main() {
          * const string woodDiffuseFileName = "textures/wood_diffuse_4096x4096.png";
          * KTXCompressor::Texture texture = KTXCompressor::Texture(woodDiffuseFileName);
          */
+        
+
         auto *rendererApp = new KTXCompressor::RendererApp();
         rendererApp->Run();
 

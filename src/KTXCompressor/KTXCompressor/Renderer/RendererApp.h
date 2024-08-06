@@ -10,7 +10,7 @@
 #include "Instance/Instance.h"
 #include "Instance/Debug/Debugger.h"
 #include "Presentation/SwapChain.h"
-#include "Graphics/GraphicsPipeline.h"
+#include "Graphics/Shaders/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
 
 namespace KTXCompressor {
 

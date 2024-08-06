@@ -25,7 +25,7 @@ namespace KTXCompressor {
     protected:
         VkDevice vulkanDevice;
         SwapChain *swapChain;
-  
+
         RenderPass *renderPass;
         VkPipeline vulkanGraphicsPipeline;
 
@@ -36,6 +36,11 @@ namespace KTXCompressor {
 
         virtual void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) = 0;
+
+    public:
+        RenderPass *GetRenderPass() {
+            return renderPass;
+        }
     };
 
 } // KTXCompressor

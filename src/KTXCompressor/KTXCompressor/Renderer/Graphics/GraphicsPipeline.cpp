@@ -152,6 +152,7 @@ namespace KTXCompressor {
         this->swapChain = swapChain;
         renderPass = new RenderPass(vulkanDevice, swapChain->GetImageFormat());
     }
+
     // #endregion
 
     // #region Destructors 

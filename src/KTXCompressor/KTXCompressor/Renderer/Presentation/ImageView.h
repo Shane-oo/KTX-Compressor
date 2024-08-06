@@ -19,9 +19,14 @@ namespace KTXCompressor {
     private:
         VkImageView vulkanImageView;
         VkDevice vulkanDevice;
-        
+
     private:
-        VkImageView CreateVulkanImageView( VkImage vulkanImage, VkFormat imageFormat);
+        VkImageView CreateVulkanImageView(VkImage vulkanImage, VkFormat imageFormat);
+
+    public:
+        VkImageView GetVulkanImageView() {
+            return vulkanImageView;
+        }
     };
 
 } // KTXCompressor

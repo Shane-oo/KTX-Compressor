@@ -60,6 +60,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/Shaders/SimpleTriangle/SimpleTriangleGraphicsPipeline.h
         Renderer/Graphics/RenderPass.cpp
         Renderer/Graphics/RenderPass.h
+        Renderer/Presentation/FrameBuffer.cpp
+        Renderer/Presentation/FrameBuffer.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

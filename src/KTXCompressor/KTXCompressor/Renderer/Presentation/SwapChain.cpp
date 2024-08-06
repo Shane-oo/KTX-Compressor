@@ -5,6 +5,7 @@
 
 #include <GLFW/glfw3.h>
 #include "SwapChain.h"
+#include "../Graphics/GraphicsPipeline.h"
 
 namespace KTXCompressor {
 
@@ -151,6 +152,26 @@ namespace KTXCompressor {
         return views;
     }
 
+    vector<FrameBuffer *> *SwapChain::CreateFrameBuffers() {
+        auto *fBuffers = new vector<FrameBuffer *>();
+
+        for (auto imageView: *imageViews) {
+            auto attachments = new vector<VkImageView>();
+            attachments->push_back(imageView->GetVulkanImageView());
+
+            auto *renderPass = graphicsPipeline->GetRenderPass();
+
+            fBuffers->push_back(
+                    new FrameBuffer(logicalDevice->GetVulkanDevice(),
+                                    *attachments,
+                                    renderPass->GetVulkanRenderPass(),
+                                    extent)
+            );
+        }
+
+        return fBuffers;
+    }
+
 
     // #endregion
 
@@ -170,6 +191,11 @@ namespace KTXCompressor {
 
     SwapChain::~SwapChain() {
         cout << "Destroy Swap Chain" << endl;
+
+        for (auto frameBuffer: *frameBuffers) {
+            delete frameBuffer;
+        }
+        delete frameBuffers;
 
         for (auto imageView: *imageViews) {
             delete imageView;
@@ -215,11 +241,10 @@ namespace KTXCompressor {
         return details;
     }
 
-
-
-
-
-
+    void SwapChain::SetGraphicsPipeline(GraphicsPipeline *pGraphicsPipeline) {
+        this->graphicsPipeline = pGraphicsPipeline;
+        frameBuffers = CreateFrameBuffers();
+    }
 
     // #endregion
 

@@ -9,9 +9,12 @@
 #include "../../Common.h"
 #include "Window.h"
 #include "ImageView.h"
+#include "FrameBuffer.h"
 
 
 namespace KTXCompressor {
+
+    class GraphicsPipeline;
 
     class SwapChain {
     public:
@@ -22,7 +25,9 @@ namespace KTXCompressor {
     private:
         Window *window;
         LogicalDevice *logicalDevice;
+        GraphicsPipeline *graphicsPipeline;
         vector<ImageView *> *imageViews;
+        vector<FrameBuffer *> *frameBuffers;
         VkSwapchainKHR vulkanSwapChain;
         vector<VkImage> images;
         VkFormat imageFormat;
@@ -39,6 +44,8 @@ namespace KTXCompressor {
         };
 
         vector<ImageView *> *CreateImageViews();
+
+        vector<FrameBuffer *> *CreateFrameBuffers();
 
         void RetrieveSwapChainImages();
 
@@ -62,6 +69,8 @@ namespace KTXCompressor {
         VkFormat GetImageFormat() {
             return imageFormat;
         }
+
+        void SetGraphicsPipeline(GraphicsPipeline *pGraphicsPipeline);
     };
 
 } // KTXCompressor
