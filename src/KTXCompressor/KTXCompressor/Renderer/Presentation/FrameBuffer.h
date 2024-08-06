@@ -26,6 +26,11 @@ namespace KTXCompressor {
         VkFramebuffer CreateFrameBuffer(vector<VkImageView> attachments,
                                         VkRenderPass vulkanRenderPass,
                                         VkExtent2D extent);
+
+    public:
+        VkFramebuffer GetVulkanFrameBuffer() {
+            return vulkanFrameBuffer;
+        }
     };
 
 } // KTXCompressor

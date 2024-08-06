@@ -32,6 +32,14 @@ namespace KTXCompressor {
         subpassDescription.colorAttachmentCount = 1;
         subpassDescription.pColorAttachments = &colorAttachmentReference;
 
+        VkSubpassDependency subpassDependency = {};
+        subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        subpassDependency.dstSubpass = 0; // refers to our subpass, which is first and only one
+        // need to wait for the swap chain to finish reading from the image before we can access it
+        subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency.srcAccessMask = 0;
+        subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
         VkRenderPassCreateInfo renderPassCreateInfo = {};
         renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -39,6 +47,8 @@ namespace KTXCompressor {
         renderPassCreateInfo.pAttachments = &colorAttachmentDescription;
         renderPassCreateInfo.subpassCount = 1;
         renderPassCreateInfo.pSubpasses = &subpassDescription;
+        renderPassCreateInfo.dependencyCount = 1;
+        renderPassCreateInfo.pDependencies = &subpassDependency;
 
         VkRenderPass renderPass;
         VkResult createRenderPassResult = vkCreateRenderPass(vulkanDevice,

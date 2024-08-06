@@ -14,10 +14,20 @@ namespace KTXCompressor {
         while (!window->GetWindowShouldClose()) {
             DrawFrame();
         }
+
+        vkDeviceWaitIdle(logicalDevice->GetVulkanDevice());
     }
 
     void RendererApp::DrawFrame() {
+        synchronization->WaitForFences();
 
+        auto vulkanFrameBuffer = swapChain->NextImage(synchronization->GetWaitSemaphore());
+
+        graphicsPipeline->Draw(vulkanFrameBuffer);
+
+        graphicsPipeline->Submit(synchronization);
+
+        swapChain->Present(synchronization);
     }
 
     // #endregion
@@ -37,11 +47,13 @@ namespace KTXCompressor {
 
         swapChain = new SwapChain(physicalDevice, window, logicalDevice);
 
-        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice->GetVulkanDevice(),
+        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice,
                                                               swapChain,
                                                               physicalDevice->GetGraphicsFamilyIndex());
 
         swapChain->SetGraphicsPipeline(graphicsPipeline);
+
+        synchronization = new Synchronization(logicalDevice->GetVulkanDevice());
     }
 
     // #endregion
@@ -51,6 +63,7 @@ namespace KTXCompressor {
     RendererApp::~RendererApp() {
         cout << "Destroy RendererApp" << endl;
 
+        delete synchronization;
         delete graphicsPipeline;
         delete swapChain;
         delete logicalDevice;

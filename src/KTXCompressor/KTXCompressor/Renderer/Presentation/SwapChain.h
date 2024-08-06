@@ -10,6 +10,7 @@
 #include "Window.h"
 #include "ImageView.h"
 #include "FrameBuffer.h"
+#include "../Synchronization/Synchronization.h"
 
 
 namespace KTXCompressor {
@@ -32,6 +33,7 @@ namespace KTXCompressor {
         vector<VkImage> images;
         VkFormat imageFormat;
         VkExtent2D extent;
+        uint32_t imageIndex;
 
         struct SwapChainSupportDetails {
             VkSurfaceCapabilitiesKHR capabilities;
@@ -60,6 +62,10 @@ namespace KTXCompressor {
     public:
         static SwapChainSupportDetails
         QuerySwapChainSupport(VkPhysicalDevice vulkanPhysicalDevice, VkSurfaceKHR vulkanSurface);
+
+        VkFramebuffer NextImage(VkSemaphore imageAvailableSemaphore);
+        
+        void Present(Synchronization *synchronization);
 
     public:
         VkExtent2D GetExtent() {

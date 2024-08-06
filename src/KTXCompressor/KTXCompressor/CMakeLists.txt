@@ -41,10 +41,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Instance/Devices/Queues/QueueFamily.h
         Renderer/Instance/Devices/LogicalDevice.cpp
         Renderer/Instance/Devices/LogicalDevice.h
-        Renderer/Instance/Devices/Queues/GraphicsQueue.cpp
-        Renderer/Instance/Devices/Queues/GraphicsQueue.h
-        Renderer/Instance/Devices/Queues/PresentQueue.cpp
-        Renderer/Instance/Devices/Queues/PresentQueue.h
+        Renderer/Instance/Devices/Queues/Queue.cpp
+        Renderer/Instance/Devices/Queues/Queue.h
         Renderer/RendererConstants.cpp
         Renderer/Presentation/SwapChain.cpp
         Renderer/Presentation/SwapChain.h
@@ -64,6 +62,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Presentation/FrameBuffer.h
         Renderer/Commands/DrawCommand.cpp
         Renderer/Commands/DrawCommand.h
+        Renderer/Synchronization/Synchronization.cpp
+        Renderer/Synchronization/Synchronization.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

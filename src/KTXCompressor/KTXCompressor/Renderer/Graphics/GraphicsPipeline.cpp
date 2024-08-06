@@ -3,6 +3,7 @@
 //
 
 #include "GraphicsPipeline.h"
+#include "../Synchronization/Synchronization.h"
 
 namespace KTXCompressor {
 
@@ -126,7 +127,7 @@ namespace KTXCompressor {
         graphicsPipelineCreateInfo.basePipelineIndex = -1; // Optional
 
         VkPipeline graphicsPipeline;
-        VkResult createGraphicsPipelineResult = vkCreateGraphicsPipelines(vulkanDevice,
+        VkResult createGraphicsPipelineResult = vkCreateGraphicsPipelines(logicalDevice->GetVulkanDevice(),
                                                                           VK_NULL_HANDLE,
                                                                           1,
                                                                           &graphicsPipelineCreateInfo,
@@ -147,11 +148,12 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    GraphicsPipeline::GraphicsPipeline(VkDevice device, SwapChain *swapChain, uint32_t graphicsFamilyIndex) {
-        vulkanDevice = device;
+    GraphicsPipeline::GraphicsPipeline(LogicalDevice *logicalDevice, SwapChain *swapChain,
+                                       uint32_t graphicsFamilyIndex) {
+        this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
-        renderPass = new RenderPass(vulkanDevice, swapChain->GetImageFormat());
-        drawCommand = new DrawCommand(vulkanDevice, graphicsFamilyIndex);
+        renderPass = new RenderPass(logicalDevice->GetVulkanDevice(), swapChain->GetImageFormat());
+        drawCommand = new DrawCommand(logicalDevice->GetVulkanDevice(), graphicsFamilyIndex);
     }
 
     // #endregion
@@ -162,7 +164,7 @@ namespace KTXCompressor {
         cout << "Destroy Graphics Pipeline" << endl;
 
         delete renderPass;
-        vkDestroyPipeline(vulkanDevice, vulkanGraphicsPipeline, nullptr);
+        vkDestroyPipeline(logicalDevice->GetVulkanDevice(), vulkanGraphicsPipeline, nullptr);
         delete shader;
         delete drawCommand;
     }
@@ -216,11 +218,42 @@ namespace KTXCompressor {
         scissor.extent = extent;
         vkCmdSetScissor(vulkanCommandBuffer, 0, 1, &scissor);
 
-        Render();
-        
+        Render(vulkanCommandBuffer);
+
         renderPass->End(vulkanCommandBuffer);
-        
+
         drawCommand->End();
+    }
+
+    void GraphicsPipeline::Submit(Synchronization *synchronization) {
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        VkSemaphore waitSemaphores[] = {synchronization->GetWaitSemaphore()};
+        VkPipelineStageFlags waitStages[]{VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+
+        auto commandBuffer = drawCommand->GetVulkanCommandBuffer();
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
+
+        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore()};
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+
+        auto graphicsQueue = logicalDevice->GetGraphicsQueue();
+        VkResult queueSubmitResult = vkQueueSubmit(graphicsQueue->GetVulkanQueue(),
+                                                   1,
+                                                   &submitInfo,
+                                                   synchronization->GetInFlightFence());
+
+        if (queueSubmitResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Submit Draw Command Buffer");
+        }
+
+        //cout << "Successful Submitted" << endl;
     }
 
     // #endregion

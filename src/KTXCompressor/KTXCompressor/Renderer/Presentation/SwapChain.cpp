@@ -246,6 +246,41 @@ namespace KTXCompressor {
         frameBuffers = CreateFrameBuffers();
     }
 
+    VkFramebuffer SwapChain::NextImage(VkSemaphore imageAvailableSemaphore) {
+        vkAcquireNextImageKHR(logicalDevice->GetVulkanDevice(),
+                              vulkanSwapChain,
+                              UINT64_MAX,
+                              imageAvailableSemaphore,
+                              VK_NULL_HANDLE,
+                              &imageIndex);
+
+
+        return (*frameBuffers)[imageIndex]->GetVulkanFrameBuffer();
+    }
+
+    void SwapChain::Present(Synchronization *synchronization) {
+        VkPresentInfoKHR presentInfo = {};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+
+        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore()};
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
+
+        VkSwapchainKHR swapChains[] = {vulkanSwapChain};
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
+        presentInfo.pImageIndices = &imageIndex; // note is set in NextImage
+        presentInfo.pResults = nullptr;
+
+        auto presentQueue = logicalDevice->GetPresentQueue();
+        VkResult presentResult = vkQueuePresentKHR(presentQueue->GetVulkanQueue(), &presentInfo);
+
+        if (presentResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Present Queue");
+        }
+    }
+
     // #endregion
 
 

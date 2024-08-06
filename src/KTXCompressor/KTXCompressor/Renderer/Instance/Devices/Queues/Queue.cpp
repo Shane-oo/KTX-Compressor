@@ -2,13 +2,13 @@
 // Created by shane on 14/07/2024.
 //
 
-#include "PresentQueue.h"
+#include "Queue.h"
 
 namespace KTXCompressor {
 
     // #region Constructors
 
-    PresentQueue::PresentQueue(VkQueue vkQueue) {
+    Queue::Queue(VkQueue vkQueue) {
         vulkanQueue = vkQueue;
     }
 

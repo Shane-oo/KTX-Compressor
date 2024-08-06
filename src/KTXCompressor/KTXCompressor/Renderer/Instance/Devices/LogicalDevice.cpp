@@ -80,10 +80,10 @@ namespace KTXCompressor {
         vulkanDevice = CreateLogicalVulkanDevice(physicalDevice);
 
         uint32_t graphicsFamilyIndex = physicalDevice->GetGraphicsFamilyIndex();
-        graphicsQueue = new GraphicsQueue(RetrieveQueue(graphicsFamilyIndex));
+        graphicsQueue = new Queue(RetrieveQueue(graphicsFamilyIndex));
 
         uint32_t presentFamilyIndex = physicalDevice->GetPresentFamilyIndex();
-        presentQueue = new PresentQueue(RetrieveQueue(presentFamilyIndex));
+        presentQueue = new Queue(RetrieveQueue(presentFamilyIndex));
     }
 
     // #endregion

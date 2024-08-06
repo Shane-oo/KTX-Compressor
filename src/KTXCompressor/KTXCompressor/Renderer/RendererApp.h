@@ -10,6 +10,7 @@
 #include "Instance/Instance.h"
 #include "Instance/Debug/Debugger.h"
 #include "Presentation/SwapChain.h"
+#include "Synchronization/Synchronization.h"
 
 namespace KTXCompressor {
 
@@ -29,9 +30,10 @@ namespace KTXCompressor {
         LogicalDevice *logicalDevice;
         SwapChain *swapChain;
         GraphicsPipeline *graphicsPipeline;
+        Synchronization *synchronization;
 
         void MainLoop();
-        
+
         void DrawFrame();
     };
 } // KTXCompressor

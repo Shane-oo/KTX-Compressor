@@ -10,7 +10,7 @@ namespace KTXCompressor {
 
     // #region Protected Methods
     Shader *SimpleTriangleGraphicsPipeline::CreateShader() {
-        return new SimpleTriangleShader(vulkanDevice);
+        return new SimpleTriangleShader(logicalDevice->GetVulkanDevice());
     }
 
 
@@ -30,8 +30,8 @@ namespace KTXCompressor {
     }
 
 
-    void SimpleTriangleGraphicsPipeline::Render() {
-        vkCmdDraw(drawCommand->GetVulkanCommandBuffer(), 3, 1, 0, 0);
+    void SimpleTriangleGraphicsPipeline::Render(VkCommandBuffer commandBuffer) {
+        vkCmdDraw(commandBuffer, 3, 1, 0, 0);
     }
 
 
@@ -40,10 +40,10 @@ namespace KTXCompressor {
     // #region Constructors 
 
 
-    SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(VkDevice device,
+    SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(LogicalDevice* logicalDevice,
                                                                    SwapChain *swapChain,
                                                                    uint32_t graphicsFamilyIndex)
-            : GraphicsPipeline(device, swapChain, graphicsFamilyIndex) {
+            : GraphicsPipeline(logicalDevice, swapChain, graphicsFamilyIndex) {
         Init();
     }
 

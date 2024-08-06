@@ -77,6 +77,9 @@ namespace KTXCompressor {
     // #region Public Methods
 
     void DrawCommand::Begin() {
+        // reset to make sure it can be recorded to
+        vkResetCommandBuffer(vulkanCommandBuffer, 0);
+
         VkCommandBufferBeginInfo commandBufferBeginInfo = {};
         commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         commandBufferBeginInfo.flags = 0; // Optional
@@ -96,7 +99,7 @@ namespace KTXCompressor {
             throw runtime_error("Failed To End Command Buffer!");
         }
 
-        cout << "Successfully Ended Command Buffer" << endl;
+        //cout << "Successfully Ended Command Buffer" << endl;
     }
 
     // #endregion

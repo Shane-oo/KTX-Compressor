@@ -7,8 +7,7 @@
 
 #include "../../../Common.h"
 #include "PhysicalDevice.h"
-#include "Queues/GraphicsQueue.h"
-#include "Queues/PresentQueue.h"
+#include "Queues/Queue.h"
 #include <vulkan/vulkan_core.h>
 
 namespace KTXCompressor {
@@ -21,8 +20,8 @@ namespace KTXCompressor {
 
     private:
         VkDevice vulkanDevice;
-        GraphicsQueue *graphicsQueue;
-        PresentQueue *presentQueue;
+        Queue *graphicsQueue;
+        Queue *presentQueue;
 
     private :
         VkDevice CreateLogicalVulkanDevice(PhysicalDevice *physicalDevice);
@@ -32,6 +31,14 @@ namespace KTXCompressor {
     public:
         VkDevice GetVulkanDevice() {
             return vulkanDevice;
+        }
+
+        Queue *GetGraphicsQueue() {
+            return graphicsQueue;
+        }
+
+        Queue *GetPresentQueue() {
+            return presentQueue;
         }
     };
 

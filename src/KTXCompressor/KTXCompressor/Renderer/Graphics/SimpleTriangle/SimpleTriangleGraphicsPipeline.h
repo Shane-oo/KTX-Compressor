@@ -13,7 +13,9 @@ namespace KTXCompressor {
     class SimpleTriangleGraphicsPipeline : public GraphicsPipeline {
 
     public:
-        SimpleTriangleGraphicsPipeline(VkDevice device, SwapChain *swapChain, uint32_t graphicsFamilyIndex);
+        SimpleTriangleGraphicsPipeline(LogicalDevice *logicalDevice,
+                                       SwapChain *swapChain,
+                                       uint32_t graphicsFamilyIndex);
 
     protected:
         Shader *CreateShader() override;
@@ -21,7 +23,7 @@ namespace KTXCompressor {
         void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;
 
-        void Render() override;
+        void Render(VkCommandBuffer commandBuffer) override;
     };
 
 } // KTXCompressor
