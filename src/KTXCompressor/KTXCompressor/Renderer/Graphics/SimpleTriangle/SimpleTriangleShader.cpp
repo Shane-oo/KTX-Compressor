@@ -3,7 +3,6 @@
 //
 
 #include "SimpleTriangleShader.h"
-#include "../../Utils/BufferUtil.h"
 
 namespace KTXCompressor {
 
@@ -46,8 +45,6 @@ namespace KTXCompressor {
     }
 
     void SimpleTriangleShader::CreateVertexBuffer() {
-        auto bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
-
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
         bufferUtil->CreateAndFillBuffer(vertices.data(),
@@ -57,7 +54,20 @@ namespace KTXCompressor {
                                         vertexBuffer,
                                         vertexBufferMemory);
 
-        delete bufferUtil; // if I'm just using it here for now
+        cout << "Successfully Created Simple Triangle Vertex Buffer" << endl;
+    }
+
+    void SimpleTriangleShader::CreateIndexBuffer() {
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+        bufferUtil->CreateAndFillBuffer(indices.data(),
+                                        bufferSize,
+                                        VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                        indexBuffer,
+                                        indexBufferMemory);
+
+        cout << "Successfully Created Simple Triangle Index Buffer" << endl;
     }
 
     // #endregion
@@ -73,8 +83,10 @@ namespace KTXCompressor {
     }
 
     void SimpleTriangleShader::Render(VkCommandBuffer vulkanCommandBuffer) {
-        vkCmdDraw(vulkanCommandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+        vkCmdDrawIndexed(vulkanCommandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     }
+
+
 
     // #endregion
 

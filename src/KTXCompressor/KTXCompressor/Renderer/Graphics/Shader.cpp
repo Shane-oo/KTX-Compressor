@@ -11,6 +11,7 @@ namespace KTXCompressor {
 
     void Shader::Init() {
         CreateVertexBuffer();
+        CreateIndexBuffer();
     }
 
     vector<char> Shader::ReadFile(const string &fileName) {
@@ -58,12 +59,13 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Shader::Shader(PhysicalDevice* physicalDevice, 
+    Shader::Shader(PhysicalDevice *physicalDevice,
                    LogicalDevice *logicalDevice,
                    const string &vertexFileName,
                    const string &fragmentFileName) {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
+        this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
 
         vertexShaderModule = CreateShaderModule(vertexFileName);
         fragmentShaderModule = CreateShaderModule(fragmentFileName);
@@ -78,6 +80,8 @@ namespace KTXCompressor {
 
         vkDestroyBuffer(logicalDevice->GetVulkanDevice(), vertexBuffer, nullptr);
         vkFreeMemory(logicalDevice->GetVulkanDevice(), vertexBufferMemory, nullptr);
+        vkDestroyBuffer(logicalDevice->GetVulkanDevice(), indexBuffer, nullptr);
+        vkFreeMemory(logicalDevice->GetVulkanDevice(), indexBufferMemory, nullptr);
         vkDestroyPipelineLayout(logicalDevice->GetVulkanDevice(), vulkanPipelineLayout, nullptr);
     }
 
@@ -85,7 +89,7 @@ namespace KTXCompressor {
     // #endregion
 
     // #region Protected Methods
-    
+
 
 
     // #endregion
@@ -130,16 +134,17 @@ namespace KTXCompressor {
         cout << "Destroy Shader Modules" << endl;
         vkDestroyShaderModule(logicalDevice->GetVulkanDevice(), fragmentShaderModule, nullptr);
         vkDestroyShaderModule(logicalDevice->GetVulkanDevice(), vertexShaderModule, nullptr);
+
+        delete bufferUtil; // no longer needed
     }
 
     void Shader::Bind(VkCommandBuffer vulkanCommandBuffer) {
         VkBuffer vertexBuffers[] = {vertexBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, vertexBuffers, offsets);
+
+        vkCmdBindIndexBuffer(vulkanCommandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
     }
-
-
-
 
 
     // #endregion

@@ -18,9 +18,14 @@ namespace KTXCompressor {
 
     private:
         const vector<Vertex> vertices = {
-                {{0.0f,  -0.5f}, {1.0f, 1.0f, 1.0f}},
-                {{0.5f,  0.5f},  {1.0f, 1.0f, 0.0f}},
-                {{-0.5f, 0.5f},  {0.0f, 0.0f, 1.0f}}
+                {{-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+                {{0.5f,  -0.5f}, {1.0f, 1.0f, 0.0f}},
+                {{0.5f,  0.5f},  {0.0f, 0.0f, 1.0f}},
+                {{-0.5f, 0.5f},  {0.0f, 1.0f, 1.0f}}
+        };
+
+        const vector<uint16_t> indices = {
+                0, 1, 2, 2, 3, 0
         };
 
     public:
@@ -32,6 +37,8 @@ namespace KTXCompressor {
         VkPipelineLayout CreatePipelineLayout() override;
 
         void CreateVertexBuffer() override;
+        
+        void CreateIndexBuffer() override;
 
     };
 

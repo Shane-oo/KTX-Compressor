@@ -10,6 +10,7 @@
 #include "../../Common.h"
 #include "../Instance/Devices/PhysicalDevice.h"
 #include "../Instance/Devices/LogicalDevice.h"
+#include "../Utils/BufferUtil.h"
 
 
 namespace KTXCompressor {
@@ -17,7 +18,7 @@ namespace KTXCompressor {
     class Shader {
 
     public:
-        Shader(PhysicalDevice *physicalDevice, 
+        Shader(PhysicalDevice *physicalDevice,
                LogicalDevice *logicalDevice,
                const string &vertexFileName,
                const string &fragmentFileName);
@@ -33,9 +34,12 @@ namespace KTXCompressor {
         };
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
+        BufferUtil* bufferUtil;
         VkPipelineLayout vulkanPipelineLayout = nullptr;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
 
         void Init();
 
@@ -43,6 +47,8 @@ namespace KTXCompressor {
 
 
         virtual void CreateVertexBuffer() = 0;
+
+        virtual void CreateIndexBuffer() = 0;
 
     private:
         static vector<char> ReadFile(const string &fileName);
