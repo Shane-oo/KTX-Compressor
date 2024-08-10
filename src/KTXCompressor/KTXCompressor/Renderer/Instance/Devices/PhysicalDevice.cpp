@@ -28,6 +28,8 @@ namespace KTXCompressor {
                 auto queueFamilyIndices = queueFamily->FindQueueFamiliesForPhysicalDevice(device);
                 queueFamily->SetSelectedQueueFamilyIndices(queueFamilyIndices);
 
+                vkGetPhysicalDeviceMemoryProperties(device, &physicalDeviceMemoryProperties);
+
                 return device;
             }
         }
@@ -96,7 +98,23 @@ namespace KTXCompressor {
         // no need to clean up vulkanPhysicalDevice - will be destroyed when vulkanInstance is destroyed
     }
 
+    // #endregion 
 
+    // #region Public Methods
+
+    uint32_t PhysicalDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags memoryPropertyFlags) {
+
+        for (uint32_t i = 0; i < physicalDeviceMemoryProperties.memoryTypeCount; i++) {
+
+            if ((typeFilter & (1 << i))
+                && (physicalDeviceMemoryProperties.memoryTypes[i].propertyFlags
+                    & memoryPropertyFlags) == memoryPropertyFlags) {
+                return i;
+            }
+        }
+
+        throw runtime_error("Failed to Find Suitable Memory Type");
+    }
 
     // #endregion 
 

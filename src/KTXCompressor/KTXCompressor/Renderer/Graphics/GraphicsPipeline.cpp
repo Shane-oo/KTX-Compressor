@@ -27,13 +27,16 @@ namespace KTXCompressor {
                 fragmentShaderStageInfo
         };
 
-        // For now, we are hard coding vertex data
+
+        auto bindingDescriptions = shader->GetBindingDescription();
+        auto attributeDescriptions = shader->GetAttributeDescriptions();
+
         VkPipelineVertexInputStateCreateInfo vertexInputStateCreateInfo = {};
         vertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputStateCreateInfo.vertexBindingDescriptionCount = 0;
-        vertexInputStateCreateInfo.pVertexBindingDescriptions = nullptr; // Optional
-        vertexInputStateCreateInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputStateCreateInfo.pVertexAttributeDescriptions = nullptr; // Optional
+        vertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
+        vertexInputStateCreateInfo.pVertexBindingDescriptions = &bindingDescriptions;
+        vertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+        vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
         // Draw Triangles
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = {};
@@ -148,12 +151,15 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    GraphicsPipeline::GraphicsPipeline(LogicalDevice *logicalDevice, SwapChain *swapChain,
+    GraphicsPipeline::GraphicsPipeline(PhysicalDevice *physicalDevice,
+                                       LogicalDevice *logicalDevice,
+                                       SwapChain *swapChain,
                                        uint32_t graphicsFamilyIndex) {
+        this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
         renderPass = new RenderPass(logicalDevice->GetVulkanDevice(), swapChain->GetImageFormat());
-        
+
         drawCommands = new DrawCommand(logicalDevice->GetVulkanDevice(), graphicsFamilyIndex);
     }
 
@@ -181,8 +187,6 @@ namespace KTXCompressor {
 
         // no longer need shader modules
         shader->CleanUpShaderModules();
-
-
     }
 
 
@@ -204,6 +208,8 @@ namespace KTXCompressor {
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           vulkanGraphicsPipeline);
 
+        shader->Bind(vulkanCommandBuffer);
+
         // Dynamic viewport and scissor
         VkViewport viewport = {};
         viewport.x = 0.0f;
@@ -219,7 +225,7 @@ namespace KTXCompressor {
         scissor.extent = extent;
         vkCmdSetScissor(vulkanCommandBuffer, 0, 1, &scissor);
 
-        Render(vulkanCommandBuffer);
+        shader->Render(vulkanCommandBuffer);
 
         renderPass->End(vulkanCommandBuffer);
 

@@ -10,7 +10,7 @@ namespace KTXCompressor {
 
     // #region Protected Methods
     Shader *SimpleTriangleGraphicsPipeline::CreateShader() {
-        return new SimpleTriangleShader(logicalDevice->GetVulkanDevice());
+        return new SimpleTriangleShader(physicalDevice, logicalDevice->GetVulkanDevice());
     }
 
 
@@ -29,21 +29,16 @@ namespace KTXCompressor {
         rasterizationStateCreateInfo.depthBiasSlopeFactor = 0.0f; // Optional
     }
 
-
-    void SimpleTriangleGraphicsPipeline::Render(VkCommandBuffer commandBuffer) {
-        vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-    }
-
-
     // #endregion
 
     // #region Constructors 
 
 
-    SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(LogicalDevice* logicalDevice,
+    SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(PhysicalDevice *physicalDevice,
+                                                                   LogicalDevice *logicalDevice,
                                                                    SwapChain *swapChain,
                                                                    uint32_t graphicsFamilyIndex)
-            : GraphicsPipeline(logicalDevice, swapChain, graphicsFamilyIndex) {
+            : GraphicsPipeline(physicalDevice, logicalDevice, swapChain, graphicsFamilyIndex) {
         Init();
     }
 

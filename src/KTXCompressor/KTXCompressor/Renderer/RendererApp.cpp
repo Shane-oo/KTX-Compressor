@@ -58,7 +58,8 @@ namespace KTXCompressor {
 
         swapChain = new SwapChain(physicalDevice, window, logicalDevice);
 
-        graphicsPipeline = new SimpleTriangleGraphicsPipeline(logicalDevice,
+        graphicsPipeline = new SimpleTriangleGraphicsPipeline(physicalDevice,
+                                                              logicalDevice,
                                                               swapChain,
                                                               physicalDevice->GetGraphicsFamilyIndex());
 
@@ -72,7 +73,7 @@ namespace KTXCompressor {
     // #region Destructors
 
     RendererApp::~RendererApp() {
-        cout << "Destroy RendererApp" << endl;
+        cout << "Destroy Renderer App" << endl;
 
         delete synchronization;
         delete graphicsPipeline;

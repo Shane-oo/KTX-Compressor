@@ -16,7 +16,10 @@ namespace KTXCompressor {
 
     class GraphicsPipeline {
     public:
-        GraphicsPipeline(LogicalDevice *logicalDevice, SwapChain *swapChain, uint32_t graphicsFamilyIndex);
+        GraphicsPipeline(PhysicalDevice *physicalDevice,
+                         LogicalDevice *logicalDevice,
+                         SwapChain *swapChain,
+                         uint32_t graphicsFamilyIndex);
 
         ~GraphicsPipeline();
 
@@ -29,6 +32,7 @@ namespace KTXCompressor {
 
         Shader *shader;
     protected:
+        PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
         SwapChain *swapChain;
         RenderPass *renderPass;
@@ -42,9 +46,6 @@ namespace KTXCompressor {
 
         virtual void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) = 0;
-
-        virtual void Render(VkCommandBuffer vulkanCommandBuffer) = 0;
-
     public:
         RenderPass *GetRenderPass() {
             return renderPass;

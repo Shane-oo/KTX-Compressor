@@ -9,6 +9,12 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
+    void Shader::Init() {
+        vertexBuffer = CreateVertexBuffer();
+        vertexBufferMemory = AllocateBufferMemory(vertexBuffer);
+        FillVertexBuffer();
+    }
+
     vector<char> Shader::ReadFile(const string &fileName) {
         ifstream file(fileName, ios::ate | ios::binary);
 
@@ -54,7 +60,9 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Shader::Shader(VkDevice vulkanDevice, const string &vertexFileName, const string &fragmentFileName) {
+    Shader::Shader(PhysicalDevice *physicalDevice, VkDevice vulkanDevice, const string &vertexFileName,
+                   const string &fragmentFileName) {
+        this->physicalDevice = physicalDevice;
         this->vulkanDevice = vulkanDevice;
 
         vertexShaderModule = CreateShaderModule(vertexFileName);
@@ -67,9 +75,38 @@ namespace KTXCompressor {
 
     Shader::~Shader() {
         cout << "Destroy Shader" << endl;
+
+        vkDestroyBuffer(vulkanDevice, vertexBuffer, nullptr);
+        vkFreeMemory(vulkanDevice, vertexBufferMemory, nullptr);
         vkDestroyPipelineLayout(vulkanDevice, vulkanPipelineLayout, nullptr);
     }
 
+
+    // #endregion
+
+    // #region Protected Methods
+
+    VkDeviceMemory Shader::AllocateBufferMemory(VkBuffer buffer) {
+        VkMemoryRequirements memoryRequirements;
+        vkGetBufferMemoryRequirements(vulkanDevice, buffer, &memoryRequirements);
+
+        VkMemoryAllocateInfo memoryAllocateInfo = {};
+        memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        memoryAllocateInfo.allocationSize = memoryRequirements.size;
+        memoryAllocateInfo.memoryTypeIndex = physicalDevice->FindMemoryType(memoryRequirements.memoryTypeBits,
+                                                                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+                                                                            | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        VkDeviceMemory deviceMemory;
+        VkResult allocateMemoryResult = vkAllocateMemory(vulkanDevice, &memoryAllocateInfo, nullptr, &deviceMemory);
+        if (allocateMemoryResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Allocated Device Memory!");
+        }
+
+        vkBindBufferMemory(vulkanDevice, buffer, deviceMemory, 0);
+        cout << "Successfully Allocated and Bound Device Memory" << endl;
+
+        return deviceMemory;
+    }
 
     // #endregion
 
@@ -82,10 +119,43 @@ namespace KTXCompressor {
         return vulkanPipelineLayout;
     }
 
+
+    VkVertexInputBindingDescription Shader::GetBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription = {};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(Vertex);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    }
+
+    vector<VkVertexInputAttributeDescription> Shader::GetAttributeDescriptions() {
+        vector<VkVertexInputAttributeDescription> attributeDescriptions{2};
+        // Position
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+        // Colour
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(Vertex, colour);
+
+        return attributeDescriptions;
+    }
+
     void Shader::CleanUpShaderModules() {
         cout << "Destroy Shader Modules" << endl;
         vkDestroyShaderModule(vulkanDevice, fragmentShaderModule, nullptr);
         vkDestroyShaderModule(vulkanDevice, vertexShaderModule, nullptr);
+    }
+
+    void Shader::Bind(VkCommandBuffer vulkanCommandBuffer) {
+        VkBuffer vertexBuffers[] = {vertexBuffer};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, vertexBuffers, offsets);
     }
 
     // #endregion

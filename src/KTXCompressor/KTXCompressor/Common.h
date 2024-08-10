@@ -12,6 +12,7 @@
 #include <set>
 #include <optional>
 #include <algorithm>
+#include <array>
 
 // Use the standard namespace for commonly used components
 using namespace std;

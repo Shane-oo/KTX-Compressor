@@ -17,9 +17,12 @@ namespace KTXCompressor {
         PhysicalDevice(VkInstance vulkanInstance, QueueFamily *queueFamily);
 
         ~PhysicalDevice();
+        
+        uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags memoryPropertyFlags);
 
     private:
         VkPhysicalDevice vulkanPhysicalDevice;
+        VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
         QueueFamily *queueFamily;
 
     private:
