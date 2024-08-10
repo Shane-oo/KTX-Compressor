@@ -7,7 +7,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/textures DESTINATION ${CMAKE_CURRENT_BINAR
 # SHADERS
 
 # Copy All Shaders to the build and binary directory
-set(SHADERS_FOLDER Renderer/Graphics/Shaders)
+set(SHADERS_FOLDER Renderer/Graphics)
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_FOLDER})
 
 # Recursively find all .spv files in the shaders directory

@@ -6,7 +6,7 @@ setlocal enabledelayedexpansion
 set GLSLC=C:\Program Files\VulkanSDK\1.3.283.0\Bin\glslc.exe
 
 :: Define the root folder for all shaders
-set SHADERS_DIR=KTXCompressor\Renderer\Graphics\Shaders
+set SHADERS_DIR=KTXCompressor\Renderer\Graphics
 
 :: Recursively find all .frag and .vert files in the SHADERS_DIR
 for /r "%SHADERS_DIR%" %%f in (*.frag *.vert) do (
