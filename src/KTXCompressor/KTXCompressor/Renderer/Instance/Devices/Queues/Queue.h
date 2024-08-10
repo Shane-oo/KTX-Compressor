@@ -12,15 +12,20 @@ namespace KTXCompressor {
     class Queue {
 
     public:
-        Queue(VkQueue vkQueue);
+        Queue(VkQueue vkQueue, uint32_t queueFamilyIndex);
 
     private:
         VkQueue vulkanQueue;
+        uint32_t queueFamilyIndex;
 
     public:
         VkQueue GetVulkanQueue() {
             return vulkanQueue;
         }
+
+        uint32_t GetQueueFamilyIndex() {
+            return queueFamilyIndex;
+        };
     };
 
 } // KTXCompressor

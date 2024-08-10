@@ -36,7 +36,7 @@ namespace KTXCompressor {
         LogicalDevice *logicalDevice;
         SwapChain *swapChain;
         RenderPass *renderPass;
-        DrawCommand *drawCommands;
+        DrawCommand *drawCommand;
         VkPipeline vulkanGraphicsPipeline;
 
 

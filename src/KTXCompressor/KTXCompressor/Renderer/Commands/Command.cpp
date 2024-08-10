@@ -9,24 +9,24 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Command::Command(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex) {
-        this->vulkanDevice = vulkanDevice;
-        vulkanCommandPool = CreateVulkanCommandPool(graphicsFamilyIndex);
+    Command::Command(LogicalDevice* logicalDevice) {
+        this->logicalDevice = logicalDevice;
+        vulkanCommandPool = CreateVulkanCommandPool();
     }
 
     // #endregion
 
     // #region Protected Methods
 
-    VkCommandPool Command::CreateVulkanCommandPool(uint32_t graphicsFamilyIndex) {
+    VkCommandPool Command::CreateVulkanCommandPool() {
         VkCommandPoolCreateInfo commandPoolCreateInfo = {};
         commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         // allow command buffers to be recorded individually
         commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        commandPoolCreateInfo.queueFamilyIndex = graphicsFamilyIndex;
+        commandPoolCreateInfo.queueFamilyIndex = logicalDevice->GetGraphicsQueue()->GetQueueFamilyIndex();
 
         VkCommandPool commandPool;
-        VkResult createCommandPoolResult = vkCreateCommandPool(vulkanDevice,
+        VkResult createCommandPoolResult = vkCreateCommandPool(logicalDevice->GetVulkanDevice(),
                                                                &commandPoolCreateInfo,
                                                                nullptr,
                                                                &commandPool);

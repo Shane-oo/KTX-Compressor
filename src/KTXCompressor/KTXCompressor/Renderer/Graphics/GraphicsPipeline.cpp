@@ -160,7 +160,7 @@ namespace KTXCompressor {
         this->swapChain = swapChain;
         renderPass = new RenderPass(logicalDevice->GetVulkanDevice(), swapChain->GetImageFormat());
 
-        drawCommands = new DrawCommand(logicalDevice->GetVulkanDevice(), graphicsFamilyIndex);
+        drawCommand = new DrawCommand(logicalDevice);
     }
 
     // #endregion
@@ -173,7 +173,7 @@ namespace KTXCompressor {
         delete renderPass;
         vkDestroyPipeline(logicalDevice->GetVulkanDevice(), vulkanGraphicsPipeline, nullptr);
         delete shader;
-        delete drawCommands;
+        delete drawCommand;
     }
 
     // #endregion
@@ -195,9 +195,9 @@ namespace KTXCompressor {
     // #region Public Methods
 
     void GraphicsPipeline::Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) {
-        drawCommands->Begin(currentFrame);
+        drawCommand->Begin(currentFrame);
 
-        auto vulkanCommandBuffer = drawCommands->GetVulkanCommandBuffer(currentFrame);
+        auto vulkanCommandBuffer = drawCommand->GetVulkanCommandBuffer(currentFrame);
 
         auto extent = swapChain->GetExtent();
         renderPass->Begin(vulkanCommandBuffer,
@@ -229,7 +229,7 @@ namespace KTXCompressor {
 
         renderPass->End(vulkanCommandBuffer);
 
-        drawCommands->End(currentFrame);
+        drawCommand->End(currentFrame);
     }
 
     void GraphicsPipeline::Submit(Synchronization *synchronization, uint32_t currentFrame) {
@@ -242,7 +242,7 @@ namespace KTXCompressor {
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
 
-        auto commandBuffer = drawCommands->GetVulkanCommandBuffer(currentFrame);
+        auto commandBuffer = drawCommand->GetVulkanCommandBuffer(currentFrame);
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &commandBuffer;
 
@@ -250,15 +250,7 @@ namespace KTXCompressor {
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
 
-        auto graphicsQueue = logicalDevice->GetGraphicsQueue();
-        VkResult queueSubmitResult = vkQueueSubmit(graphicsQueue->GetVulkanQueue(),
-                                                   1,
-                                                   &submitInfo,
-                                                   synchronization->GetInFlightFence(currentFrame));
-
-        if (queueSubmitResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Submit Draw Command Buffer");
-        }
+        logicalDevice->SubmitToGraphicsQueue(submitInfo, synchronization->GetInFlightFence(currentFrame));
 
         //cout << "Successful Submitted" << endl;
     }

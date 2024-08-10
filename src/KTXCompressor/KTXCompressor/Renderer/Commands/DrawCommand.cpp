@@ -21,7 +21,7 @@ namespace KTXCompressor {
         commandBuffers.resize(RendererConstants::MAX_FRAMES_IN_FLIGHT);
 
         for (size_t i = 0; i < RendererConstants::MAX_FRAMES_IN_FLIGHT; i++) {
-            VkResult allocateCommandBuffersResult = vkAllocateCommandBuffers(vulkanDevice,
+            VkResult allocateCommandBuffersResult = vkAllocateCommandBuffers(logicalDevice->GetVulkanDevice(),
                                                                              &commandBufferAllocateInfo,
                                                                              &commandBuffers[i]);
 
@@ -39,8 +39,7 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    DrawCommand::DrawCommand(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex) : Command(vulkanDevice,
-                                                                                            graphicsFamilyIndex) {
+    DrawCommand::DrawCommand(LogicalDevice *logicalDevice) : Command(logicalDevice) {
         vulkanDrawCommandBuffers = CreateVulkanCommandBuffers();
     }
 
@@ -51,7 +50,7 @@ namespace KTXCompressor {
     DrawCommand::~DrawCommand() {
         cout << "Destroy Draw Command" << endl;
 
-        vkDestroyCommandPool(vulkanDevice, vulkanCommandPool, nullptr);
+        vkDestroyCommandPool(logicalDevice->GetVulkanDevice(), vulkanCommandPool, nullptr);
     }
 
     // #endregion

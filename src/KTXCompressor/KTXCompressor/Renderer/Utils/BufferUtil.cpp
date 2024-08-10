@@ -3,15 +3,69 @@
 //
 
 #include "BufferUtil.h"
-#include "../Instance/Devices/PhysicalDevice.h"
+#include "../Commands/CopyBufferCommand.h"
 
 namespace KTXCompressor {
+    // #region Private Methods
+
+
+    void BufferUtil::CreateBuffer(VkDeviceSize deviceSize,
+                                  VkBufferUsageFlags bufferUsageFlags,
+                                  VkMemoryPropertyFlags memoryPropertyFlags,
+                                  VkBuffer &buffer,
+                                  VkDeviceMemory &bufferMemory) {
+        VkBufferCreateInfo bufferCreateInfo = {};
+        bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferCreateInfo.size = deviceSize;
+        bufferCreateInfo.usage = bufferUsageFlags;
+        bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        VkResult createBufferResult = vkCreateBuffer(logicalDevice->GetVulkanDevice(), &bufferCreateInfo, nullptr,
+                                                     &buffer);
+        if (createBufferResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Create Buffer");
+        }
+
+        cout << "Successfully Created Buffer, size: " << to_string(deviceSize) << endl;
+
+        VkMemoryRequirements memoryRequirements;
+        vkGetBufferMemoryRequirements(logicalDevice->GetVulkanDevice(), buffer, &memoryRequirements);
+
+        VkMemoryAllocateInfo memoryAllocateInfo = {};
+        memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        memoryAllocateInfo.allocationSize = memoryRequirements.size;
+        memoryAllocateInfo.memoryTypeIndex = physicalDevice->FindMemoryType(memoryRequirements.memoryTypeBits,
+                                                                            memoryPropertyFlags);
+
+        VkResult allocateMemoryResult = vkAllocateMemory(logicalDevice->GetVulkanDevice(), &memoryAllocateInfo, nullptr,
+                                                         &bufferMemory);
+        if (allocateMemoryResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Allocate Buffer Memory");
+        }
+
+        cout << "Successfully Allocated Buffer Memory, size: " << to_string(memoryRequirements.size) << endl;
+
+        VkResult bindBufferResult = vkBindBufferMemory(logicalDevice->GetVulkanDevice(), buffer, bufferMemory, 0);
+        if (bindBufferResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Bind Buffer to Buffer Memory");
+        }
+
+        cout << "Successfully Bound Buffer To Buffer Memory" << endl;
+    }
+
+    void BufferUtil::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+        auto copyBuffer = new CopyBufferCommand(logicalDevice, srcBuffer, dstBuffer, size);
+        delete copyBuffer;
+    }
+
+    // #endregion
+
+
     // #region Constructors
 
-    BufferUtil::BufferUtil(VkDevice vulkanDevice, PhysicalDevice *physicalDevice) {
-        this->vulkanDevice = vulkanDevice;
+    BufferUtil::BufferUtil(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice) {
+        this->logicalDevice = logicalDevice;
         this->physicalDevice = physicalDevice;
-
     }
 
     // #endregion
@@ -27,51 +81,45 @@ namespace KTXCompressor {
 
     // #region Public Methods
 
-    void BufferUtil::CreateBuffer(VkDeviceSize deviceSize,
-                                  VkBufferUsageFlags bufferUsageFlags,
-                                  VkMemoryPropertyFlags memoryPropertyFlags,
-                                  VkBuffer &buffer,
-                                  VkDeviceMemory &bufferMemory) {
-        VkBufferCreateInfo bufferCreateInfo = {};
-        bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        bufferCreateInfo.size = deviceSize;
-        bufferCreateInfo.usage = bufferUsageFlags;
-        bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    void BufferUtil::CreateAndFillBuffer(const void *data,
+                                         VkDeviceSize size,
+                                         VkBufferUsageFlags bufferUsageFlags,
+                                         VkMemoryPropertyFlags memoryPropertyFlags,
+                                         VkBuffer &buffer,
+                                         VkDeviceMemory &bufferMemory) {
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
 
-        VkResult createBufferResult = vkCreateBuffer(vulkanDevice, &bufferCreateInfo, nullptr, &buffer);
-        if (createBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create Buffer");
-        }
+        // Create staging buffer
+        CreateBuffer(size,
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                     stagingBuffer,
+                     stagingBufferMemory);
 
-        cout << "Successfully Created Buffer, size: " << to_string(deviceSize) << endl;
+        // Fill the staging buffer with data
+        void *mappedData;
+        vkMapMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory, 0, size, 0, &mappedData);
+        memcpy(mappedData, data, static_cast<size_t>(size));
+        vkUnmapMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory);
 
-        VkMemoryRequirements memoryRequirements;
-        vkGetBufferMemoryRequirements(vulkanDevice, buffer, &memoryRequirements);
+        // Create target buffer
+        CreateBuffer(size,
+                     bufferUsageFlags | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                     memoryPropertyFlags,
+                     buffer,
+                     bufferMemory);
 
-        VkMemoryAllocateInfo memoryAllocateInfo = {};
-        memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        memoryAllocateInfo.allocationSize = memoryRequirements.size;
-        memoryAllocateInfo.memoryTypeIndex = physicalDevice->FindMemoryType(memoryRequirements.memoryTypeBits,
-                                                                            memoryPropertyFlags);
+        // Copy data from staging buffer to the target buffer
+        CopyBuffer(stagingBuffer, buffer, size);
 
-        VkResult allocateMemoryResult = vkAllocateMemory(vulkanDevice, &memoryAllocateInfo, nullptr, &bufferMemory);
-        if (allocateMemoryResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Allocate Buffer Memory");
-        }
+        // Cleanup staging buffer
+        vkDestroyBuffer(logicalDevice->GetVulkanDevice(), stagingBuffer, nullptr);
+        vkFreeMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory, nullptr);
 
-        cout << "Successfully Allocated Buffer Memory, size: " << to_string(memoryRequirements.size) << endl;
-
-        VkResult bindBufferResult = vkBindBufferMemory(vulkanDevice, buffer, bufferMemory, 0);
-        if (bindBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Bind Buffer to Buffer Memory");
-        }
-
-        cout << "Successfully Bound Buffer To Buffer Memory" << endl;
+        cout << "Successfully Created And Filled Buffer" << endl;
     }
 
-    void BufferUtil::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-         //todo use the CopyBufferCommand...
-    }
 
     // #endregion
 

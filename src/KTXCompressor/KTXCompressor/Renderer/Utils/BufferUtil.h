@@ -7,15 +7,26 @@
 
 #include <vulkan/vulkan_core.h>
 #include "../../Common.h"
-#include "../Instance/Devices/PhysicalDevice.h"
+#include "../Instance/Devices/LogicalDevice.h"
 
 namespace KTXCompressor {
 
     class BufferUtil {
     public:
-        BufferUtil(VkDevice vulkanDevice, PhysicalDevice *physicalDevice);
+        BufferUtil(LogicalDevice *logicalDevice, PhysicalDevice* physicalDevice);
 
         ~BufferUtil();
+
+        void CreateAndFillBuffer(const void* data,
+                                 VkDeviceSize size,
+                                 VkBufferUsageFlags bufferUsageFlags,
+                                 VkMemoryPropertyFlags memoryPropertyFlags,
+                                 VkBuffer& buffer,
+                                 VkDeviceMemory& bufferMemory);
+
+    private:
+        LogicalDevice *logicalDevice;
+        PhysicalDevice *physicalDevice;
 
         void CreateBuffer(VkDeviceSize deviceSize,
                           VkBufferUsageFlags bufferUsageFlags,
@@ -24,9 +35,6 @@ namespace KTXCompressor {
                           VkDeviceMemory &bufferMemory);
 
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-    private:
-        VkDevice vulkanDevice;
-        PhysicalDevice *physicalDevice;
     };
 
 } // KTXCompressor

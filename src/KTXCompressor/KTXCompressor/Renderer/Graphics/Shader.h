@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include "../../Common.h"
 #include "../Instance/Devices/PhysicalDevice.h"
+#include "../Instance/Devices/LogicalDevice.h"
 
 
 namespace KTXCompressor {
@@ -16,7 +17,9 @@ namespace KTXCompressor {
     class Shader {
 
     public:
-        Shader(PhysicalDevice *physicalDevice, VkDevice device, const string &vertexFileName,
+        Shader(PhysicalDevice *physicalDevice, 
+               LogicalDevice *logicalDevice,
+               const string &vertexFileName,
                const string &fragmentFileName);
 
         virtual ~Shader();
@@ -29,15 +32,12 @@ namespace KTXCompressor {
             glm::vec3 colour;
         };
         PhysicalDevice *physicalDevice;
-        VkDevice vulkanDevice;
+        LogicalDevice *logicalDevice;
         VkPipelineLayout vulkanPipelineLayout = nullptr;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
 
         void Init();
-
-       
-        void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
         virtual VkPipelineLayout CreatePipelineLayout() = 0;
 

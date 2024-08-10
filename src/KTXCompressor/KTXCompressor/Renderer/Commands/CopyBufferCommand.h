@@ -10,15 +10,25 @@
 namespace KTXCompressor {
 
     class CopyBufferCommand : public Command {
+
     public:
-        CopyBufferCommand(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex);
+        CopyBufferCommand(LogicalDevice *logicalDevice, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
         ~CopyBufferCommand();
 
+
     private:
         VkCommandBuffer vulkanCopyCommandBuffer;
-        
+
         VkCommandBuffer CreateCopyCommandBuffer();
+
+        void Begin();
+
+        void Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+        void End();
+
+        void Submit();
     };
 
 } // KTXCompressor

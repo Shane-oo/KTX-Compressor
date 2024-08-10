@@ -7,17 +7,19 @@
 
 #include <vulkan/vulkan_core.h>
 #include "../../Common.h"
+#include "../Instance/Devices/LogicalDevice.h"
 
 namespace KTXCompressor {
 
     class Command {
     public:
-        Command(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex);
+        Command(LogicalDevice *logicalDevice);
+
     protected:
-        VkDevice vulkanDevice;
+        LogicalDevice* logicalDevice;
         VkCommandPool vulkanCommandPool;
 
-        VkCommandPool CreateVulkanCommandPool(uint32_t graphicsFamilyIndex);
+        VkCommandPool CreateVulkanCommandPool();
 
     };
 

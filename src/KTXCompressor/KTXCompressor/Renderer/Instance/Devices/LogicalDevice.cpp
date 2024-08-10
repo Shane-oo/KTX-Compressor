@@ -80,10 +80,10 @@ namespace KTXCompressor {
         vulkanDevice = CreateLogicalVulkanDevice(physicalDevice);
 
         uint32_t graphicsFamilyIndex = physicalDevice->GetGraphicsFamilyIndex();
-        graphicsQueue = new Queue(RetrieveQueue(graphicsFamilyIndex));
+        graphicsQueue = new Queue(RetrieveQueue(graphicsFamilyIndex), graphicsFamilyIndex);
 
         uint32_t presentFamilyIndex = physicalDevice->GetPresentFamilyIndex();
-        presentQueue = new Queue(RetrieveQueue(presentFamilyIndex));
+        presentQueue = new Queue(RetrieveQueue(presentFamilyIndex), presentFamilyIndex);
     }
 
     // #endregion
@@ -99,8 +99,23 @@ namespace KTXCompressor {
         delete presentQueue;
     }
 
+    // #endregion
 
+    // #region Public Methods
+
+    void LogicalDevice::SubmitToGraphicsQueue(VkSubmitInfo submitInfo, VkFence fence) {
+
+        VkResult queueSubmitResult = vkQueueSubmit(graphicsQueue->GetVulkanQueue(),
+                                                   1,
+                                                   &submitInfo,
+                                                   fence);
+
+        if (queueSubmitResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Submit Draw Command Buffer");
+        }
+    }
 
     // #endregion
+
 
 } // KTXCompressor

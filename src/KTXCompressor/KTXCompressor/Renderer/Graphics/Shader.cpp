@@ -40,7 +40,7 @@ namespace KTXCompressor {
         shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
 
         VkShaderModule shaderModule;
-        VkResult createShaderModuleResult = vkCreateShaderModule(vulkanDevice,
+        VkResult createShaderModuleResult = vkCreateShaderModule(logicalDevice->GetVulkanDevice(),
                                                                  &shaderModuleCreateInfo,
                                                                  nullptr,
                                                                  &shaderModule);
@@ -58,10 +58,12 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Shader::Shader(PhysicalDevice *physicalDevice, VkDevice vulkanDevice, const string &vertexFileName,
+    Shader::Shader(PhysicalDevice* physicalDevice, 
+                   LogicalDevice *logicalDevice,
+                   const string &vertexFileName,
                    const string &fragmentFileName) {
         this->physicalDevice = physicalDevice;
-        this->vulkanDevice = vulkanDevice;
+        this->logicalDevice = logicalDevice;
 
         vertexShaderModule = CreateShaderModule(vertexFileName);
         fragmentShaderModule = CreateShaderModule(fragmentFileName);
@@ -74,9 +76,9 @@ namespace KTXCompressor {
     Shader::~Shader() {
         cout << "Destroy Shader" << endl;
 
-        vkDestroyBuffer(vulkanDevice, vertexBuffer, nullptr);
-        vkFreeMemory(vulkanDevice, vertexBufferMemory, nullptr);
-        vkDestroyPipelineLayout(vulkanDevice, vulkanPipelineLayout, nullptr);
+        vkDestroyBuffer(logicalDevice->GetVulkanDevice(), vertexBuffer, nullptr);
+        vkFreeMemory(logicalDevice->GetVulkanDevice(), vertexBufferMemory, nullptr);
+        vkDestroyPipelineLayout(logicalDevice->GetVulkanDevice(), vulkanPipelineLayout, nullptr);
     }
 
 
@@ -84,9 +86,6 @@ namespace KTXCompressor {
 
     // #region Protected Methods
     
-    void Shader::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-
-    }
 
 
     // #endregion
@@ -129,8 +128,8 @@ namespace KTXCompressor {
 
     void Shader::CleanUpShaderModules() {
         cout << "Destroy Shader Modules" << endl;
-        vkDestroyShaderModule(vulkanDevice, fragmentShaderModule, nullptr);
-        vkDestroyShaderModule(vulkanDevice, vertexShaderModule, nullptr);
+        vkDestroyShaderModule(logicalDevice->GetVulkanDevice(), fragmentShaderModule, nullptr);
+        vkDestroyShaderModule(logicalDevice->GetVulkanDevice(), vertexShaderModule, nullptr);
     }
 
     void Shader::Bind(VkCommandBuffer vulkanCommandBuffer) {

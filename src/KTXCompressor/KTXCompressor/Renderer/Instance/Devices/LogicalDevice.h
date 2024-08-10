@@ -17,6 +17,8 @@ namespace KTXCompressor {
         LogicalDevice(PhysicalDevice *physicalDevice);
 
         ~LogicalDevice();
+        
+        void SubmitToGraphicsQueue(VkSubmitInfo submitInfo, VkFence fence);
 
     private:
         VkDevice vulkanDevice;

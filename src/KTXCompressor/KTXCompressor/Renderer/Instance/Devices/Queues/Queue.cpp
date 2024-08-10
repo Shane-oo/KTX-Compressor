@@ -8,8 +8,9 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Queue::Queue(VkQueue vkQueue) {
+    Queue::Queue(VkQueue vkQueue, uint32_t queueFamilyIndex) {
         vulkanQueue = vkQueue;
+        this->queueFamilyIndex = queueFamilyIndex;
     }
 
     // #endregion

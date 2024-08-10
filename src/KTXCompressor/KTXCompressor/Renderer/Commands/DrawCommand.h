@@ -16,7 +16,7 @@ namespace KTXCompressor {
 
     class DrawCommand : public Command {
     public:
-        DrawCommand(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex);
+        DrawCommand(LogicalDevice* logicalDevice);
 
         ~DrawCommand();
 
