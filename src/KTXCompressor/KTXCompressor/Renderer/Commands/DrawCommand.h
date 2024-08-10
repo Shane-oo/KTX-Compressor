@@ -7,25 +7,22 @@
 
 #include <vulkan/vulkan_core.h>
 #include "../../Common.h"
+#include "Command.h"
 
 namespace KTXCompressor {
 
     class GraphicsPipeline;
 
 
-    class DrawCommand {
+    class DrawCommand : public Command {
     public:
         DrawCommand(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex);
 
         ~DrawCommand();
 
     private:
-        VkDevice vulkanDevice;
-        VkCommandPool vulkanCommandPool;
-        vector<VkCommandBuffer> vulkanCommandBuffers;
 
-
-        VkCommandPool CreateVulkanCommandPool(uint32_t graphicsFamilyIndex);
+        vector<VkCommandBuffer> vulkanDrawCommandBuffers;
 
         vector<VkCommandBuffer> CreateVulkanCommandBuffers();
 
@@ -35,7 +32,7 @@ namespace KTXCompressor {
         void End(uint32_t currentFrame);
 
         VkCommandBuffer GetVulkanCommandBuffer(uint32_t currentFrame) {
-            return vulkanCommandBuffers[currentFrame];
+            return vulkanDrawCommandBuffers[currentFrame];
         }
     };
 

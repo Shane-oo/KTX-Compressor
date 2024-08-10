@@ -44,31 +44,31 @@ namespace KTXCompressor {
         return pipelineLayout;
     }
 
-    VkBuffer SimpleTriangleShader::CreateVertexBuffer() {
-        VkBufferCreateInfo createBufferInfo = {};
-        createBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        createBufferInfo.size = sizeof(vertices[0]) * vertices.size();
-        createBufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-        createBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    void SimpleTriangleShader::CreateVertexBuffer() {
+        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
-        VkBuffer buffer;
-        VkResult createBufferResult = vkCreateBuffer(vulkanDevice, &createBufferInfo, nullptr, &buffer);
-        if (createBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create Vertex Buffer");
-        }
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        
+        // use the BufferUtil Class 
+        page 161
+        CreateBuffer(bufferSize,
+                     VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                     stagingBuffer,
+                     stagingBufferMemory);
 
-        cout << "Successfully Created Vertex Buffer" << endl;
-
-        return buffer;
-    }
-
-    void SimpleTriangleShader::FillVertexBuffer() {
         void *data;
-        size_t size = sizeof(vertices[0]) * vertices.size();
-        vkMapMemory(vulkanDevice, vertexBufferMemory, 0, size, 0, &data);
-        memcpy(data, vertices.data(), size);
-        vkUnmapMemory(vulkanDevice, vertexBufferMemory);
+        vkMapMemory(vulkanDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices.data(), (size_t) bufferSize);
+        vkUnmapMemory(vulkanDevice, stagingBufferMemory);
 
+        CreateBuffer(bufferSize,
+                     VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                     vertexBuffer,
+                     vertexBufferMemory);
+        
         cout << "Vertex Buffer Filled" << endl;
     }
 

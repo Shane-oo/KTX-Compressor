@@ -24,33 +24,31 @@ namespace KTXCompressor {
         virtual void Render(VkCommandBuffer vulkanCommandBuffer) = 0;
 
     protected:
+        struct Vertex {
+            glm::vec2 pos;
+            glm::vec3 colour;
+        };
         PhysicalDevice *physicalDevice;
         VkDevice vulkanDevice;
         VkPipelineLayout vulkanPipelineLayout = nullptr;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
 
-        virtual VkPipelineLayout CreatePipelineLayout() = 0;
-
         void Init();
 
-        virtual VkBuffer CreateVertexBuffer() = 0;
+       
+        void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
-        virtual void FillVertexBuffer() = 0;
+        virtual VkPipelineLayout CreatePipelineLayout() = 0;
 
-        struct Vertex {
-            glm::vec2 pos;
-            glm::vec3 colour;
-        };
 
-        VkDeviceMemory AllocateBufferMemory(VkBuffer);
+        virtual void CreateVertexBuffer() = 0;
 
     private:
-
-
         static vector<char> ReadFile(const string &fileName);
 
         VkShaderModule CreateShaderModule(const string &fileName);
+
 
     public:
         virtual const char *GetVertexEntryPointName() = 0;

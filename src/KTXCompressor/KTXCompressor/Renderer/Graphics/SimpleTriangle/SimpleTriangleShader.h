@@ -31,9 +31,8 @@ namespace KTXCompressor {
     protected:
         VkPipelineLayout CreatePipelineLayout() override;
 
-        VkBuffer CreateVertexBuffer() override;
+        void CreateVertexBuffer() override;
 
-        void FillVertexBuffer() override;
     };
 
 } // KTXCompressor

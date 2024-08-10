@@ -64,6 +64,12 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Commands/DrawCommand.h
         Renderer/Synchronization/Synchronization.cpp
         Renderer/Synchronization/Synchronization.h
+        Renderer/Utils/BufferUtil.cpp
+        Renderer/Utils/BufferUtil.h
+        Renderer/Commands/Command.cpp
+        Renderer/Commands/Command.h
+        Renderer/Commands/CopyBufferCommand.cpp
+        Renderer/Commands/CopyBufferCommand.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

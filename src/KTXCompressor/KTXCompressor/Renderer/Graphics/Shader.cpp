@@ -10,9 +10,7 @@ namespace KTXCompressor {
     // #region Private Methods
 
     void Shader::Init() {
-        vertexBuffer = CreateVertexBuffer();
-        vertexBufferMemory = AllocateBufferMemory(vertexBuffer);
-        FillVertexBuffer();
+        CreateVertexBuffer();
     }
 
     vector<char> Shader::ReadFile(const string &fileName) {
@@ -85,28 +83,11 @@ namespace KTXCompressor {
     // #endregion
 
     // #region Protected Methods
+    
+    void Shader::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
 
-    VkDeviceMemory Shader::AllocateBufferMemory(VkBuffer buffer) {
-        VkMemoryRequirements memoryRequirements;
-        vkGetBufferMemoryRequirements(vulkanDevice, buffer, &memoryRequirements);
-
-        VkMemoryAllocateInfo memoryAllocateInfo = {};
-        memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        memoryAllocateInfo.allocationSize = memoryRequirements.size;
-        memoryAllocateInfo.memoryTypeIndex = physicalDevice->FindMemoryType(memoryRequirements.memoryTypeBits,
-                                                                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-                                                                            | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        VkDeviceMemory deviceMemory;
-        VkResult allocateMemoryResult = vkAllocateMemory(vulkanDevice, &memoryAllocateInfo, nullptr, &deviceMemory);
-        if (allocateMemoryResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Allocated Device Memory!");
-        }
-
-        vkBindBufferMemory(vulkanDevice, buffer, deviceMemory, 0);
-        cout << "Successfully Allocated and Bound Device Memory" << endl;
-
-        return deviceMemory;
     }
+
 
     // #endregion
 
@@ -157,6 +138,10 @@ namespace KTXCompressor {
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, vertexBuffers, offsets);
     }
+
+
+
+
 
     // #endregion
 

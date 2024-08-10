@@ -10,28 +10,6 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
-    VkCommandPool DrawCommand::CreateVulkanCommandPool(uint32_t graphicsFamilyIndex) {
-        VkCommandPoolCreateInfo commandPoolCreateInfo = {};
-        commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        // allow command buffers to be recorded individually
-        commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        commandPoolCreateInfo.queueFamilyIndex = graphicsFamilyIndex;
-
-        VkCommandPool commandPool;
-        VkResult createCommandPoolResult = vkCreateCommandPool(vulkanDevice,
-                                                               &commandPoolCreateInfo,
-                                                               nullptr,
-                                                               &commandPool);
-
-        if (createCommandPoolResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create Draw Command Pool");
-        }
-
-        cout << "Successfully Created Command Pool" << endl;
-
-        return commandPool;
-    }
-
     vector<VkCommandBuffer> DrawCommand::CreateVulkanCommandBuffers() {
         VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
         commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -61,10 +39,9 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    DrawCommand::DrawCommand(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex) {
-        this->vulkanDevice = vulkanDevice;
-        vulkanCommandPool = CreateVulkanCommandPool(graphicsFamilyIndex);
-        vulkanCommandBuffers = CreateVulkanCommandBuffers();
+    DrawCommand::DrawCommand(VkDevice vulkanDevice, uint32_t graphicsFamilyIndex) : Command(vulkanDevice,
+                                                                                            graphicsFamilyIndex) {
+        vulkanDrawCommandBuffers = CreateVulkanCommandBuffers();
     }
 
     // #endregion
@@ -83,14 +60,14 @@ namespace KTXCompressor {
 
     void DrawCommand::Begin(uint32_t currentFrame) {
         // reset to make sure it can be recorded to
-        vkResetCommandBuffer(vulkanCommandBuffers[currentFrame], 0);
+        vkResetCommandBuffer(vulkanDrawCommandBuffers[currentFrame], 0);
 
         VkCommandBufferBeginInfo commandBufferBeginInfo = {};
         commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         commandBufferBeginInfo.flags = 0; // Optional
         commandBufferBeginInfo.pInheritanceInfo = nullptr; // Optional
 
-        VkResult beginCommandBufferResult = vkBeginCommandBuffer(vulkanCommandBuffers[currentFrame],
+        VkResult beginCommandBufferResult = vkBeginCommandBuffer(vulkanDrawCommandBuffers[currentFrame],
                                                                  &commandBufferBeginInfo);
 
         if (beginCommandBufferResult != VK_SUCCESS) {
@@ -99,7 +76,7 @@ namespace KTXCompressor {
     }
 
     void DrawCommand::End(uint32_t currentFrame) {
-        VkResult endCommandBufferResult = vkEndCommandBuffer(vulkanCommandBuffers[currentFrame]);
+        VkResult endCommandBufferResult = vkEndCommandBuffer(vulkanDrawCommandBuffers[currentFrame]);
 
         if (endCommandBufferResult != VK_SUCCESS) {
             throw runtime_error("Failed To End Command Buffer " + to_string(currentFrame));
