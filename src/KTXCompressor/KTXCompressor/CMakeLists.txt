@@ -70,6 +70,10 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Commands/Command.h
         Renderer/Commands/CopyBufferCommand.cpp
         Renderer/Commands/CopyBufferCommand.h
+        Renderer/Graphics/DescriptorSets/DescriptorSet.cpp
+        Renderer/Graphics/DescriptorSets/DescriptorSet.h
+        Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.cpp
+        Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

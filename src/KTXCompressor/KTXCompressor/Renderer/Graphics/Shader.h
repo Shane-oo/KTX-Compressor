@@ -11,6 +11,7 @@
 #include "../Instance/Devices/PhysicalDevice.h"
 #include "../Instance/Devices/LogicalDevice.h"
 #include "../Utils/BufferUtil.h"
+#include "DescriptorSets/DescriptorSet.h"
 
 
 namespace KTXCompressor {
@@ -25,7 +26,9 @@ namespace KTXCompressor {
 
         virtual ~Shader();
 
-        virtual void Render(VkCommandBuffer vulkanCommandBuffer) = 0;
+        virtual void Render(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame, VkExtent2D extent) = 0;
+
+        void Bind(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame);
 
     protected:
         struct Vertex {
@@ -34,12 +37,13 @@ namespace KTXCompressor {
         };
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
-        BufferUtil* bufferUtil;
+        BufferUtil *bufferUtil;
         VkPipelineLayout vulkanPipelineLayout = nullptr;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         VkBuffer indexBuffer;
         VkDeviceMemory indexBufferMemory;
+        DescriptorSet *descriptorSet = nullptr; // I imagine this will be an array/vector down the track
 
         void Init();
 
@@ -49,6 +53,8 @@ namespace KTXCompressor {
         virtual void CreateVertexBuffer() = 0;
 
         virtual void CreateIndexBuffer() = 0;
+
+        virtual void BindDescriptorSet(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) = 0;
 
     private:
         static vector<char> ReadFile(const string &fileName);
@@ -83,7 +89,6 @@ namespace KTXCompressor {
 
         void CleanUpShaderModules();
 
-        void Bind(VkCommandBuffer vulkanCommandBuffer);
     };
 
 } // KTXCompressor

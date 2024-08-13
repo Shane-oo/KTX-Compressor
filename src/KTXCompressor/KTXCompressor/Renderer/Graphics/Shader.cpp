@@ -138,12 +138,14 @@ namespace KTXCompressor {
         delete bufferUtil; // no longer needed
     }
 
-    void Shader::Bind(VkCommandBuffer vulkanCommandBuffer) {
+    void Shader::Bind(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) {
         VkBuffer vertexBuffers[] = {vertexBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, vertexBuffers, offsets);
 
         vkCmdBindIndexBuffer(vulkanCommandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+
+        BindDescriptorSet(vulkanCommandBuffer, currentFrame);
     }
 
 

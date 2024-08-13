@@ -208,7 +208,7 @@ namespace KTXCompressor {
                           VK_PIPELINE_BIND_POINT_GRAPHICS,
                           vulkanGraphicsPipeline);
 
-        shader->Bind(vulkanCommandBuffer);
+        shader->Bind(vulkanCommandBuffer, currentFrame);
 
         // Dynamic viewport and scissor
         VkViewport viewport = {};
@@ -225,7 +225,7 @@ namespace KTXCompressor {
         scissor.extent = extent;
         vkCmdSetScissor(vulkanCommandBuffer, 0, 1, &scissor);
 
-        shader->Render(vulkanCommandBuffer);
+        shader->Render(vulkanCommandBuffer, currentFrame, extent);
 
         renderPass->End(vulkanCommandBuffer);
 

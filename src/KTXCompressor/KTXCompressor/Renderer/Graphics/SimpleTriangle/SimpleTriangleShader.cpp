@@ -12,6 +12,20 @@ namespace KTXCompressor {
     SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice)
             : Shader(physicalDevice, logicalDevice, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
         Init();
+
+        modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
+    }
+
+    // #endregion
+
+    // #region Destructors 
+
+    SimpleTriangleShader::~SimpleTriangleShader() {
+        cout << "Destroy Simple Triangle Shader" << endl;
+
+        delete modelViewProjectionDescriptorSet;
+
+        // The base class destructor Shader::~Shader() is automatically called after this
     }
 
     // #endregion
@@ -23,8 +37,11 @@ namespace KTXCompressor {
 
         VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
         pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutCreateInfo.setLayoutCount = 0; // Optional
-        pipelineLayoutCreateInfo.pSetLayouts = nullptr; // Optional
+
+        auto descriptorSet = modelViewProjectionDescriptorSet->GetVulkanDescriptorSetLayout();
+        pipelineLayoutCreateInfo.setLayoutCount = 1;
+        pipelineLayoutCreateInfo.pSetLayouts = &descriptorSet;
+
         pipelineLayoutCreateInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutCreateInfo.pPushConstantRanges = nullptr; // Optional
         pipelineLayoutCreateInfo.pNext = nullptr;
@@ -70,6 +87,10 @@ namespace KTXCompressor {
         cout << "Successfully Created Simple Triangle Index Buffer" << endl;
     }
 
+    void SimpleTriangleShader::BindDescriptorSet(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) {
+        modelViewProjectionDescriptorSet->BindToCommandBuffer(vulkanCommandBuffer, vulkanPipelineLayout, currentFrame);
+    }
+
     // #endregion
 
     // #region Public Methods
@@ -82,9 +103,12 @@ namespace KTXCompressor {
         return "main";
     }
 
-    void SimpleTriangleShader::Render(VkCommandBuffer vulkanCommandBuffer) {
+    void SimpleTriangleShader::Render(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame, VkExtent2D extent) {
+        modelViewProjectionDescriptorSet->Update(currentFrame, extent);
         vkCmdDrawIndexed(vulkanCommandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     }
+
+
 
 
 

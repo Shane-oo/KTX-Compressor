@@ -6,6 +6,7 @@
 #define KTXCOMPRESSOR_SIMPLETRIANGLESHADER_H
 
 #include "../Shader.h"
+#include "../DescriptorSets/ModelViewProjectionDescriptorSet.h"
 
 namespace KTXCompressor {
 
@@ -13,8 +14,10 @@ namespace KTXCompressor {
 
     public:
         SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice);
+        
+        ~SimpleTriangleShader();
 
-        void Render(VkCommandBuffer vulkanCommandBuffer) override;
+        void Render(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame, VkExtent2D extent) override;
 
     private:
         const vector<Vertex> vertices = {
@@ -28,6 +31,8 @@ namespace KTXCompressor {
                 0, 1, 2, 2, 3, 0
         };
 
+        ModelViewProjectionDescriptorSet *modelViewProjectionDescriptorSet;
+
     public:
         const char *GetVertexEntryPointName() override;
 
@@ -37,9 +42,10 @@ namespace KTXCompressor {
         VkPipelineLayout CreatePipelineLayout() override;
 
         void CreateVertexBuffer() override;
-        
+
         void CreateIndexBuffer() override;
 
+        void BindDescriptorSet(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) override;
     };
 
 } // KTXCompressor

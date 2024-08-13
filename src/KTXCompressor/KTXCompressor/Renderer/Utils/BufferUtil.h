@@ -13,26 +13,26 @@ namespace KTXCompressor {
 
     class BufferUtil {
     public:
-        BufferUtil(LogicalDevice *logicalDevice, PhysicalDevice* physicalDevice);
+        BufferUtil(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice);
 
         ~BufferUtil();
 
-        void CreateAndFillBuffer(const void* data,
+        void CreateAndFillBuffer(const void *data,
                                  VkDeviceSize size,
                                  VkBufferUsageFlags bufferUsageFlags,
                                  VkMemoryPropertyFlags memoryPropertyFlags,
-                                 VkBuffer& buffer,
-                                 VkDeviceMemory& bufferMemory);
-
-    private:
-        LogicalDevice *logicalDevice;
-        PhysicalDevice *physicalDevice;
+                                 VkBuffer &buffer,
+                                 VkDeviceMemory &bufferMemory);
 
         void CreateBuffer(VkDeviceSize deviceSize,
                           VkBufferUsageFlags bufferUsageFlags,
                           VkMemoryPropertyFlags memoryPropertyFlags,
                           VkBuffer &buffer,
                           VkDeviceMemory &bufferMemory);
+
+    private:
+        LogicalDevice *logicalDevice;
+        PhysicalDevice *physicalDevice;
 
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
     };

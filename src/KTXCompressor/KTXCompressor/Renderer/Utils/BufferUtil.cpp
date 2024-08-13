@@ -9,6 +9,35 @@ namespace KTXCompressor {
     // #region Private Methods
 
 
+
+
+    void BufferUtil::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+        auto copyBuffer = new CopyBufferCommand(logicalDevice, srcBuffer, dstBuffer, size);
+        delete copyBuffer;
+    }
+
+    // #endregion
+
+
+    // #region Constructors
+
+    BufferUtil::BufferUtil(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice) {
+        this->logicalDevice = logicalDevice;
+        this->physicalDevice = physicalDevice;
+    }
+
+    // #endregion
+
+    // #region Destructors
+
+    BufferUtil::~BufferUtil() {
+
+    }
+
+    // #endregion
+
+
+    // #region Public Methods
     void BufferUtil::CreateBuffer(VkDeviceSize deviceSize,
                                   VkBufferUsageFlags bufferUsageFlags,
                                   VkMemoryPropertyFlags memoryPropertyFlags,
@@ -52,34 +81,6 @@ namespace KTXCompressor {
 
         cout << "Successfully Bound Buffer To Buffer Memory" << endl;
     }
-
-    void BufferUtil::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-        auto copyBuffer = new CopyBufferCommand(logicalDevice, srcBuffer, dstBuffer, size);
-        delete copyBuffer;
-    }
-
-    // #endregion
-
-
-    // #region Constructors
-
-    BufferUtil::BufferUtil(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice) {
-        this->logicalDevice = logicalDevice;
-        this->physicalDevice = physicalDevice;
-    }
-
-    // #endregion
-
-    // #region Destructors
-
-    BufferUtil::~BufferUtil() {
-
-    }
-
-    // #endregion
-
-
-    // #region Public Methods
 
     void BufferUtil::CreateAndFillBuffer(const void *data,
                                          VkDeviceSize size,
