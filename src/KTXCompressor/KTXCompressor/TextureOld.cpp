@@ -3,15 +3,15 @@
 //
 
 #include <filesystem>
-#include "Texture.h"
+#include "TextureOld.h"
 
 
 namespace KTXCompressor {
     // #region Private Methods
 
-    void Texture::OpenImage(const string &fileName,
-                            unique_ptr<ImageInput> &imageInput,
-                            ImageSpec &resultantImageSpec) {
+    void TextureOld::OpenImage(const string &fileName,
+                               unique_ptr<ImageInput> &imageInput,
+                               ImageSpec &resultantImageSpec) {
         imageInput = ImageInput::open(fileName);
         if (!imageInput) {
             throw runtime_error("Could not open file with name" + fileName);
@@ -36,7 +36,7 @@ namespace KTXCompressor {
     }
 
 
-    std::unique_ptr<unsigned char[]> Texture::LoadInputImage(ImageInput &inputImage, ImageSpec imageSpec) {
+    std::unique_ptr<unsigned char[]> TextureOld::LoadInputImage(ImageInput &inputImage, ImageSpec imageSpec) {
         auto pixels = std::unique_ptr<unsigned char[]>(
                 new unsigned char[imageSpec.width * imageSpec.height * imageSpec.nchannels]
         );
@@ -48,7 +48,7 @@ namespace KTXCompressor {
         return pixels;
     }
 
-    void Texture::WriteNewKtx2Image(const string &newFileName) {
+    void TextureOld::WriteNewKtx2Image(const string &newFileName) {
         // Determine the length of the wide character string
         size_t len = mbstowcs(nullptr, newFileName.c_str(), 0);
         if (len == (size_t) (-1)) {
@@ -79,7 +79,7 @@ namespace KTXCompressor {
         cout << "Successfully wrote new ktx2 texture " << newFileName << endl;
     }
 
-    void Texture::CreateKtxTexture(ImageInput &imageInput, const ImageSpec &imageSpec) {
+    void TextureOld::CreateKtxTexture(ImageInput &imageInput, const ImageSpec &imageSpec) {
         ktxTextureCreateInfo createInfo;
         // set all createInfo's bytes to 0, prevents uninitialized memory usage
         memset(&createInfo, 0, sizeof(createInfo));
@@ -100,7 +100,7 @@ namespace KTXCompressor {
                                                                      &myKtxTexture);
         if (ktxTextureCreateResult != KTX_SUCCESS) {
             auto error = ktxErrorString(ktxTextureCreateResult);
-            throw std::runtime_error("Could not create Ktx Texture: " + string(error));
+            throw std::runtime_error("Could not create Ktx TextureOld: " + string(error));
         }
         cout << "Successfully created Ktx Texture2" << endl;
 
@@ -123,7 +123,7 @@ namespace KTXCompressor {
         cout << "Successfully Set Image From Memory" << endl;
     }
 
-    void Texture::CompressTexture() const {
+    void TextureOld::CompressTexture() const {
         // UASTC Compression note: there exists an extended params version
         int astcQuality = 4;
         const auto compressAstcResult = ktxTexture2_CompressAstc(myKtxTexture, astcQuality);
@@ -144,7 +144,7 @@ namespace KTXCompressor {
             throw runtime_error("ktxTexture2_DeflateZstd: " + string(error));
         }
 
-        cout << "Successfully Deflated Astc Ktx Texture" << endl;
+        cout << "Successfully Deflated Astc Ktx TextureOld" << endl;
 
         // Add KTXwriterScParams metadata if ASTC encoding, BasisU encoding, or other supercompression was used
         const auto writerScParams = fmt::format("{}{}", astcQuality, deflateZstdLevel);
@@ -158,12 +158,12 @@ namespace KTXCompressor {
                 auto error = ktxErrorString(addKvPairResult);
                 throw runtime_error("ktxHashList_AddKVPair: " + string(error));
             }
-            cout << "Successfully wrote to Ktx Texture DataHead the metadata used" << endl;
+            cout << "Successfully wrote to Ktx TextureOld DataHead the metadata used" << endl;
         }
     }
 
     // unused
-    unique_ptr<unsigned char[]> Texture::GetCompressedPixelsFromKtxTexture(ktx_size_t &writtenSize) const {
+    unique_ptr<unsigned char[]> TextureOld::GetCompressedPixelsFromKtxTexture(ktx_size_t &writtenSize) const {
         auto newPixels = unique_ptr<unsigned char[]>(new unsigned char[myKtxTexture->dataSize]);
         unsigned char *rawPixels = newPixels.get();
         const auto writeToMemoryResult = ktxTexture_WriteToMemory(ktxTexture(myKtxTexture),
@@ -183,7 +183,7 @@ namespace KTXCompressor {
 
     // #region Constructors 
 
-    Texture::Texture(const string &fileName) {
+    TextureOld::TextureOld(const string &fileName) {
         unique_ptr<ImageInput> imageInput;
         ImageSpec imageSpec;
         OpenImage(fileName, imageInput, imageSpec);
@@ -201,7 +201,7 @@ namespace KTXCompressor {
     }
 
 
-    Texture::~Texture() {
+    TextureOld::~TextureOld() {
         if (myKtxTexture) {
             ktxTexture_Destroy(ktxTexture(myKtxTexture));
         }

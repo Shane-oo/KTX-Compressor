@@ -23,8 +23,8 @@ endforeach()
 
 # Add source to this project's executable.
 add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
-        Texture.cpp
-        Texture.h
+        TextureOld.cpp
+        TextureOld.h
         Renderer/RendererApp.cpp
         Renderer/RendererApp.h
         Renderer/Presentation/Window.cpp
@@ -74,6 +74,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/DescriptorSets/DescriptorSet.h
         Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.cpp
         Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.h
+        Renderer/Graphics/Textures/Texture.cpp
+        Renderer/Graphics/Textures/Texture.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

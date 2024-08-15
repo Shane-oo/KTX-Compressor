@@ -24,6 +24,13 @@ namespace KTXCompressor {
                                  VkBuffer &buffer,
                                  VkDeviceMemory &bufferMemory);
 
+        void CreateAndFillImage(const void *data,
+                                VkDeviceSize size,
+                                VkImageCreateInfo imageCreateInfo,
+                                VkImage &image,
+                                VkDeviceMemory &imageMemory,
+                                VkMemoryPropertyFlags memoryPropertyFlags);
+
         void CreateBuffer(VkDeviceSize deviceSize,
                           VkBufferUsageFlags bufferUsageFlags,
                           VkMemoryPropertyFlags memoryPropertyFlags,
@@ -35,6 +42,18 @@ namespace KTXCompressor {
         PhysicalDevice *physicalDevice;
 
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+        void
+        CreateStagingBuffer(const void *data, VkDeviceSize size, VkBuffer &stagingBuffer,
+                            VkDeviceMemory &stagingBufferMemory);
+
+        void CreateImage(VkImageCreateInfo imageCreateInfo,
+                         VkImage &image,
+                         VkDeviceMemory &imageMemory,
+                         VkMemoryPropertyFlags memoryPropertyFlags);
+
+        void AllocateMemory(VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceMemory &bufferMemory,
+                                      const VkMemoryRequirements &memoryRequirements);
     };
 
 } // KTXCompressor

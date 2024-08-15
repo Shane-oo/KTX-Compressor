@@ -16,12 +16,12 @@ using namespace OIIO;
 
 namespace KTXCompressor {
 
-    class Texture {
+    class TextureOld {
 
     public:
-        Texture(const string &fileName);
+        TextureOld(const string &fileName);
 
-        ~Texture();
+        ~TextureOld();
 
     private:
         static void OpenImage(const string &fileName,

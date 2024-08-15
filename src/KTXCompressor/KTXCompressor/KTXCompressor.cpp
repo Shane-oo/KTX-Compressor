@@ -3,7 +3,7 @@
 
 #include "KTXCompressor.h"
 
-#include "Texture.h"
+#include "TextureOld.h"
 #include "Renderer/RendererApp.h"
 
 using namespace std;
@@ -12,9 +12,8 @@ int main() {
     try {
         /*
          * const string woodDiffuseFileName = "textures/wood_diffuse_4096x4096.png";
-         * KTXCompressor::Texture texture = KTXCompressor::Texture(woodDiffuseFileName);
+         * KTXCompressor::TextureOld texture = KTXCompressor::TextureOld(woodDiffuseFileName);
          */
-        
 
         auto *rendererApp = new KTXCompressor::RendererApp();
         rendererApp->Run();

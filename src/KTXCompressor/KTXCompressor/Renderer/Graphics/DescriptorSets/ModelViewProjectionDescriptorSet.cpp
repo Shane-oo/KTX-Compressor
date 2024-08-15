@@ -193,10 +193,6 @@ namespace KTXCompressor {
         memcpy(vulkanUniformBuffersMapped[currentFrame], &mvpUbo, sizeof(mvpUbo));
     }
 
-
-
-
-
     // #endregion
 
 } // KTXCompressor

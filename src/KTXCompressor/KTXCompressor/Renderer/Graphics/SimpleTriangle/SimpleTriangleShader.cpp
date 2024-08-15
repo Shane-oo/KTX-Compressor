@@ -3,6 +3,7 @@
 //
 
 #include "SimpleTriangleShader.h"
+#include "../Textures/Texture.h"
 
 namespace KTXCompressor {
 
@@ -14,6 +15,9 @@ namespace KTXCompressor {
         Init();
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
+        
+        auto texture = new Texture(logicalDevice, physicalDevice, "textures/wood_diffuse_4096x4096.png");
+        
     }
 
     // #endregion

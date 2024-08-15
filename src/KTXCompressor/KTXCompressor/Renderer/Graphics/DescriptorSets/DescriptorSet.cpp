@@ -5,6 +5,7 @@
 #include "DescriptorSet.h"
 
 namespace KTXCompressor {
+
     // #region Constructors
 
     DescriptorSet::DescriptorSet(LogicalDevice *logicalDevice) {
