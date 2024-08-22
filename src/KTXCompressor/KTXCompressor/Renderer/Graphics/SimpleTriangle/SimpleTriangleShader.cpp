@@ -15,9 +15,10 @@ namespace KTXCompressor {
         Init();
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
-        
-        auto texture = new Texture(logicalDevice, physicalDevice, "textures/wood_diffuse_4096x4096.png");
-        
+
+        // TODO Image View And sampler: page 202
+        woodTexture = new Texture(logicalDevice, physicalDevice, "textures/wood_diffuse_4096x4096.png");
+
     }
 
     // #endregion
@@ -28,6 +29,7 @@ namespace KTXCompressor {
         cout << "Destroy Simple Triangle Shader" << endl;
 
         delete modelViewProjectionDescriptorSet;
+        delete woodTexture;
 
         // The base class destructor Shader::~Shader() is automatically called after this
     }

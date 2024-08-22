@@ -7,6 +7,7 @@
 
 #include "../Shader.h"
 #include "../DescriptorSets/ModelViewProjectionDescriptorSet.h"
+#include "../Textures/Texture.h"
 
 namespace KTXCompressor {
 
@@ -32,6 +33,7 @@ namespace KTXCompressor {
         };
 
         ModelViewProjectionDescriptorSet *modelViewProjectionDescriptorSet;
+        Texture* woodTexture;
 
     public:
         const char *GetVertexEntryPointName() override;

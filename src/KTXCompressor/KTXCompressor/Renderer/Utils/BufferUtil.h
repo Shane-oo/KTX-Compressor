@@ -10,6 +10,12 @@
 #include "../Instance/Devices/LogicalDevice.h"
 
 namespace KTXCompressor {
+    /*
+    * Future Work:
+    * Try to experiment with this by creating a setupCommandBuffer that the helper functions record 
+    * commands into, and add a flushSetupCommands to execute the commands that 
+    * have been recorded so far.
+    */
 
     class BufferUtil {
     public:
@@ -29,6 +35,9 @@ namespace KTXCompressor {
                                 VkImageCreateInfo imageCreateInfo,
                                 VkImage &image,
                                 VkDeviceMemory &imageMemory,
+                                VkFormat imageFormat,
+                                uint32_t width,
+                                uint32_t height,
                                 VkMemoryPropertyFlags memoryPropertyFlags);
 
         void CreateBuffer(VkDeviceSize deviceSize,
@@ -43,6 +52,12 @@ namespace KTXCompressor {
 
         void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
+        void CopyImage(VkImage image,
+                       VkFormat format,
+                       VkBuffer stagingBuffer,
+                       uint32_t width,
+                       uint32_t height);
+
         void
         CreateStagingBuffer(const void *data, VkDeviceSize size, VkBuffer &stagingBuffer,
                             VkDeviceMemory &stagingBufferMemory);
@@ -53,7 +68,9 @@ namespace KTXCompressor {
                          VkMemoryPropertyFlags memoryPropertyFlags);
 
         void AllocateMemory(VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceMemory &bufferMemory,
-                                      const VkMemoryRequirements &memoryRequirements);
+                            const VkMemoryRequirements &memoryRequirements);
+
+        void CleanUpBuffer(VkBuffer stagingBuffer, VkDeviceMemory stagingBufferMemory);
     };
 
 } // KTXCompressor

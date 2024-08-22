@@ -1,19 +1,19 @@
 ﻿# CMakeList.txt : CMake project for KTXCompressor, include source and define
 # project specific logic here.
 
-# Copy the textures folder to the build and binary directory
+# CopyBuffers the textures folder to the build and binary directory
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # SHADERS
 
-# Copy All Shaders to the build and binary directory
+# CopyBuffers All Shaders to the build and binary directory
 set(SHADERS_FOLDER Renderer/Graphics)
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${SHADERS_FOLDER})
 
 # Recursively find all .spv files in the shaders directory
 file(GLOB_RECURSE SPV_SHADERS ${SHADERS_DIR}/*.spv)
 
-# Copy the .spv files to the top-level directory in the build directory
+# CopyBuffers the .spv files to the top-level directory in the build directory
 foreach(SPV_SHADER ${SPV_SHADERS})
     get_filename_component(SPV_SHADER_NAME ${SPV_SHADER} NAME)
     file(COPY ${SPV_SHADER} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

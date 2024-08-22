@@ -16,11 +16,13 @@ namespace KTXCompressor {
 
     class Texture {
     public:
-        Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, string fileName);
+        Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string& fileName);
 
         ~Texture();
 
     private:
+        LogicalDevice *logicalDevice;
+        string name;
         BufferUtil *bufferUtil;
         unique_ptr<ImageInput> ImageInput;
         VkImage vulkanImage;

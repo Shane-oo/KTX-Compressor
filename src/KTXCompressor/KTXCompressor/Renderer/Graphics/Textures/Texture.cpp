@@ -18,24 +18,30 @@ namespace KTXCompressor {
 
         auto imageSpecs = ImageInput->spec();
 
-        auto channels = imageSpecs.nchannels;
-        auto size = imageSpecs.width * imageSpecs.height * channels;
+        auto channels = 4;  // (R,G,B,A) //imageSpecs.nchannels;
+        VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
+
+        auto width = static_cast<uint32_t>(imageSpecs.width);
+        auto height = static_cast<uint32_t>(imageSpecs.height);
+        auto size = width * height * channels;
+
 
         auto pixels = unique_ptr<unsigned char[]>(
                 new unsigned char[size]
         );
         ImageInput->read_image(0, 0, 0, channels, TypeDesc::UINT8, pixels.get());
-        VkDeviceSize deviceSize = imageSpecs.width * imageSpecs.height * imageSpecs.nchannels;
+        VkDeviceSize deviceSize = size;
+
 
         VkImageCreateInfo imageCreateInfo = {};
         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
-        imageCreateInfo.extent.width = static_cast<uint32_t>(imageSpecs.width);
-        imageCreateInfo.extent.height = static_cast<uint32_t>(imageSpecs.height);
+        imageCreateInfo.extent.width = width;
+        imageCreateInfo.extent.height = height;
         imageCreateInfo.extent.depth = 1;
         imageCreateInfo.mipLevels = 1;
         imageCreateInfo.arrayLayers = 1;
-        imageCreateInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+        imageCreateInfo.format = format;
         imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
         imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         imageCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
@@ -48,6 +54,9 @@ namespace KTXCompressor {
                                              imageCreateInfo,
                                              vulkanImage,
                                              vulkanImageMemory,
+                                             format,
+                                             width,
+                                             height,
                                              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     }
 
@@ -56,8 +65,11 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Texture::Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, string fileName) {
+    Texture::Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string& fileName) {
+        this->logicalDevice = logicalDevice;
         this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
+
+        this->name = fileName;
         LoadImageForFile(fileName);
     }
 
@@ -66,7 +78,10 @@ namespace KTXCompressor {
     // #region Destructors
 
     Texture::~Texture() {
+        cout << "Destroying " << name << endl;
 
+        vkDestroyImage(logicalDevice->GetVulkanDevice(), vulkanImage, nullptr);
+        vkFreeMemory(logicalDevice->GetVulkanDevice(), vulkanImageMemory, nullptr);
     }
 
     // #endregion

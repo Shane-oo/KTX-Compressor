@@ -6,13 +6,24 @@
 #include "../Commands/CopyBufferCommand.h"
 
 namespace KTXCompressor {
+
     // #region Private Methods
 
     void BufferUtil::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-        auto copyBuffer = new CopyBufferCommand(logicalDevice, srcBuffer, dstBuffer, size);
+        auto copyBuffer = new CopyBufferCommand(logicalDevice);
+        copyBuffer->Copy(srcBuffer, dstBuffer, size);
         delete copyBuffer;
     }
 
+    void BufferUtil::CopyImage(VkImage image,
+                               VkFormat format,
+                               VkBuffer stagingBuffer,
+                               uint32_t width,
+                               uint32_t height) {
+        auto copyBuffer = new CopyBufferCommand(logicalDevice);
+        copyBuffer->CopyImage(image, format, stagingBuffer, width, height);
+        delete copyBuffer;
+    }
 
     void BufferUtil::AllocateMemory(VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceMemory &bufferMemory,
                                     const VkMemoryRequirements &memoryRequirements) {
@@ -75,6 +86,11 @@ namespace KTXCompressor {
         }
 
         cout << "Successfully Bound Image To Image Memory" << endl;
+    }
+
+    void BufferUtil::CleanUpBuffer(VkBuffer stagingBuffer, VkDeviceMemory stagingBufferMemory) {
+        vkDestroyBuffer(logicalDevice->GetVulkanDevice(), stagingBuffer, nullptr);
+        vkFreeMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory, nullptr);
     }
 
     // #endregion
@@ -149,12 +165,11 @@ namespace KTXCompressor {
                      buffer,
                      bufferMemory);
 
-        // Copy data from staging buffer to the target buffer
+        // CopyBuffers data from staging buffer to the target buffer
         CopyBuffer(stagingBuffer, buffer, size);
 
         // Cleanup staging buffer
-        vkDestroyBuffer(logicalDevice->GetVulkanDevice(), stagingBuffer, nullptr);
-        vkFreeMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory, nullptr);
+        CleanUpBuffer(stagingBuffer, stagingBufferMemory);
 
         cout << "Successfully Created And Filled Buffer" << endl;
     }
@@ -164,25 +179,20 @@ namespace KTXCompressor {
                                         VkImageCreateInfo imageCreateInfo,
                                         VkImage &image,
                                         VkDeviceMemory &imageMemory,
+                                        VkFormat imageFormat,
+                                        uint32_t width,
+                                        uint32_t height,
                                         VkMemoryPropertyFlags memoryPropertyFlags) {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
         CreateStagingBuffer(data, size, stagingBuffer, stagingBufferMemory);
 
         CreateImage(imageCreateInfo, image, imageMemory, memoryPropertyFlags);
-        
-        // TODO: Layout Transitions page 195
 
+        CopyImage(image, imageFormat, stagingBuffer, width, height);
 
-        
-        
-        
-        
-        
-        
         // Cleanup staging buffer
-        vkDestroyBuffer(logicalDevice->GetVulkanDevice(), stagingBuffer, nullptr);
-        vkFreeMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory, nullptr);
+        CleanUpBuffer(stagingBuffer, stagingBufferMemory);
 
         cout << "Successfully Created And Filled Image" << endl;
     }

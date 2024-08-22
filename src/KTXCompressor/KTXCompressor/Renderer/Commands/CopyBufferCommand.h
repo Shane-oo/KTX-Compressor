@@ -12,23 +12,41 @@ namespace KTXCompressor {
     class CopyBufferCommand : public Command {
 
     public:
-        CopyBufferCommand(LogicalDevice *logicalDevice, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+        CopyBufferCommand(LogicalDevice *logicalDevice);
 
         ~CopyBufferCommand();
 
+        void Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+        void CopyImage(VkImage image,
+                       VkFormat format,
+                       VkBuffer stagingBuffer,
+                       uint32_t width,
+                       uint32_t height);
+
 
     private:
-        VkCommandBuffer vulkanCopyCommandBuffer;
+        VkCommandBuffer vulkanCommandBuffer;
 
-        VkCommandBuffer CreateCopyCommandBuffer();
+        VkCommandBuffer CreatCommandBuffer();
 
         void Begin();
 
-        void Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+        void CopyBuffers(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
         void End();
 
         void Submit();
+
+        void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
+        void Transition(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+        void GetPipelineStageFlags(VkImageLayout oldLayout,
+                                   VkImageLayout newLayout,
+                                   VkImageMemoryBarrier& imageMemoryBarrier,
+                                   VkPipelineStageFlags &sourceStage,
+                                   VkPipelineStageFlags &destinationStage);
     };
 
 } // KTXCompressor
