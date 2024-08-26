@@ -65,12 +65,16 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Texture::Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string& fileName) {
+    Texture::Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string &fileName) {
         this->logicalDevice = logicalDevice;
         this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
 
         this->name = fileName;
         LoadImageForFile(fileName);
+
+        if (vulkanImage) {
+            textureImageView = new ImageView(logicalDevice->GetVulkanDevice(), vulkanImage, VK_FORMAT_R8G8B8A8_SRGB);
+        }
     }
 
     // #endregion
@@ -79,6 +83,8 @@ namespace KTXCompressor {
 
     Texture::~Texture() {
         cout << "Destroying " << name << endl;
+
+        delete textureImageView;
 
         vkDestroyImage(logicalDevice->GetVulkanDevice(), vulkanImage, nullptr);
         vkFreeMemory(logicalDevice->GetVulkanDevice(), vulkanImageMemory, nullptr);

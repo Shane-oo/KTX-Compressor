@@ -8,6 +8,7 @@
 #include "../../../Common.h"
 #include "vulkan/vulkan_core.h"
 #include "../../Utils/BufferUtil.h"
+#include "../../Presentation/ImageView.h"
 #include <OpenImageIO/imageio.h>
 
 using namespace OIIO;
@@ -16,12 +17,13 @@ namespace KTXCompressor {
 
     class Texture {
     public:
-        Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string& fileName);
+        Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string &fileName);
 
         ~Texture();
 
     private:
         LogicalDevice *logicalDevice;
+        ImageView *textureImageView;
         string name;
         BufferUtil *bufferUtil;
         unique_ptr<ImageInput> ImageInput;

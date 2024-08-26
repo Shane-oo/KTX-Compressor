@@ -16,7 +16,6 @@ namespace KTXCompressor {
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
 
-        // TODO Image View And sampler: page 202
         woodTexture = new Texture(logicalDevice, physicalDevice, "textures/wood_diffuse_4096x4096.png");
 
     }

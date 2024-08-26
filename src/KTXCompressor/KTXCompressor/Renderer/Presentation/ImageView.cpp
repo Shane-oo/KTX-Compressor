@@ -5,6 +5,7 @@
 #include "ImageView.h"
 
 namespace KTXCompressor {
+
     // #region Private Methods
 
     VkImageView ImageView::CreateVulkanImageView(VkImage vulkanImage, VkFormat imageFormat) {
