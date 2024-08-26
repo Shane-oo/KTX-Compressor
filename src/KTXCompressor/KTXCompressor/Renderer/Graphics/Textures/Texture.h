@@ -23,14 +23,19 @@ namespace KTXCompressor {
 
     private:
         LogicalDevice *logicalDevice;
-        ImageView *textureImageView;
+        PhysicalDevice *physicalDevice;
         string name;
         BufferUtil *bufferUtil;
         unique_ptr<ImageInput> ImageInput;
         VkImage vulkanImage;
         VkDeviceMemory vulkanImageMemory;
+        ImageView *textureImageView;
+        VkSampler textureSampler;
+
 
         void LoadImageForFile(const string &fileName);
+
+        VkSampler CreateTextureSampler();
     };
 
 } // KTXCompressor

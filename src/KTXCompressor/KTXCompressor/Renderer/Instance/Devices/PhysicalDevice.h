@@ -23,6 +23,7 @@ namespace KTXCompressor {
     private:
         VkPhysicalDevice vulkanPhysicalDevice;
         VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
+        VkPhysicalDeviceProperties physicalDeviceProperties;
         QueueFamily *queueFamily;
 
     private:
@@ -47,9 +48,13 @@ namespace KTXCompressor {
         }
 
         [[nodiscard]] VkPhysicalDeviceFeatures GetRequiredPhysicalDeviceFeatures() {
-            // todo
-            VkPhysicalDeviceFeatures enabledDeviceFeatures{};
-            return enabledDeviceFeatures;
+            VkPhysicalDeviceFeatures requiredPhysicalDeviceFeatures{};
+            requiredPhysicalDeviceFeatures.samplerAnisotropy = VK_TRUE;
+            return requiredPhysicalDeviceFeatures;
+        }
+
+        [[nodiscard]] float GetMaxSamplerAnisotropy() const {
+            return physicalDeviceProperties.limits.maxSamplerAnisotropy;
         }
     };
 

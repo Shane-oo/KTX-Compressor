@@ -49,12 +49,15 @@ namespace KTXCompressor {
                                                                       queueFamily->GetVulkanSurface())
                     .IsAdequate();
 
-            suitable = queueFamilyIndicesComplete && swapChainAdequate;
-            if (suitable) {
-                VkPhysicalDeviceProperties deviceProperties;
-                vkGetPhysicalDeviceProperties(device, &deviceProperties);
+            VkPhysicalDeviceFeatures supportedFeatures;
+            vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-                cout << "Device " << deviceProperties.deviceName << " Is Suitable" << endl;
+
+            suitable = queueFamilyIndicesComplete && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+            if (suitable) {
+                vkGetPhysicalDeviceProperties(device, &physicalDeviceProperties);
+
+                cout << "Device " << physicalDeviceProperties.deviceName << " Is Suitable" << endl;
             }
 
         }
