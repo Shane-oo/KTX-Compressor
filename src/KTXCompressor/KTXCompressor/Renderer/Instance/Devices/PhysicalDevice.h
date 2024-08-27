@@ -8,6 +8,7 @@
 #include "../../../Common.h"
 #include "Queues/QueueFamily.h"
 #include <vulkan/vulkan_core.h>
+#include <ktx.h>
 
 namespace KTXCompressor {
 
@@ -24,7 +25,9 @@ namespace KTXCompressor {
         VkPhysicalDevice vulkanPhysicalDevice;
         VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
         VkPhysicalDeviceProperties physicalDeviceProperties;
+        VkPhysicalDeviceFeatures supportedFeatures;
         QueueFamily *queueFamily;
+        vector<ktx_transcode_fmt_e> availableTargetFormats;
 
     private:
         VkPhysicalDevice PickPhysicalDevice(VkInstance vulkanInstance);
@@ -32,6 +35,10 @@ namespace KTXCompressor {
         bool IsDeviceSuitable(VkPhysicalDevice device);
 
         bool CheckDeviceExtensionsSupported(VkPhysicalDevice device);
+
+        void SetAvailableTargetFormatsForKtx();
+
+        bool GetVulkanFormatSupported(VkFormat format);
 
     public:
 
@@ -55,6 +62,10 @@ namespace KTXCompressor {
 
         [[nodiscard]] float GetMaxSamplerAnisotropy() const {
             return physicalDeviceProperties.limits.maxSamplerAnisotropy;
+        }
+
+        vector<ktx_transcode_fmt_e> GetAvailableKTXFormats() {
+            return availableTargetFormats;
         }
     };
 

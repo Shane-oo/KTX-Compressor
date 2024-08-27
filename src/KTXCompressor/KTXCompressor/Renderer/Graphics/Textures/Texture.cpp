@@ -8,7 +8,8 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
-    void Texture::AddAlphaChannelToImage(unique_ptr<unsigned char[]> &pixels, uint32_t width, uint32_t height, int channels) {
+    void Texture::AddAlphaChannelToImage(unique_ptr<unsigned char[]> &pixels, uint32_t width, uint32_t height,
+                                         int channels) {
         size_t original_size = width * height * channels;
         size_t new_channels = channels + 1;
         size_t new_size = width * height * new_channels;
@@ -128,6 +129,9 @@ namespace KTXCompressor {
         this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
 
         this->name = fileName;
+
+        // TODO Check for if ends with .ktx2  
+        //  https://github.com/KhronosGroup/Vulkan-Samples/tree/main/samples/performance/texture_compression_basisu#loading-the-ktx-20-file
         LoadImageForFile(fileName);
 
         if (vulkanImage) {

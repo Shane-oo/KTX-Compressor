@@ -10,6 +10,48 @@
 namespace KTXCompressor {
     // #region Private Methods
 
+    // Check if the device supports sampling and transfers for the selected image
+    bool PhysicalDevice::GetVulkanFormatSupported(VkFormat format) {
+
+        VkFormatProperties formatProperties;
+        vkGetPhysicalDeviceFormatProperties(vulkanPhysicalDevice, format, &formatProperties);
+        return ((formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_TRANSFER_DST_BIT) &&
+                (formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT));
+    }
+
+    void PhysicalDevice::SetAvailableTargetFormatsForKtx() {
+
+        // Block Compression
+        if (supportedFeatures.textureCompressionBC) {
+            // BC7 is the preferred block compression if available
+            if (GetVulkanFormatSupported(VK_FORMAT_BC7_SRGB_BLOCK)) {
+                availableTargetFormats.push_back(KTX_TTF_BC7_RGBA);
+            }
+
+            if (GetVulkanFormatSupported(VK_FORMAT_BC3_SRGB_BLOCK)) {
+                availableTargetFormats.push_back(KTX_TTF_BC3_RGBA);
+            }
+        }
+
+        // Adaptive scalable texture compression
+        if (supportedFeatures.textureCompressionASTC_LDR) {
+            if (GetVulkanFormatSupported(VK_FORMAT_ASTC_4x4_SRGB_BLOCK)) {
+                availableTargetFormats.push_back(KTX_TTF_ASTC_4x4_RGBA);
+            }
+        }
+
+        // Ericcson texture Compression
+        if (supportedFeatures.textureCompressionETC2) {
+            if (GetVulkanFormatSupported(VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK)) {
+                availableTargetFormats.push_back(KTX_TTF_ETC2_RGBA);
+            }
+        }
+
+        // Always add uncompressed RGBA as a valid target
+        availableTargetFormats.push_back(KTX_TTF_RGBA32);
+    }
+
+
     // Look for and select a graphics card in the system that supports the features we need
     VkPhysicalDevice PhysicalDevice::PickPhysicalDevice(VkInstance vulkanInstance) {
 
@@ -49,7 +91,6 @@ namespace KTXCompressor {
                                                                       queueFamily->GetVulkanSurface())
                     .IsAdequate();
 
-            VkPhysicalDeviceFeatures supportedFeatures;
             vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
 
@@ -89,6 +130,7 @@ namespace KTXCompressor {
     PhysicalDevice::PhysicalDevice(VkInstance vulkanInstance, QueueFamily *queueFamily) {
         this->queueFamily = queueFamily;
         vulkanPhysicalDevice = PickPhysicalDevice(vulkanInstance);
+        SetAvailableTargetFormatsForKtx();
     }
 
     // #endregion
@@ -118,6 +160,7 @@ namespace KTXCompressor {
 
         throw runtime_error("Failed to Find Suitable Memory Type");
     }
+
 
     // #endregion 
 

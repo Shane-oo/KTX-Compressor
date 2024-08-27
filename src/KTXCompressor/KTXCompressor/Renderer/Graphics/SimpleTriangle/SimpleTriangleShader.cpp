@@ -17,7 +17,7 @@ namespace KTXCompressor {
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
 
-        woodTexture = new Texture(logicalDevice, physicalDevice, "textures/wood_diffuse_4096x4096.png");
+        woodTexture = new Texture(logicalDevice, physicalDevice, "textures/SAMPLE_2d_rbg8.ktx2");
         combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, woodTexture);
     }
 
