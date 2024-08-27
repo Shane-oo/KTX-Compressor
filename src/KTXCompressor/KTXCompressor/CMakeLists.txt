@@ -76,6 +76,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.h
         Renderer/Graphics/Textures/Texture.cpp
         Renderer/Graphics/Textures/Texture.h
+        Renderer/Graphics/DescriptorSets/CombinedImageSamplerDescriptorSet.cpp
+        Renderer/Graphics/DescriptorSets/CombinedImageSamplerDescriptorSet.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -108,3 +110,5 @@ target_link_libraries(KTXCompressor PRIVATE glfw)
 find_package(glm REQUIRED)
 # Link GLM Library
 target_link_directories(KTXCompressor PRIVATE glm)
+
+##

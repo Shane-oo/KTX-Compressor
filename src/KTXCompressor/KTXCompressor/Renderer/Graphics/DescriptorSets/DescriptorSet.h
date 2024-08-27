@@ -17,9 +17,9 @@ namespace KTXCompressor {
 
         ~DescriptorSet();
 
-        void BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
+        virtual void BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
                                  VkPipelineLayout vulkanPipelineLayout,
-                                 uint32_t currentFrame);
+                                 uint32_t currentFrame) = 0;
 
     protected:
         LogicalDevice *logicalDevice;
@@ -27,13 +27,22 @@ namespace KTXCompressor {
         VkDescriptorPool vulkanDescriptorPool;
         vector<VkDescriptorSet> vulkanDescriptorSets;
 
-        virtual VkDescriptorSetLayout CreateDescriptorSetLayout() = 0;
+        virtual VkDescriptorSetLayoutBinding GetDescriptorSetLayoutBinding() = 0;
 
-        virtual VkDescriptorPool CreateDescriptorPool() = 0;
+        virtual VkDescriptorPoolSize GetDescriptorPoolSize() = 0;
 
-        virtual vector<VkDescriptorSet> CreateDescriptorSets() = 0;
+        virtual void SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
+                                           size_t i) = 0;
+        
 
         void Init();
+
+    private:
+        VkDescriptorSetLayout CreateDescriptorSetLayout();
+
+        VkDescriptorPool CreateDescriptorPool();
+        
+        vector<VkDescriptorSet> CreateDescriptorSets();
 
     public:
         VkDescriptorSetLayout GetVulkanDescriptorSetLayout() {

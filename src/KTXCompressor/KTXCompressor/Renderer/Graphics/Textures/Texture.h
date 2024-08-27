@@ -36,6 +36,15 @@ namespace KTXCompressor {
         void LoadImageForFile(const string &fileName);
 
         VkSampler CreateTextureSampler();
+
+    public:
+        ImageView *GetImageView() {
+            return textureImageView;
+        }
+
+        VkSampler GetSampler() {
+            return textureSampler;
+        }
     };
 
 } // KTXCompressor

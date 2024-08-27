@@ -4,6 +4,7 @@
 
 #include "SimpleTriangleShader.h"
 #include "../Textures/Texture.h"
+#include "../DescriptorSets/CombinedImageSamplerDescriptorSet.h"
 
 namespace KTXCompressor {
 
@@ -17,7 +18,7 @@ namespace KTXCompressor {
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
 
         woodTexture = new Texture(logicalDevice, physicalDevice, "textures/wood_diffuse_4096x4096.png");
-
+        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, woodTexture);
     }
 
     // #endregion
@@ -28,6 +29,7 @@ namespace KTXCompressor {
         cout << "Destroy Simple Triangle Shader" << endl;
 
         delete modelViewProjectionDescriptorSet;
+        delete combinedImageSamplerDescriptorSet;
         delete woodTexture;
 
         // The base class destructor Shader::~Shader() is automatically called after this
@@ -43,9 +45,12 @@ namespace KTXCompressor {
         VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
         pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
-        auto descriptorSet = modelViewProjectionDescriptorSet->GetVulkanDescriptorSetLayout();
-        pipelineLayoutCreateInfo.setLayoutCount = 1;
-        pipelineLayoutCreateInfo.pSetLayouts = &descriptorSet;
+        vector<VkDescriptorSetLayout> descriptorSets{2};
+        descriptorSets[0] = modelViewProjectionDescriptorSet->GetVulkanDescriptorSetLayout();
+        descriptorSets[1] = combinedImageSamplerDescriptorSet->GetVulkanDescriptorSetLayout();
+
+        pipelineLayoutCreateInfo.setLayoutCount = descriptorSets.size();
+        pipelineLayoutCreateInfo.pSetLayouts = descriptorSets.data();
 
         pipelineLayoutCreateInfo.pushConstantRangeCount = 0; // Optional
         pipelineLayoutCreateInfo.pPushConstantRanges = nullptr; // Optional
@@ -94,7 +99,10 @@ namespace KTXCompressor {
 
     void SimpleTriangleShader::BindDescriptorSet(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) {
         modelViewProjectionDescriptorSet->BindToCommandBuffer(vulkanCommandBuffer, vulkanPipelineLayout, currentFrame);
+        combinedImageSamplerDescriptorSet->BindToCommandBuffer(vulkanCommandBuffer, vulkanPipelineLayout, currentFrame);
     }
+    
+    
 
     // #endregion
 

@@ -23,14 +23,19 @@ namespace KTXCompressor {
 
         ~ModelViewProjectionDescriptorSet();
 
+        void BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
+                                 VkPipelineLayout vulkanPipelineLayout,
+                                 uint32_t currentFrame) override;
+
         void Update(uint32_t currentFrame, VkExtent2D extent);
 
     protected:
-        VkDescriptorSetLayout CreateDescriptorSetLayout() override;
-        
-        VkDescriptorPool CreateDescriptorPool() override;
+        VkDescriptorSetLayoutBinding GetDescriptorSetLayoutBinding() override;
 
-        vector<VkDescriptorSet> CreateDescriptorSets() override;
+        VkDescriptorPoolSize GetDescriptorPoolSize() override;
+
+        void SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
+                                   size_t i) override;
 
     private:
         struct ModelViewProjectionUbo {
@@ -43,6 +48,7 @@ namespace KTXCompressor {
         vector<VkBuffer> vulkanUniformBuffers;
         vector<VkDeviceMemory> vulkanUniformBuffersMemory;
         vector<void *> vulkanUniformBuffersMapped;
+        vector<VkDescriptorBufferInfo> descriptorBufferInfos;
 
         void CreateModelViewProjectionUniformBuffers();
     };

@@ -114,7 +114,7 @@ namespace KTXCompressor {
     }
 
     vector<VkVertexInputAttributeDescription> Shader::GetAttributeDescriptions() {
-        vector<VkVertexInputAttributeDescription> attributeDescriptions{2};
+        vector<VkVertexInputAttributeDescription> attributeDescriptions{3};
         // Position
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
@@ -126,6 +126,12 @@ namespace KTXCompressor {
         attributeDescriptions[1].location = 1;
         attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
         attributeDescriptions[1].offset = offsetof(Vertex, colour);
+
+        // Texture
+        attributeDescriptions[2].binding = 0;
+        attributeDescriptions[2].location = 2;
+        attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
 
         return attributeDescriptions;
     }

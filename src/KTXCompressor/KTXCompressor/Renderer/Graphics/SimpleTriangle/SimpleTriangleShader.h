@@ -8,6 +8,7 @@
 #include "../Shader.h"
 #include "../DescriptorSets/ModelViewProjectionDescriptorSet.h"
 #include "../Textures/Texture.h"
+#include "../DescriptorSets/CombinedImageSamplerDescriptorSet.h"
 
 namespace KTXCompressor {
 
@@ -15,17 +16,17 @@ namespace KTXCompressor {
 
     public:
         SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice);
-        
+
         ~SimpleTriangleShader();
 
         void Render(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame, VkExtent2D extent) override;
 
     private:
         const vector<Vertex> vertices = {
-                {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-                {{0.5f,  -0.5f}, {0.0f, 1.0f, 0.0f}},
-                {{0.5f,  0.5f},  {0.0f, 0.0f, 1.0f}},
-                {{-0.5f, 0.5f},  {1.0f, 1.0f, 1.0f}}
+                {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+                {{0.5f,  -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                {{0.5f,  0.5f},  {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                {{-0.5f, 0.5f},  {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
         };
 
         const vector<uint16_t> indices = {
@@ -33,7 +34,8 @@ namespace KTXCompressor {
         };
 
         ModelViewProjectionDescriptorSet *modelViewProjectionDescriptorSet;
-        Texture* woodTexture;
+        CombinedImageSamplerDescriptorSet *combinedImageSamplerDescriptorSet;
+        Texture *woodTexture;
 
     public:
         const char *GetVertexEntryPointName() override;

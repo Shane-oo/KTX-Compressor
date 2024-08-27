@@ -64,7 +64,7 @@ namespace KTXCompressor {
     // #region Protected Methods
 
 
-    VkDescriptorSetLayout ModelViewProjectionDescriptorSet::CreateDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding ModelViewProjectionDescriptorSet::GetDescriptorSetLayoutBinding() {
         VkDescriptorSetLayoutBinding modelViewProjectionUboLayoutBinding = {};
         modelViewProjectionUboLayoutBinding.binding = 0;
         modelViewProjectionUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -72,103 +72,52 @@ namespace KTXCompressor {
         modelViewProjectionUboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
         modelViewProjectionUboLayoutBinding.pImmutableSamplers = nullptr; // Optional
 
-        VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
-        descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        descriptorSetLayoutCreateInfo.bindingCount = 1;
-        descriptorSetLayoutCreateInfo.pBindings = &modelViewProjectionUboLayoutBinding;
 
-        VkDescriptorSetLayout descriptorSetLayout;
-        VkResult createDescriptorSetLayoutResult = vkCreateDescriptorSetLayout(logicalDevice->GetVulkanDevice(),
-                                                                               &descriptorSetLayoutCreateInfo,
-                                                                               nullptr,
-                                                                               &descriptorSetLayout);
-        if (createDescriptorSetLayoutResult != VK_SUCCESS) {
-            throw runtime_error("Failed To Create ModelViewProjectionDescriptorSet");
-        }
-
-        cout << "Successfully Created ModelViewProjectionDescriptorSet" << endl;
-
-        return descriptorSetLayout;
+        return modelViewProjectionUboLayoutBinding;
     }
 
-    VkDescriptorPool ModelViewProjectionDescriptorSet::CreateDescriptorPool() {
+    VkDescriptorPoolSize ModelViewProjectionDescriptorSet::GetDescriptorPoolSize() {
         VkDescriptorPoolSize descriptorPoolSize = {};
         descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorPoolSize.descriptorCount = static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT);
 
-        VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
-        descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        descriptorPoolCreateInfo.poolSizeCount = 1;
-        descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;
-        descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT);
-
-        VkDescriptorPool descriptorPool;
-        VkResult createDescriptorPoolResult = vkCreateDescriptorPool(logicalDevice->GetVulkanDevice(),
-                                                                     &descriptorPoolCreateInfo,
-                                                                     nullptr,
-                                                                     &descriptorPool);
-        if (createDescriptorPoolResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create ModelViewProjection Descriptor Pool");
-        }
-
-        cout << "Successfully Created ModelViewProjection Descriptor Pool" << endl;
-
-        return descriptorPool;
+        return descriptorPoolSize;
     }
 
-    // could this be in the parent?
-    vector<VkDescriptorSet> ModelViewProjectionDescriptorSet::CreateDescriptorSets() {
-        //In our case we will create one descriptor set for each frame in flight, all with the same layout
-
-        vector<VkDescriptorSetLayout> descriptorSetLayouts(RendererConstants::MAX_FRAMES_IN_FLIGHT,
-                                                           vulkanDescriptorSetLayout);
-
-        VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
-        descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        descriptorSetAllocateInfo.descriptorPool = vulkanDescriptorPool;
-        descriptorSetAllocateInfo.descriptorSetCount = static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT);
-        descriptorSetAllocateInfo.pSetLayouts = descriptorSetLayouts.data();
-
-        vector<VkDescriptorSet> descriptorSets(RendererConstants::MAX_FRAMES_IN_FLIGHT);
-        VkResult allocateDescriptorSetsResult = vkAllocateDescriptorSets(logicalDevice->GetVulkanDevice(),
-                                                                         &descriptorSetAllocateInfo,
-                                                                         descriptorSets.data());
-        if (allocateDescriptorSetsResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Allocate Descriptor Sets!");
+    void ModelViewProjectionDescriptorSet::SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
+                                                                 size_t i) {
+        if (descriptorBufferInfos.size() <= i) {
+            descriptorBufferInfos.resize(i + 1);
         }
+        descriptorBufferInfos[i].buffer = vulkanUniformBuffers[i];
+        descriptorBufferInfos[i].offset = 0;
+        descriptorBufferInfos[i].range = sizeof(ModelViewProjectionUbo);
 
-        cout << "Successfully Allocated Descriptor Sets" << endl;
-
-        /* Descriptors that refer to buffers, like our uniform buffer descriptor, are configured
-         * with a VkDescriptorBufferInfo struct. This structure specifies the buffer 
-         * and the region within it that contains the data for the descriptor
-        */
-        for (size_t i = 0; i < RendererConstants::MAX_FRAMES_IN_FLIGHT; i++) {
-            VkDescriptorBufferInfo descriptorBufferInfo = {};
-            descriptorBufferInfo.buffer = vulkanUniformBuffers[i];
-            descriptorBufferInfo.offset = 0;
-            descriptorBufferInfo.range = sizeof(ModelViewProjectionUbo);
-
-            VkWriteDescriptorSet writeDescriptorSet = {};
-            writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            writeDescriptorSet.dstSet = descriptorSets[i];
-            writeDescriptorSet.dstBinding = 0;
-            writeDescriptorSet.dstArrayElement = 0;
-            writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            writeDescriptorSet.descriptorCount = 1;
-            writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;
-            writeDescriptorSet.pImageInfo = nullptr; // Optional
-            writeDescriptorSet.pTexelBufferView = nullptr;//Optional
-
-            vkUpdateDescriptorSets(logicalDevice->GetVulkanDevice(), 1, &writeDescriptorSet, 0, nullptr);
-        }
-
-        return descriptorSets;
+        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeDescriptorSet.dstBinding = 0;
+        writeDescriptorSet.dstArrayElement = 0;
+        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        writeDescriptorSet.descriptorCount = 1;
+        writeDescriptorSet.pBufferInfo = &descriptorBufferInfos[i];
+        writeDescriptorSet.pImageInfo = nullptr; // Optional
+        writeDescriptorSet.pTexelBufferView = nullptr;//Optional
     }
 
     // #endregion
 
     // #region Public Methods
+
+    void ModelViewProjectionDescriptorSet::BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
+                                                                VkPipelineLayout vulkanPipelineLayout,
+                                                                uint32_t currentFrame) {
+        vkCmdBindDescriptorSets(vulkanCommandBuffer,
+                                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                vulkanPipelineLayout,
+                                0,
+                                1, // CombinedImageSampler is the second one...?
+                                &vulkanDescriptorSets[currentFrame], 0, nullptr);
+    }
+
 
     void ModelViewProjectionDescriptorSet::Update(uint32_t currentFrame, VkExtent2D extent) {
         static auto startTime = std::chrono::high_resolution_clock::now();

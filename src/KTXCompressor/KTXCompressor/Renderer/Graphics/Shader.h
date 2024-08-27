@@ -34,6 +34,7 @@ namespace KTXCompressor {
         struct Vertex {
             glm::vec2 pos;
             glm::vec3 colour;
+            glm::vec2 texCoord;
         };
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
