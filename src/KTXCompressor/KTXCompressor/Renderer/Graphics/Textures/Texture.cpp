@@ -8,6 +8,25 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
+    void Texture::AddAlphaChannelToImage(unique_ptr<unsigned char[]> &pixels, uint32_t width, uint32_t height, int channels) {
+        size_t original_size = width * height * channels;
+        size_t new_channels = channels + 1;
+        size_t new_size = width * height * new_channels;
+
+        unique_ptr<unsigned char[]> new_pixels(new unsigned char[new_size]);
+
+        // Iterate through the original pixels and copy them, adding an alpha value
+        for (size_t i = 0, j = 0; i < original_size; i += channels, j += new_channels) {
+            // Copy existing channels
+            std::memcpy(&new_pixels[j], &pixels[i], channels);
+            // Add alpha channel (fully opaque)
+            new_pixels[j + channels] = 255;
+        }
+
+        // Replace the old pixel data with the new one
+        pixels.swap(new_pixels);
+    }
+
     void Texture::LoadImageForFile(const string &fileName) {
         ImageInput = ImageInput::open(fileName);
         if (!ImageInput) {
@@ -18,20 +37,26 @@ namespace KTXCompressor {
 
         auto imageSpecs = ImageInput->spec();
 
-        auto channels = 4;  // (R,G,B,A) //imageSpecs.nchannels;
-        VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
 
         auto width = static_cast<uint32_t>(imageSpecs.width);
         auto height = static_cast<uint32_t>(imageSpecs.height);
-        auto size = width * height * channels;
+        int channels = imageSpecs.nchannels;
+        auto originalImageSize = width * height * channels;
 
+        auto pixels = std::unique_ptr<unsigned char[]>(new unsigned char[originalImageSize]);
+        ImageInput->read_image(0, 0, 0, channels, TypeDesc::UINT8, &pixels[0]);
 
-        auto pixels = unique_ptr<unsigned char[]>(
-                new unsigned char[size]
-        );
-        ImageInput->read_image(0, 0, 0, channels, TypeDesc::UINT8, pixels.get());
-        VkDeviceSize deviceSize = size;
+        if (channels == 3) {
+            // Missing Alpha
+            // GPU's do not guarantee to support images without an alpha channel, so you must always have one
+            AddAlphaChannelToImage(pixels, width, height, channels);
+        }
 
+        ImageInput->close();
+
+        VkDeviceSize imageSize = width * height * 4; // RGBA
+
+        VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
 
         VkImageCreateInfo imageCreateInfo = {};
         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -50,7 +75,7 @@ namespace KTXCompressor {
         imageCreateInfo.flags = 0; //Optional
 
         this->bufferUtil->CreateAndFillImage(pixels.get(),
-                                             deviceSize,
+                                             imageSize,
                                              imageCreateInfo,
                                              vulkanImage,
                                              vulkanImageMemory,

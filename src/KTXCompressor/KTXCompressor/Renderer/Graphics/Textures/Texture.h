@@ -37,6 +37,8 @@ namespace KTXCompressor {
 
         VkSampler CreateTextureSampler();
 
+        static void AddAlphaChannelToImage(unique_ptr<unsigned char[]>& pixels, uint32_t width, uint32_t height, int channels);
+
     public:
         ImageView *GetImageView() {
             return textureImageView;
