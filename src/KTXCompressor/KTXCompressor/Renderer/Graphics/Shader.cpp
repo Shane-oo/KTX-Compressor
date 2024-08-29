@@ -54,6 +54,14 @@ namespace KTXCompressor {
         return shaderModule;
     }
 
+    void Shader::BindDescriptorSets(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) {
+        for (auto descriptorSet: descriptorSets) {
+            descriptorSet->BindToCommandBuffer(vulkanCommandBuffer,
+                                               vulkanPipelineLayout,
+                                               currentFrame);
+        }
+    }
+
     // #endregion
 
 
@@ -151,7 +159,7 @@ namespace KTXCompressor {
 
         vkCmdBindIndexBuffer(vulkanCommandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
-        BindDescriptorSet(vulkanCommandBuffer, currentFrame);
+        BindDescriptorSets(vulkanCommandBuffer, currentFrame);
     }
 
 

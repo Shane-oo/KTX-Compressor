@@ -10,8 +10,7 @@ namespace KTXCompressor {
     // #region Constructors
 
     CombinedImageSamplerDescriptorSet::CombinedImageSamplerDescriptorSet(LogicalDevice *logicalDevice, Texture *texture)
-            :
-            DescriptorSet(logicalDevice) {
+            : DescriptorSet(logicalDevice) {
         this->texture = texture;
         Init();
     }
@@ -23,7 +22,7 @@ namespace KTXCompressor {
 
     VkDescriptorSetLayoutBinding CombinedImageSamplerDescriptorSet::GetDescriptorSetLayoutBinding() {
         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        samplerLayoutBinding.binding = 1;
+        samplerLayoutBinding.binding = GetBinding();
         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         samplerLayoutBinding.descriptorCount = 1; // not an array
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -49,7 +48,7 @@ namespace KTXCompressor {
         descriptorImageInfos[i].sampler = texture->GetSampler();
 
         writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSet.dstBinding = 1;
+        writeDescriptorSet.dstBinding = GetBinding();
         writeDescriptorSet.dstArrayElement = 0;
         writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         writeDescriptorSet.descriptorCount = 1;
@@ -59,17 +58,6 @@ namespace KTXCompressor {
     // #endregion
 
     // #region Public Methods
-
-    void CombinedImageSamplerDescriptorSet::BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
-                                                                VkPipelineLayout vulkanPipelineLayout,
-                                                                uint32_t currentFrame) {
-        vkCmdBindDescriptorSets(vulkanCommandBuffer,
-                                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                vulkanPipelineLayout,
-                                1,
-                                1, // CombinedImageSampler is the second one...?
-                                &vulkanDescriptorSets[currentFrame], 0, nullptr);
-    }
 
 
     // #endregion

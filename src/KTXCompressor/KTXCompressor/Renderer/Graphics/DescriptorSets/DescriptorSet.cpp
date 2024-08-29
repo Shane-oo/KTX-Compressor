@@ -130,6 +130,19 @@ namespace KTXCompressor {
         return descriptorSets;
     }
 
+    void DescriptorSet::BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
+                                            VkPipelineLayout vulkanPipelineLayout,
+                                            uint32_t currentFrame) {
+        vkCmdBindDescriptorSets(vulkanCommandBuffer,
+                                VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                vulkanPipelineLayout,
+                                GetBinding(),
+                                1,
+                                &vulkanDescriptorSets[currentFrame],
+                                0,
+                                nullptr);
+    }
+
     // #endregion
 
 } // KTXCompressor

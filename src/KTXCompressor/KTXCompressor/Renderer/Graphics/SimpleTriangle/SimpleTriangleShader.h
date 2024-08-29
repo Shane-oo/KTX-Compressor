@@ -48,8 +48,6 @@ namespace KTXCompressor {
         void CreateVertexBuffer() override;
 
         void CreateIndexBuffer() override;
-
-        void BindDescriptorSet(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) override;
     };
 
 } // KTXCompressor

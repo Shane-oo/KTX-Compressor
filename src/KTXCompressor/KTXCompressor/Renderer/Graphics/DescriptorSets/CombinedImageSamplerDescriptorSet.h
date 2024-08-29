@@ -14,10 +14,6 @@ namespace KTXCompressor {
 
     public:
         CombinedImageSamplerDescriptorSet(LogicalDevice *logicalDevice, Texture *texture);
-        
-        void BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
-                                      VkPipelineLayout vulkanPipelineLayout,
-                                      uint32_t currentFrame) override;
 
     protected:
         VkDescriptorSetLayoutBinding GetDescriptorSetLayoutBinding() override;
@@ -27,7 +23,13 @@ namespace KTXCompressor {
         void SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
                                    size_t i) override;
 
+        int GetBinding() override {
+            return binding;
+        }
+
     private:
+        int binding = 1;
+
         Texture *texture;
         vector<VkDescriptorImageInfo> descriptorImageInfos;
 

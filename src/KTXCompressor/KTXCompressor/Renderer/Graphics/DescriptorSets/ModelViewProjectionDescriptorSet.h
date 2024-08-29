@@ -23,10 +23,6 @@ namespace KTXCompressor {
 
         ~ModelViewProjectionDescriptorSet();
 
-        void BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
-                                 VkPipelineLayout vulkanPipelineLayout,
-                                 uint32_t currentFrame) override;
-
         void Update(uint32_t currentFrame, VkExtent2D extent);
 
     protected:
@@ -37,7 +33,14 @@ namespace KTXCompressor {
         void SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
                                    size_t i) override;
 
+
+        int GetBinding() override {
+            return binding;
+        }
+
     private:
+        int binding = 0;
+
         struct ModelViewProjectionUbo {
             alignas(16)  glm::mat4 model;
             alignas(16) glm::mat4 view;

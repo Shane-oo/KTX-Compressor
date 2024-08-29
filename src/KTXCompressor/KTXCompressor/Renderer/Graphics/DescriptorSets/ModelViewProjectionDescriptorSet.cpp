@@ -66,7 +66,7 @@ namespace KTXCompressor {
 
     VkDescriptorSetLayoutBinding ModelViewProjectionDescriptorSet::GetDescriptorSetLayoutBinding() {
         VkDescriptorSetLayoutBinding modelViewProjectionUboLayoutBinding = {};
-        modelViewProjectionUboLayoutBinding.binding = 0;
+        modelViewProjectionUboLayoutBinding.binding = GetBinding();
         modelViewProjectionUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         modelViewProjectionUboLayoutBinding.descriptorCount = 1;// not an array
         modelViewProjectionUboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -94,7 +94,7 @@ namespace KTXCompressor {
         descriptorBufferInfos[i].range = sizeof(ModelViewProjectionUbo);
 
         writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSet.dstBinding = 0;
+        writeDescriptorSet.dstBinding = GetBinding();
         writeDescriptorSet.dstArrayElement = 0;
         writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         writeDescriptorSet.descriptorCount = 1;
@@ -106,18 +106,6 @@ namespace KTXCompressor {
     // #endregion
 
     // #region Public Methods
-
-    void ModelViewProjectionDescriptorSet::BindToCommandBuffer(VkCommandBuffer vulkanCommandBuffer,
-                                                                VkPipelineLayout vulkanPipelineLayout,
-                                                                uint32_t currentFrame) {
-        vkCmdBindDescriptorSets(vulkanCommandBuffer,
-                                VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                vulkanPipelineLayout,
-                                0,
-                                1, // CombinedImageSampler is the second one...?
-                                &vulkanDescriptorSets[currentFrame], 0, nullptr);
-    }
-
 
     void ModelViewProjectionDescriptorSet::Update(uint32_t currentFrame, VkExtent2D extent) {
         static auto startTime = std::chrono::high_resolution_clock::now();

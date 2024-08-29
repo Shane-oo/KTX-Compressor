@@ -55,7 +55,7 @@ namespace KTXCompressor {
 
         virtual void CreateIndexBuffer() = 0;
 
-        virtual void BindDescriptorSet(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) = 0;
+        void BindDescriptorSets(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame);
 
     private:
         static vector<char> ReadFile(const string &fileName);

@@ -21,7 +21,7 @@ namespace KTXCompressor {
         woodTexture = new Texture(logicalDevice, physicalDevice, "textures/SAMPLE_2d_rgba8.ktx2");
 
         combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, woodTexture);
-        descriptorSets.push_back(modelViewProjectionDescriptorSet);
+        descriptorSets.push_back(combinedImageSamplerDescriptorSet);
     }
 
     // #endregion
@@ -99,13 +99,6 @@ namespace KTXCompressor {
 
         cout << "Successfully Created Simple Triangle Index Buffer" << endl;
     }
-
-    void SimpleTriangleShader::BindDescriptorSet(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame) {
-        modelViewProjectionDescriptorSet->BindToCommandBuffer(vulkanCommandBuffer, vulkanPipelineLayout, currentFrame);
-        combinedImageSamplerDescriptorSet->BindToCommandBuffer(vulkanCommandBuffer, vulkanPipelineLayout, currentFrame);
-    }
-    
-    
 
     // #endregion
 
