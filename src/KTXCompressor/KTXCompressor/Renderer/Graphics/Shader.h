@@ -44,7 +44,7 @@ namespace KTXCompressor {
         VkDeviceMemory vertexBufferMemory;
         VkBuffer indexBuffer;
         VkDeviceMemory indexBufferMemory;
-        DescriptorSet *descriptorSet = nullptr; // I imagine this will be an array/vector down the track
+        vector<DescriptorSet*> descriptorSets;
 
         void Init();
 

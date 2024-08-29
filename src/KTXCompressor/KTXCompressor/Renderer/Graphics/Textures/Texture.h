@@ -27,17 +27,25 @@ namespace KTXCompressor {
         string name;
         BufferUtil *bufferUtil;
         unique_ptr<ImageInput> ImageInput;
-        VkImage vulkanImage;
+        VkImage vulkanImage = nullptr;
         VkDeviceMemory vulkanImageMemory;
         ImageView *textureImageView;
         VkSampler textureSampler;
 
-
         void LoadImageForFile(const string &fileName);
+
+        void LoadKtx2File(const string &fileName);
+
+        void CreateImage(uint32_t width,
+                         uint32_t height,
+                         const void *pixels);
 
         VkSampler CreateTextureSampler();
 
-        static void AddAlphaChannelToImage(unique_ptr<unsigned char[]>& pixels, uint32_t width, uint32_t height, int channels);
+        static void AddAlphaChannelToImage(unique_ptr<unsigned char[]> &pixels,
+                                           uint32_t width,
+                                           uint32_t height,
+                                           int channels);
 
     public:
         ImageView *GetImageView() {
@@ -47,6 +55,7 @@ namespace KTXCompressor {
         VkSampler GetSampler() {
             return textureSampler;
         }
+
     };
 
 } // KTXCompressor

@@ -28,6 +28,36 @@ namespace KTXCompressor {
         pixels.swap(new_pixels);
     }
 
+    void Texture::LoadKtx2File(const string &fileName) {
+        ktxTexture2 *ktxTexture;
+        auto createKtxTextureResult = ktxTexture_CreateFromNamedFile(fileName.c_str(),
+                                                                     KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT,
+                                                                     reinterpret_cast<struct ktxTexture **>(&ktxTexture));
+        if (createKtxTextureResult != KTX_SUCCESS) {
+            throw runtime_error("Could not Load the Requested .ktx2 Image");
+        }
+
+        // Check if the source KTX 2.0 file needs transcoding, 
+        // this will transcode the texture data into the GPU native target format
+        if (ktxTexture2_NeedsTranscoding(ktxTexture)) {
+            ktx_transcode_flags transcodeFlags = 0;
+            auto transcodeKtxTextureResult = ktxTexture2_TranscodeBasis(ktxTexture,
+                                                                        physicalDevice->GetBestAvailableKTXFormat(),
+                                                                        transcodeFlags);
+            if (transcodeKtxTextureResult != KTX_SUCCESS) {
+                throw runtime_error("Could not Transcode the Input Texture to the Target Format");
+            }
+        }
+
+        auto width = static_cast<uint32_t>(ktxTexture->baseWidth);
+        auto height = static_cast<uint32_t>(ktxTexture->baseHeight);
+
+        // hmm what is this?
+        VkFormat format = static_cast<VkFormat>(ktxTexture->vkFormat);
+
+        CreateImage(width, height, ktxTexture->pData);
+    }
+
     void Texture::LoadImageForFile(const string &fileName) {
         ImageInput = ImageInput::open(fileName);
         if (!ImageInput) {
@@ -55,6 +85,11 @@ namespace KTXCompressor {
 
         ImageInput->close();
 
+        CreateImage(width, height, pixels.get());
+    }
+
+    void Texture::CreateImage(uint32_t width, uint32_t height,
+                              const void *pixels) {
         VkDeviceSize imageSize = width * height * 4; // RGBA
 
         VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
@@ -75,15 +110,15 @@ namespace KTXCompressor {
         imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
         imageCreateInfo.flags = 0; //Optional
 
-        this->bufferUtil->CreateAndFillImage(pixels.get(),
-                                             imageSize,
-                                             imageCreateInfo,
-                                             vulkanImage,
-                                             vulkanImageMemory,
-                                             format,
-                                             width,
-                                             height,
-                                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        bufferUtil->CreateAndFillImage(pixels,
+                                       imageSize,
+                                       imageCreateInfo,
+                                       vulkanImage,
+                                       vulkanImageMemory,
+                                       format,
+                                       width,
+                                       height,
+                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     }
 
     VkSampler Texture::CreateTextureSampler() {
@@ -130,9 +165,11 @@ namespace KTXCompressor {
 
         this->name = fileName;
 
-        // TODO Check for if ends with .ktx2  
-        //  https://github.com/KhronosGroup/Vulkan-Samples/tree/main/samples/performance/texture_compression_basisu#loading-the-ktx-20-file
-        LoadImageForFile(fileName);
+        if (fileName.ends_with(".ktx2")) {
+            LoadKtx2File(fileName);
+        } else {
+            LoadImageForFile(fileName);
+        }
 
         if (vulkanImage) {
             textureImageView = new ImageView(logicalDevice->GetVulkanDevice(), vulkanImage, VK_FORMAT_R8G8B8A8_SRGB);

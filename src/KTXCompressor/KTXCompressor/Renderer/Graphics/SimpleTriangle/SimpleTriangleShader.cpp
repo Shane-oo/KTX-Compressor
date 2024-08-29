@@ -16,9 +16,12 @@ namespace KTXCompressor {
         Init();
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
+        descriptorSets.push_back(modelViewProjectionDescriptorSet);
 
-        woodTexture = new Texture(logicalDevice, physicalDevice, "textures/SAMPLE_2d_rbg8.ktx2");
+        woodTexture = new Texture(logicalDevice, physicalDevice, "textures/SAMPLE_2d_rgba8.ktx2");
+
         combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, woodTexture);
+        descriptorSets.push_back(modelViewProjectionDescriptorSet);
     }
 
     // #endregion

@@ -67,6 +67,10 @@ namespace KTXCompressor {
         vector<ktx_transcode_fmt_e> GetAvailableKTXFormats() {
             return availableTargetFormats;
         }
+
+        ktx_transcode_fmt_e GetBestAvailableKTXFormat() {
+            return availableTargetFormats[0];
+        }
     };
 
 
