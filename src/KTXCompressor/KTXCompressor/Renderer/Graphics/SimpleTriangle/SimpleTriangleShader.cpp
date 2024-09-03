@@ -11,16 +11,19 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice)
-            : Shader(physicalDevice, logicalDevice, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
+    SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice,
+                                               LogicalDevice *logicalDevice,
+                                               VkExtent2D extent)
+            : Shader(physicalDevice, logicalDevice, extent, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
         Init();
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
         descriptorSets.push_back(modelViewProjectionDescriptorSet);
 
-        woodTexture = new Texture(logicalDevice, physicalDevice, "textures/SAMPLE_2d_rgba8.ktx2");
+        ktxTexture = new KTXTexture("textures/SAMPLE_2d_rgba8.ktx2", logicalDevice, physicalDevice);
+        imageTexture = new ImageTexture("textures/wood_diffuse_4096x4096.png", logicalDevice, physicalDevice);
 
-        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, woodTexture);
+        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, imageTexture);
         descriptorSets.push_back(combinedImageSamplerDescriptorSet);
     }
 
@@ -33,7 +36,8 @@ namespace KTXCompressor {
 
         delete modelViewProjectionDescriptorSet;
         delete combinedImageSamplerDescriptorSet;
-        delete woodTexture;
+        delete ktxTexture;
+        delete imageTexture;
 
         // The base class destructor Shader::~Shader() is automatically called after this
     }

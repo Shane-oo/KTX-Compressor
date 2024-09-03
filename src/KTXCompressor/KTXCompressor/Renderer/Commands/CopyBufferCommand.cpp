@@ -99,8 +99,6 @@ namespace KTXCompressor {
                                &bufferImageCopy);
     }
 
-    // TODO Not working something wrong
-
     void CopyBufferCommand::Transition(VkImage image,
                                        VkFormat format,
                                        VkImageLayout oldLayout,

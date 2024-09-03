@@ -8,7 +8,7 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
-    VkImageView ImageView::CreateVulkanImageView(VkImage vulkanImage, VkFormat imageFormat) {
+    VkImageView ImageView::CreateVulkanImageView(VkImage vulkanImage, VkFormat imageFormat, VkImageAspectFlags imageAspectFlags) {
         VkImageViewCreateInfo imageViewCreateInfo{};
         imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         imageViewCreateInfo.image = vulkanImage;
@@ -21,7 +21,7 @@ namespace KTXCompressor {
         imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
         // our images will be used as colour targets without any mip-mapping levels or multiple layers for now
-        imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageViewCreateInfo.subresourceRange.aspectMask = imageAspectFlags; //VK_IMAGE_ASPECT_COLOR_BIT;
         imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
         imageViewCreateInfo.subresourceRange.levelCount = 1;
         imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
@@ -46,9 +46,9 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    ImageView::ImageView(VkDevice vulkanDevice, VkImage vulkanImage, VkFormat imageFormat) {
+    ImageView::ImageView(VkDevice vulkanDevice, VkImage vulkanImage, VkFormat imageFormat, VkImageAspectFlags imageAspectFlags) {
         this->vulkanDevice = vulkanDevice;
-        vulkanImageView = CreateVulkanImageView(vulkanImage, imageFormat);
+        vulkanImageView = CreateVulkanImageView(vulkanImage, imageFormat, imageAspectFlags);
     }
 
     // #endregion

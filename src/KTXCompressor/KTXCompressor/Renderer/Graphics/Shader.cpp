@@ -12,6 +12,8 @@ namespace KTXCompressor {
     void Shader::Init() {
         CreateVertexBuffer();
         CreateIndexBuffer();
+
+        depthTexture = new DepthTexture(extent, logicalDevice, physicalDevice);
     }
 
     vector<char> Shader::ReadFile(const string &fileName) {
@@ -69,10 +71,12 @@ namespace KTXCompressor {
 
     Shader::Shader(PhysicalDevice *physicalDevice,
                    LogicalDevice *logicalDevice,
+                   VkExtent2D extent,
                    const string &vertexFileName,
                    const string &fragmentFileName) {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
+        this->extent = extent;
         this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
 
         vertexShaderModule = CreateShaderModule(vertexFileName);
@@ -86,6 +90,7 @@ namespace KTXCompressor {
     Shader::~Shader() {
         cout << "Destroy Shader" << endl;
 
+        delete depthTexture;
         vkDestroyBuffer(logicalDevice->GetVulkanDevice(), vertexBuffer, nullptr);
         vkFreeMemory(logicalDevice->GetVulkanDevice(), vertexBufferMemory, nullptr);
         vkDestroyBuffer(logicalDevice->GetVulkanDevice(), indexBuffer, nullptr);
@@ -126,7 +131,7 @@ namespace KTXCompressor {
         // Position
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
         attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
         // Colour

@@ -9,53 +9,47 @@
 #include "vulkan/vulkan_core.h"
 #include "../../Utils/BufferUtil.h"
 #include "../../Presentation/ImageView.h"
-#include <OpenImageIO/imageio.h>
 
-using namespace OIIO;
 
 namespace KTXCompressor {
 
     class Texture {
     public:
-        Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string &fileName);
+        Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice);
 
         ~Texture();
 
-    private:
+        virtual VkSampler GetSampler() = 0;
+
+    protected:
         LogicalDevice *logicalDevice;
         PhysicalDevice *physicalDevice;
-        string name;
-        BufferUtil *bufferUtil;
-        unique_ptr<ImageInput> ImageInput;
-        VkImage vulkanImage = nullptr;
-        VkDeviceMemory vulkanImageMemory;
-        ImageView *textureImageView;
-        VkSampler textureSampler;
-
-        void LoadImageForFile(const string &fileName);
-
-        void LoadKtx2File(const string &fileName);
 
         void CreateImage(uint32_t width,
                          uint32_t height,
                          const void *pixels);
 
+        void CreateImageWithoutPixels(uint32_t width,
+                                      uint32_t height,
+                                      VkFormat format,
+                                      VkImageUsageFlags imageUsageFlags);
+
         VkSampler CreateTextureSampler();
 
-        static void AddAlphaChannelToImage(unique_ptr<unsigned char[]> &pixels,
-                                           uint32_t width,
-                                           uint32_t height,
-                                           int channels);
+    private:
+
+        BufferUtil *bufferUtil;
+        VkImage vulkanImage;
+        VkDeviceMemory vulkanImageMemory;
+        ImageView *imageView;
+
+        VkImageCreateInfo GetImageCreateInfo(uint32_t width, uint32_t height, const VkFormat &format,  VkImageUsageFlags imageUsageFlags);
 
     public:
         ImageView *GetImageView() {
-            return textureImageView;
+            return imageView;
         }
-
-        VkSampler GetSampler() {
-            return textureSampler;
-        }
-
+        
     };
 
 } // KTXCompressor

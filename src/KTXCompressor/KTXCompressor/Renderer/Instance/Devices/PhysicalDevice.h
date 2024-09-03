@@ -21,6 +21,8 @@ namespace KTXCompressor {
 
         uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags memoryPropertyFlags);
 
+        VkFormat FindSupportedFormat(const vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
     private:
         VkPhysicalDevice vulkanPhysicalDevice;
         VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;

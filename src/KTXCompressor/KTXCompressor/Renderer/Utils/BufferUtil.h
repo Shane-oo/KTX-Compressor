@@ -38,7 +38,12 @@ namespace KTXCompressor {
                                 VkFormat imageFormat,
                                 uint32_t width,
                                 uint32_t height,
-                                VkMemoryPropertyFlags memoryPropertyFlags);
+                                VkMemoryPropertyFlags memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+        void CreateImage(VkImageCreateInfo imageCreateInfo,
+                         VkImage &image,
+                         VkDeviceMemory &imageMemory,
+                         VkMemoryPropertyFlags memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
         void CreateBuffer(VkDeviceSize deviceSize,
                           VkBufferUsageFlags bufferUsageFlags,
@@ -62,10 +67,7 @@ namespace KTXCompressor {
         CreateStagingBuffer(const void *data, VkDeviceSize size, VkBuffer &stagingBuffer,
                             VkDeviceMemory &stagingBufferMemory);
 
-        void CreateImage(VkImageCreateInfo imageCreateInfo,
-                         VkImage &image,
-                         VkDeviceMemory &imageMemory,
-                         VkMemoryPropertyFlags memoryPropertyFlags);
+     
 
         void AllocateMemory(VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceMemory &bufferMemory,
                             const VkMemoryRequirements &memoryRequirements);

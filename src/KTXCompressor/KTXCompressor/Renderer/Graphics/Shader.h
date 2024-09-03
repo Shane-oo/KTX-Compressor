@@ -12,6 +12,8 @@
 #include "../Instance/Devices/LogicalDevice.h"
 #include "../Utils/BufferUtil.h"
 #include "DescriptorSets/DescriptorSet.h"
+#include "Textures/DepthTexture.h"
+#include "../Presentation/SwapChain.h"
 
 
 namespace KTXCompressor {
@@ -21,6 +23,7 @@ namespace KTXCompressor {
     public:
         Shader(PhysicalDevice *physicalDevice,
                LogicalDevice *logicalDevice,
+               VkExtent2D extent,
                const string &vertexFileName,
                const string &fragmentFileName);
 
@@ -32,19 +35,21 @@ namespace KTXCompressor {
 
     protected:
         struct Vertex {
-            glm::vec2 pos;
+            glm::vec3 pos;
             glm::vec3 colour;
             glm::vec2 texCoord;
         };
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
+        VkExtent2D extent;
         BufferUtil *bufferUtil;
         VkPipelineLayout vulkanPipelineLayout = nullptr;
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         VkBuffer indexBuffer;
         VkDeviceMemory indexBufferMemory;
-        vector<DescriptorSet*> descriptorSets;
+        vector<DescriptorSet *> descriptorSets;
+        DepthTexture *depthTexture;
 
         void Init();
 

@@ -9,13 +9,15 @@
 #include "../DescriptorSets/ModelViewProjectionDescriptorSet.h"
 #include "../Textures/Texture.h"
 #include "../DescriptorSets/CombinedImageSamplerDescriptorSet.h"
+#include "../Textures/KTXTexture.h"
+#include "../Textures/ImageTexture.h"
 
 namespace KTXCompressor {
 
     class SimpleTriangleShader : public Shader {
 
     public:
-        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice);
+        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice, VkExtent2D extent);
 
         ~SimpleTriangleShader();
 
@@ -23,19 +25,26 @@ namespace KTXCompressor {
 
     private:
         const vector<Vertex> vertices = {
-                {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-                {{0.5f,  -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-                {{0.5f,  0.5f},  {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-                {{-0.5f, 0.5f},  {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
+                {{-0.5f, -0.5f, 0.0f},  {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+                {{0.5f,  -0.5f, 0.0f},  {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                {{0.5f,  0.5f,  0.0f},  {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                {{-0.5f, 0.5f,  0.0f},  {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
+
+                {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+                {{0.5f,  -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+                {{0.5f,  0.5f,  -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+                {{-0.5f, 0.5f,  -0.5f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}}
         };
 
         const vector<uint16_t> indices = {
-                0, 1, 2, 2, 3, 0
+                0, 1, 2, 2, 3, 0,
+                4, 5, 6, 6, 7, 4
         };
 
         ModelViewProjectionDescriptorSet *modelViewProjectionDescriptorSet;
         CombinedImageSamplerDescriptorSet *combinedImageSamplerDescriptorSet;
-        Texture *woodTexture;
+        KTXTexture *ktxTexture;
+        ImageTexture *imageTexture;
 
     public:
         const char *GetVertexEntryPointName() override;

@@ -78,6 +78,12 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/Textures/Texture.h
         Renderer/Graphics/DescriptorSets/CombinedImageSamplerDescriptorSet.cpp
         Renderer/Graphics/DescriptorSets/CombinedImageSamplerDescriptorSet.h
+        Renderer/Graphics/Textures/DepthTexture.cpp
+        Renderer/Graphics/Textures/DepthTexture.h
+        Renderer/Graphics/Textures/KTXTexture.cpp
+        Renderer/Graphics/Textures/KTXTexture.h
+        Renderer/Graphics/Textures/ImageTexture.cpp
+        Renderer/Graphics/Textures/ImageTexture.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

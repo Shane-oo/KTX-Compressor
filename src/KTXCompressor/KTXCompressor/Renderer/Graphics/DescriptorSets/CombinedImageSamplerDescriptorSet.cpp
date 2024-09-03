@@ -22,7 +22,10 @@ namespace KTXCompressor {
 
     VkDescriptorSetLayoutBinding CombinedImageSamplerDescriptorSet::GetDescriptorSetLayoutBinding() {
         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+        
+        //note: if want to have multiple textures this should probs not be here and should be passed in through the constructor
         samplerLayoutBinding.binding = GetBinding();
+
         samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         samplerLayoutBinding.descriptorCount = 1; // not an array
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;

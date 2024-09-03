@@ -10,7 +10,7 @@ namespace KTXCompressor {
 
     // #region Protected Methods
     Shader *SimpleTriangleGraphicsPipeline::CreateShader() {
-        return new SimpleTriangleShader(physicalDevice, logicalDevice);
+        return new SimpleTriangleShader(physicalDevice, logicalDevice, swapChain->GetExtent());
     }
 
 

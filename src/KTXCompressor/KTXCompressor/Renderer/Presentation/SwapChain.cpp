@@ -146,7 +146,7 @@ namespace KTXCompressor {
         auto *views = new vector<ImageView *>();
 
         for (auto &image: images) {
-            views->push_back(new ImageView(logicalDevice->GetVulkanDevice(), image, imageFormat));
+            views->push_back(new ImageView(logicalDevice->GetVulkanDevice(), image, imageFormat, VK_IMAGE_ASPECT_COLOR_BIT));
         }
 
         return views;

@@ -12,7 +12,7 @@ namespace KTXCompressor {
 
     class ImageView {
     public:
-        ImageView(VkDevice vulkanDevice, VkImage vulkanImage, VkFormat imageFormat);
+        ImageView(VkDevice vulkanDevice, VkImage vulkanImage, VkFormat imageFormat, VkImageAspectFlags imageAspectFlags);
 
         ~ImageView();
 
@@ -21,7 +21,7 @@ namespace KTXCompressor {
         VkDevice vulkanDevice;
 
     private:
-        VkImageView CreateVulkanImageView(VkImage vulkanImage, VkFormat imageFormat);
+        VkImageView CreateVulkanImageView(VkImage vulkanImage, VkFormat imageFormat, VkImageAspectFlags imageAspectFlags);
 
     public:
         VkImageView GetVulkanImageView() {

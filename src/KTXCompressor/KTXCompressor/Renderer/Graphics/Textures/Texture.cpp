@@ -8,84 +8,13 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
-    void Texture::AddAlphaChannelToImage(unique_ptr<unsigned char[]> &pixels, uint32_t width, uint32_t height,
-                                         int channels) {
-        size_t original_size = width * height * channels;
-        size_t new_channels = channels + 1;
-        size_t new_size = width * height * new_channels;
+    void Texture::CreateImageWithoutPixels(uint32_t width, uint32_t height, VkFormat format,
+                                           VkImageUsageFlags imageUsageFlags) {
+        VkImageCreateInfo imageCreateInfo = GetImageCreateInfo(width, height, format, imageUsageFlags);
 
-        unique_ptr<unsigned char[]> new_pixels(new unsigned char[new_size]);
+        bufferUtil->CreateImage(imageCreateInfo, vulkanImage, vulkanImageMemory);
 
-        // Iterate through the original pixels and copy them, adding an alpha value
-        for (size_t i = 0, j = 0; i < original_size; i += channels, j += new_channels) {
-            // Copy existing channels
-            std::memcpy(&new_pixels[j], &pixels[i], channels);
-            // Add alpha channel (fully opaque)
-            new_pixels[j + channels] = 255;
-        }
-
-        // Replace the old pixel data with the new one
-        pixels.swap(new_pixels);
-    }
-
-    void Texture::LoadKtx2File(const string &fileName) {
-        ktxTexture2 *ktxTexture;
-        auto createKtxTextureResult = ktxTexture_CreateFromNamedFile(fileName.c_str(),
-                                                                     KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT,
-                                                                     reinterpret_cast<struct ktxTexture **>(&ktxTexture));
-        if (createKtxTextureResult != KTX_SUCCESS) {
-            throw runtime_error("Could not Load the Requested .ktx2 Image");
-        }
-
-        // Check if the source KTX 2.0 file needs transcoding, 
-        // this will transcode the texture data into the GPU native target format
-        if (ktxTexture2_NeedsTranscoding(ktxTexture)) {
-            ktx_transcode_flags transcodeFlags = 0;
-            auto transcodeKtxTextureResult = ktxTexture2_TranscodeBasis(ktxTexture,
-                                                                        physicalDevice->GetBestAvailableKTXFormat(),
-                                                                        transcodeFlags);
-            if (transcodeKtxTextureResult != KTX_SUCCESS) {
-                throw runtime_error("Could not Transcode the Input Texture to the Target Format");
-            }
-        }
-
-        auto width = static_cast<uint32_t>(ktxTexture->baseWidth);
-        auto height = static_cast<uint32_t>(ktxTexture->baseHeight);
-
-        // hmm what is this?
-        VkFormat format = static_cast<VkFormat>(ktxTexture->vkFormat);
-
-        CreateImage(width, height, ktxTexture->pData);
-    }
-
-    void Texture::LoadImageForFile(const string &fileName) {
-        ImageInput = ImageInput::open(fileName);
-        if (!ImageInput) {
-            throw runtime_error("Could Not Open File With Name: " + fileName);
-        }
-        // Always go to first sub image and first MipLevel
-        ImageInput->seek_subimage(0, 0);
-
-        auto imageSpecs = ImageInput->spec();
-
-
-        auto width = static_cast<uint32_t>(imageSpecs.width);
-        auto height = static_cast<uint32_t>(imageSpecs.height);
-        int channels = imageSpecs.nchannels;
-        auto originalImageSize = width * height * channels;
-
-        auto pixels = std::unique_ptr<unsigned char[]>(new unsigned char[originalImageSize]);
-        ImageInput->read_image(0, 0, 0, channels, TypeDesc::UINT8, &pixels[0]);
-
-        if (channels == 3) {
-            // Missing Alpha
-            // GPU's do not guarantee to support images without an alpha channel, so you must always have one
-            AddAlphaChannelToImage(pixels, width, height, channels);
-        }
-
-        ImageInput->close();
-
-        CreateImage(width, height, pixels.get());
+        imageView = new ImageView(logicalDevice->GetVulkanDevice(), vulkanImage, format, VK_IMAGE_ASPECT_DEPTH_BIT);
     }
 
     void Texture::CreateImage(uint32_t width, uint32_t height,
@@ -94,6 +23,23 @@ namespace KTXCompressor {
 
         VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
 
+        VkImageCreateInfo imageCreateInfo = GetImageCreateInfo(width, height, format, VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+                                                                                      VK_IMAGE_USAGE_SAMPLED_BIT);
+
+        bufferUtil->CreateAndFillImage(pixels,
+                                       imageSize,
+                                       imageCreateInfo,
+                                       vulkanImage,
+                                       vulkanImageMemory,
+                                       format,
+                                       width,
+                                       height);
+
+        imageView = new ImageView(logicalDevice->GetVulkanDevice(), vulkanImage, format, VK_IMAGE_ASPECT_COLOR_BIT);
+    }
+
+    VkImageCreateInfo Texture::GetImageCreateInfo(uint32_t width, uint32_t height, const VkFormat &format,
+                                                  VkImageUsageFlags imageUsageFlags) {
         VkImageCreateInfo imageCreateInfo = {};
         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -105,20 +51,12 @@ namespace KTXCompressor {
         imageCreateInfo.format = format;
         imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
         imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        imageCreateInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        imageCreateInfo.usage = imageUsageFlags;
         imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
         imageCreateInfo.flags = 0; //Optional
 
-        bufferUtil->CreateAndFillImage(pixels,
-                                       imageSize,
-                                       imageCreateInfo,
-                                       vulkanImage,
-                                       vulkanImageMemory,
-                                       format,
-                                       width,
-                                       height,
-                                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        return imageCreateInfo;
     }
 
     VkSampler Texture::CreateTextureSampler() {
@@ -158,23 +96,10 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    Texture::Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, const string &fileName) {
+    Texture::Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice) {
         this->logicalDevice = logicalDevice;
         this->physicalDevice = physicalDevice;
         this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
-
-        this->name = fileName;
-
-        if (fileName.ends_with(".ktx2")) {
-            LoadKtx2File(fileName);
-        } else {
-            LoadImageForFile(fileName);
-        }
-
-        if (vulkanImage) {
-            textureImageView = new ImageView(logicalDevice->GetVulkanDevice(), vulkanImage, VK_FORMAT_R8G8B8A8_SRGB);
-            textureSampler = CreateTextureSampler();
-        }
     }
 
     // #endregion
@@ -182,10 +107,9 @@ namespace KTXCompressor {
     // #region Destructors
 
     Texture::~Texture() {
-        cout << "Destroying " << name << endl;
-        vkDestroySampler(logicalDevice->GetVulkanDevice(), textureSampler, nullptr);
+        cout << "Destroying Texture" << endl;
 
-        delete textureImageView;
+        delete imageView;
 
         vkDestroyImage(logicalDevice->GetVulkanDevice(), vulkanImage, nullptr);
         vkFreeMemory(logicalDevice->GetVulkanDevice(), vulkanImageMemory, nullptr);
