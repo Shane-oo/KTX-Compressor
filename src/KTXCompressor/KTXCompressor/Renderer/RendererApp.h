@@ -29,7 +29,7 @@ namespace KTXCompressor {
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
         SwapChain *swapChain;
-        GraphicsPipeline *graphicsPipeline;
+        vector<GraphicsPipeline*> graphicsPipelines;
         Synchronization *synchronization;
         uint32_t currentFrame = 0;
 

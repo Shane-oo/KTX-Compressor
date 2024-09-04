@@ -28,8 +28,8 @@ namespace KTXCompressor {
         Window *window;
         LogicalDevice *logicalDevice;
         PhysicalDevice *physicalDevice;
-        GraphicsPipeline *graphicsPipeline;
-        DepthTexture* depthTexture;
+        vector<GraphicsPipeline *> graphicsPipelines;
+        DepthTexture *depthTexture;
         vector<ImageView *> *imageViews;
         vector<FrameBuffer *> *frameBuffers;
         VkSwapchainKHR vulkanSwapChain;
@@ -70,7 +70,7 @@ namespace KTXCompressor {
         static SwapChainSupportDetails
         QuerySwapChainSupport(VkPhysicalDevice vulkanPhysicalDevice, VkSurfaceKHR vulkanSurface);
 
-        VkFramebuffer NextImage(VkSemaphore imageAvailableSemaphore);
+        VkFramebuffer NextImage(VkSemaphore imageAvailableSemaphore, size_t graphicsPipelineIndex);
 
         void Present(Synchronization *synchronization, uint32_t currentFrame);
 
@@ -83,7 +83,7 @@ namespace KTXCompressor {
             return imageFormat;
         }
 
-        void SetGraphicsPipeline(GraphicsPipeline *pGraphicsPipeline);
+        void SetGraphicsPipelines(vector<GraphicsPipeline *> pipelines);
     };
 
 } // KTXCompressor

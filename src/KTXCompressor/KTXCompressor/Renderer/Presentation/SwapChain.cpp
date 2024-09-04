@@ -157,20 +157,25 @@ namespace KTXCompressor {
         auto *fBuffers = new vector<FrameBuffer *>();
 
         for (auto imageView: *imageViews) {
-            auto attachments = new vector<VkImageView>();
-            attachments->push_back(imageView->GetVulkanImageView());
+            for (auto graphicsPipeline: graphicsPipelines) {
+                auto attachments = new vector<VkImageView>();
 
-            auto depthTextureImageView = depthTexture->GetImageView();
-            attachments->push_back(depthTextureImageView->GetVulkanImageView());
+                // Always add the SwapChain image view
+                attachments->push_back(imageView->GetVulkanImageView());
 
-            auto *renderPass = graphicsPipeline->GetRenderPass();
+                auto *renderPass = graphicsPipeline->GetRenderPass();
+                if (renderPass->NeedsDepthAttachment()) {
+                    auto depthTextureImageView = depthTexture->GetImageView();
+                    attachments->push_back(depthTextureImageView->GetVulkanImageView());
+                }
 
-            fBuffers->push_back(
-                    new FrameBuffer(logicalDevice->GetVulkanDevice(),
-                                    *attachments,
-                                    renderPass->GetVulkanRenderPass(),
-                                    extent)
-            );
+                fBuffers->push_back(
+                        new FrameBuffer(logicalDevice->GetVulkanDevice(),
+                                        *attachments,
+                                        renderPass->GetVulkanRenderPass(),
+                                        extent)
+                );
+            }
         }
 
         return fBuffers;
@@ -182,8 +187,6 @@ namespace KTXCompressor {
         cout << "Recreating Vulkan Swap Chain" << endl;
 
         vkDeviceWaitIdle(logicalDevice->GetVulkanDevice());
-
-        auto shader = graphicsPipeline->GetShader();
 
         CleanUpVulkanSwapChain();
 
@@ -269,12 +272,12 @@ namespace KTXCompressor {
         return details;
     }
 
-    void SwapChain::SetGraphicsPipeline(GraphicsPipeline *pGraphicsPipeline) {
-        this->graphicsPipeline = pGraphicsPipeline;
+    void SwapChain::SetGraphicsPipelines(vector<GraphicsPipeline *> pipelines) {
+        this->graphicsPipelines = pipelines;
         frameBuffers = CreateFrameBuffers();
     }
 
-    VkFramebuffer SwapChain::NextImage(VkSemaphore imageAvailableSemaphore) {
+    VkFramebuffer SwapChain::NextImage(VkSemaphore imageAvailableSemaphore, size_t graphicsPipelineIndex) {
         VkResult acquireNextImageResult = vkAcquireNextImageKHR(logicalDevice->GetVulkanDevice(),
                                                                 vulkanSwapChain,
                                                                 UINT64_MAX,
@@ -291,7 +294,9 @@ namespace KTXCompressor {
             throw runtime_error("Failed to Acquire Swap Chain Image!");
         }
 
-        return (*frameBuffers)[imageIndex]->GetVulkanFrameBuffer();
+        size_t framebufferIndex = imageIndex * graphicsPipelines.size() + graphicsPipelineIndex;
+
+        return (*frameBuffers)[framebufferIndex]->GetVulkanFrameBuffer();
     }
 
     void SwapChain::Present(Synchronization *synchronization, uint32_t currentFrame) {

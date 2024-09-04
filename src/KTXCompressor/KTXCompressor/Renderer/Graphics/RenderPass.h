@@ -38,6 +38,11 @@ namespace KTXCompressor {
             return 0;
         }
         
+        bool NeedsDepthAttachment(){
+            // im gui would be false
+            return true;
+        }
+        
     };
 
 } // KTXCompressor
