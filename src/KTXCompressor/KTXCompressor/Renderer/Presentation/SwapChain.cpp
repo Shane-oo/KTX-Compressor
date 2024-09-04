@@ -160,7 +160,7 @@ namespace KTXCompressor {
             auto attachments = new vector<VkImageView>();
             attachments->push_back(imageView->GetVulkanImageView());
 
-            auto depthTextureImageView = graphicsPipeline->GetShader()->GetDepthTexture()->GetImageView();
+            auto depthTextureImageView = depthTexture->GetImageView();
             attachments->push_back(depthTextureImageView->GetVulkanImageView());
 
             auto *renderPass = graphicsPipeline->GetRenderPass();
@@ -185,16 +185,18 @@ namespace KTXCompressor {
 
         auto shader = graphicsPipeline->GetShader();
 
-        shader->DeleteDepthTexture();
         CleanUpVulkanSwapChain();
 
         vulkanSwapChain = CreateVulkanSwapChain();
         imageViews = CreateImageViews();
-        shader->CreateDepthTexture(extent);
+        depthTexture = new DepthTexture(extent, logicalDevice, physicalDevice);
         frameBuffers = CreateFrameBuffers();
     }
 
     void SwapChain::CleanUpVulkanSwapChain() {
+
+        delete depthTexture;
+
         for (auto frameBuffer: *frameBuffers) {
             delete frameBuffer;
         }
@@ -218,6 +220,7 @@ namespace KTXCompressor {
         this->physicalDevice = physicalDevice;
         vulkanSwapChain = CreateVulkanSwapChain();
         imageViews = CreateImageViews();
+        depthTexture = new DepthTexture(extent, logicalDevice, physicalDevice);
     }
 
     // #endregion

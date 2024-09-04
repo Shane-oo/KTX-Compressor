@@ -104,6 +104,7 @@ namespace KTXCompressor {
     Texture::~Texture() {
         cout << "Destroying Texture" << endl;
 
+        delete bufferUtil;
         delete imageView;
 
         vkDestroyImage(logicalDevice->GetVulkanDevice(), vulkanImage, nullptr);

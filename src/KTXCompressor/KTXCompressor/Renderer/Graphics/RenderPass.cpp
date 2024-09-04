@@ -8,6 +8,7 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
+    // this should be SimpleTriangleRenderPass...
     VkRenderPass RenderPass::CreateVulkanRenderPass(VkFormat swapChainImageFormat) {
         VkAttachmentDescription colorAttachmentDescription = {};
         colorAttachmentDescription.format = swapChainImageFormat;

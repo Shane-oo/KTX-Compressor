@@ -3,7 +3,7 @@
 //
 
 #include "SingleTimeCommand.h"
-#include "../Graphics/Textures/DepthTexture.h"
+#include "../Textures/DepthTexture.h"
 
 namespace KTXCompressor {
 

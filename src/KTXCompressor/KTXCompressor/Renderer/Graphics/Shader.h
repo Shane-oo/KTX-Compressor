@@ -12,7 +12,6 @@
 #include "../Instance/Devices/LogicalDevice.h"
 #include "../Utils/BufferUtil.h"
 #include "DescriptorSets/DescriptorSet.h"
-#include "Textures/DepthTexture.h"
 #include "../Presentation/SwapChain.h"
 
 
@@ -23,7 +22,6 @@ namespace KTXCompressor {
     public:
         Shader(PhysicalDevice *physicalDevice,
                LogicalDevice *logicalDevice,
-               VkExtent2D extent,
                const string &vertexFileName,
                const string &fragmentFileName);
 
@@ -48,7 +46,6 @@ namespace KTXCompressor {
         VkBuffer indexBuffer;
         VkDeviceMemory indexBufferMemory;
         vector<DescriptorSet *> descriptorSets;
-        DepthTexture *depthTexture;
 
         void Init();
 
@@ -86,19 +83,11 @@ namespace KTXCompressor {
             return fragmentShaderModule;
         }
 
-        DepthTexture *GetDepthTexture() {
-            return depthTexture;
-        }
-
         VkPipelineLayout GetVulkanPipelineLayout();
 
         VkVertexInputBindingDescription GetBindingDescription();
 
         vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
-
-        void CreateDepthTexture(VkExtent2D extent);
-        
-        void DeleteDepthTexture();
 
         void CleanUpShaderModules();
 

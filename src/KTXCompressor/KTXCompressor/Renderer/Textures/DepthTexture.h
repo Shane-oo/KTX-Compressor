@@ -5,7 +5,7 @@
 #ifndef KTX_COMPRESSOR_DEPTHTEXTURE_H
 #define KTX_COMPRESSOR_DEPTHTEXTURE_H
 
-#include "../../../Common.h"
+#include "../../Common.h"
 #include "Texture.h"
 
 namespace KTXCompressor {

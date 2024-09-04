@@ -11,6 +11,7 @@
 #include "ImageView.h"
 #include "FrameBuffer.h"
 #include "../Synchronization/Synchronization.h"
+#include "../Textures/DepthTexture.h"
 
 
 namespace KTXCompressor {
@@ -28,6 +29,7 @@ namespace KTXCompressor {
         LogicalDevice *logicalDevice;
         PhysicalDevice *physicalDevice;
         GraphicsPipeline *graphicsPipeline;
+        DepthTexture* depthTexture;
         vector<ImageView *> *imageViews;
         vector<FrameBuffer *> *frameBuffers;
         VkSwapchainKHR vulkanSwapChain;

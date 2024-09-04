@@ -62,7 +62,7 @@ namespace KTXCompressor {
                                                               logicalDevice,
                                                               swapChain,
                                                               physicalDevice->GetGraphicsFamilyIndex());
-
+        // SetGraphicsPipelines
         swapChain->SetGraphicsPipeline(graphicsPipeline);
 
         synchronization = new Synchronization(logicalDevice->GetVulkanDevice());

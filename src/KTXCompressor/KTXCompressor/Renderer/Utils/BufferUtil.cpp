@@ -89,7 +89,7 @@ namespace KTXCompressor {
     // #region Destructors
 
     BufferUtil::~BufferUtil() {
-
+        cout << "Delete Buffer Util" << endl;
     }
 
     // #endregion

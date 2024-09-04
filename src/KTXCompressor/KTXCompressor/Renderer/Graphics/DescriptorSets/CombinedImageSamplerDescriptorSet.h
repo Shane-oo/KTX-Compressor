@@ -6,7 +6,7 @@
 #define KTX_COMPRESSOR_COMBINEDIMAGESAMPLERDESCRIPTORSET_H
 
 #include "DescriptorSet.h"
-#include "../Textures/Texture.h"
+#include "../../Textures/Texture.h"
 
 namespace KTXCompressor {
 

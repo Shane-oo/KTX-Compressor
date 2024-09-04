@@ -5,10 +5,10 @@
 #ifndef KTX_COMPRESSOR_TEXTURE_H
 #define KTX_COMPRESSOR_TEXTURE_H
 
-#include "../../../Common.h"
+#include "../../Common.h"
 #include "vulkan/vulkan_core.h"
-#include "../../Utils/BufferUtil.h"
-#include "../../Presentation/ImageView.h"
+#include "../Utils/BufferUtil.h"
+#include "../Presentation/ImageView.h"
 
 
 namespace KTXCompressor {

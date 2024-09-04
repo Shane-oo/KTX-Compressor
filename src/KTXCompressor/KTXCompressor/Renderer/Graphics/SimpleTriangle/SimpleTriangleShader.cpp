@@ -3,7 +3,6 @@
 //
 
 #include "SimpleTriangleShader.h"
-#include "../Textures/Texture.h"
 #include "../DescriptorSets/CombinedImageSamplerDescriptorSet.h"
 
 namespace KTXCompressor {
@@ -12,9 +11,8 @@ namespace KTXCompressor {
     // #region Constructors
 
     SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice,
-                                               LogicalDevice *logicalDevice,
-                                               VkExtent2D extent)
-            : Shader(physicalDevice, logicalDevice, extent, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
+                                               LogicalDevice *logicalDevice)
+            : Shader(physicalDevice, logicalDevice, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
         Init();
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);

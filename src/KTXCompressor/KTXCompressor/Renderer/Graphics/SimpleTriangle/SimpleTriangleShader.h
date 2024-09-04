@@ -7,17 +7,17 @@
 
 #include "../Shader.h"
 #include "../DescriptorSets/ModelViewProjectionDescriptorSet.h"
-#include "../Textures/Texture.h"
+#include "../../Textures/Texture.h"
 #include "../DescriptorSets/CombinedImageSamplerDescriptorSet.h"
-#include "../Textures/KTXTexture.h"
-#include "../Textures/ImageTexture.h"
+#include "../../Textures/KTXTexture.h"
+#include "../../Textures/ImageTexture.h"
 
 namespace KTXCompressor {
 
     class SimpleTriangleShader : public Shader {
 
     public:
-        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice, VkExtent2D extent);
+        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice);
 
         ~SimpleTriangleShader();
 

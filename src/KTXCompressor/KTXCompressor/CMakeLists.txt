@@ -74,16 +74,18 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/DescriptorSets/DescriptorSet.h
         Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.cpp
         Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.h
-        Renderer/Graphics/Textures/Texture.cpp
-        Renderer/Graphics/Textures/Texture.h
+        Renderer/Textures/Texture.cpp
+        Renderer/Textures/Texture.h
         Renderer/Graphics/DescriptorSets/CombinedImageSamplerDescriptorSet.cpp
         Renderer/Graphics/DescriptorSets/CombinedImageSamplerDescriptorSet.h
-        Renderer/Graphics/Textures/DepthTexture.cpp
-        Renderer/Graphics/Textures/DepthTexture.h
-        Renderer/Graphics/Textures/KTXTexture.cpp
-        Renderer/Graphics/Textures/KTXTexture.h
-        Renderer/Graphics/Textures/ImageTexture.cpp
-        Renderer/Graphics/Textures/ImageTexture.h
+        Renderer/Textures/DepthTexture.cpp
+        Renderer/Textures/DepthTexture.h
+        Renderer/Textures/KTXTexture.cpp
+        Renderer/Textures/KTXTexture.h
+        Renderer/Textures/ImageTexture.cpp
+        Renderer/Textures/ImageTexture.h
+        Renderer/Graphics/ImGui/ImGuiGraphicsPipeline.cpp
+        Renderer/Graphics/ImGui/ImGuiGraphicsPipeline.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -117,4 +119,7 @@ find_package(glm REQUIRED)
 # Link GLM Library
 target_link_directories(KTXCompressor PRIVATE glm)
 
-##
+## Find imgui
+find_package(imgui CONFIG REQUIRED)
+# Link imgui
+target_link_libraries(KTXCompressor PRIVATE imgui::imgui)
