@@ -8,23 +8,18 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
-    void Texture::CreateImageWithoutPixels(uint32_t width, uint32_t height, VkFormat format,
-                                           VkImageUsageFlags imageUsageFlags) {
-        VkImageCreateInfo imageCreateInfo = GetImageCreateInfo(width, height, format, imageUsageFlags);
-
-        bufferUtil->CreateImage(imageCreateInfo, vulkanImage, vulkanImageMemory);
-
-        imageView = new ImageView(logicalDevice->GetVulkanDevice(), vulkanImage, format, VK_IMAGE_ASPECT_DEPTH_BIT);
-    }
-
-    void Texture::CreateImage(uint32_t width, uint32_t height,
+    void Texture::CreateImage(uint32_t width,
+                              uint32_t height,
                               const void *pixels) {
         VkDeviceSize imageSize = width * height * 4; // RGBA
 
         VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
 
-        VkImageCreateInfo imageCreateInfo = GetImageCreateInfo(width, height, format, VK_IMAGE_USAGE_TRANSFER_DST_BIT |
-                                                                                      VK_IMAGE_USAGE_SAMPLED_BIT);
+        VkImageCreateInfo imageCreateInfo = GetImageCreateInfo(width,
+                                                               height,
+                                                               format,
+                                                               VK_IMAGE_USAGE_TRANSFER_DST_BIT |
+                                                               VK_IMAGE_USAGE_SAMPLED_BIT);
 
         bufferUtil->CreateAndFillImage(pixels,
                                        imageSize,

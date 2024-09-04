@@ -5,6 +5,9 @@
 #include "DepthTexture.h"
 
 namespace KTXCompressor {
+
+    // #region Constructors
+
     DepthTexture::DepthTexture(VkExtent2D extent, LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice)
             : Texture(logicalDevice,
                       physicalDevice) {
@@ -13,10 +16,34 @@ namespace KTXCompressor {
                 VK_IMAGE_TILING_OPTIMAL,
                 VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
+        VkImageCreateInfo imageCreateInfo = GetImageCreateInfo(extent.width,
+                                                               extent.height,
+                                                               depthFormat,
+                                                               VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
-        CreateImageWithoutPixels(extent.width, extent.height, depthFormat, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+        bufferUtil->CreateImage(imageCreateInfo,
+                                vulkanImage,
+                                vulkanImageMemory,
+                                depthFormat,
+                                true,
+                                VK_IMAGE_LAYOUT_UNDEFINED,
+                                VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-        page 226
-        Explicitly transitioning the depth image
+        imageView = new ImageView(logicalDevice->GetVulkanDevice(),
+                                  vulkanImage,
+                                  depthFormat,
+                                  VK_IMAGE_ASPECT_DEPTH_BIT);
     }
+
+    // #endregion
+
+    // #region Destructors
+
+    DepthTexture::~DepthTexture() {
+        cout << "Destroying Depth Texture" << endl;
+    }
+
+    // #endregion
+
+
 } // KTXCompressor

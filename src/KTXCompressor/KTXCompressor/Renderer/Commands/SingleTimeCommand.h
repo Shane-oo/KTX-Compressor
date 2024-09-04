@@ -2,19 +2,19 @@
 // Created by ShaneMonck on 10/08/2024.
 //
 
-#ifndef KTX_COMPRESSOR_COPYBUFFERCOMMAND_H
-#define KTX_COMPRESSOR_COPYBUFFERCOMMAND_H
+#ifndef KTX_COMPRESSOR_SINGLETIMECOMMAND_H
+#define KTX_COMPRESSOR_SINGLETIMECOMMAND_H
 
 #include "Command.h"
 
 namespace KTXCompressor {
 
-    class CopyBufferCommand : public Command {
+    class SingleTimeCommand : public Command {
 
     public:
-        CopyBufferCommand(LogicalDevice *logicalDevice);
+        SingleTimeCommand(LogicalDevice *logicalDevice);
 
-        ~CopyBufferCommand();
+        ~SingleTimeCommand();
 
         void Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
@@ -23,6 +23,11 @@ namespace KTXCompressor {
                        VkBuffer stagingBuffer,
                        uint32_t width,
                        uint32_t height);
+
+        void TransitionImage(VkImage image,
+                             VkFormat format,
+                             VkImageLayout oldLayout,
+                             VkImageLayout newLayout);
 
 
     private:
@@ -44,6 +49,7 @@ namespace KTXCompressor {
 
         void GetPipelineStageFlags(VkImageLayout oldLayout,
                                    VkImageLayout newLayout,
+                                   VkFormat format,
                                    VkImageMemoryBarrier& imageMemoryBarrier,
                                    VkPipelineStageFlags &sourceStage,
                                    VkPipelineStageFlags &destinationStage);
@@ -51,4 +57,4 @@ namespace KTXCompressor {
 
 } // KTXCompressor
 
-#endif //KTX_COMPRESSOR_COPYBUFFERCOMMAND_H
+#endif //KTX_COMPRESSOR_SINGLETIMECOMMAND_H

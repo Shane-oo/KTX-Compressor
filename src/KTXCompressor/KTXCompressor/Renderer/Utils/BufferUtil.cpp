@@ -3,16 +3,16 @@
 //
 
 #include "BufferUtil.h"
-#include "../Commands/CopyBufferCommand.h"
+#include "../Commands/SingleTimeCommand.h"
 
 namespace KTXCompressor {
 
     // #region Private Methods
 
     void BufferUtil::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
-        auto copyBuffer = new CopyBufferCommand(logicalDevice);
-        copyBuffer->Copy(srcBuffer, dstBuffer, size);
-        delete copyBuffer;
+        auto singleTimeCommand = new SingleTimeCommand(logicalDevice);
+        singleTimeCommand->Copy(srcBuffer, dstBuffer, size);
+        delete singleTimeCommand;
     }
 
     void BufferUtil::CopyImage(VkImage image,
@@ -20,8 +20,17 @@ namespace KTXCompressor {
                                VkBuffer stagingBuffer,
                                uint32_t width,
                                uint32_t height) {
-        auto copyBuffer = new CopyBufferCommand(logicalDevice);
-        copyBuffer->CopyImage(image, format, stagingBuffer, width, height);
+        auto singleTimeCommand = new SingleTimeCommand(logicalDevice);
+        singleTimeCommand->CopyImage(image, format, stagingBuffer, width, height);
+        delete singleTimeCommand;
+    }
+
+    void BufferUtil::TransitionImage(VkImage image,
+                                     VkFormat format,
+                                     VkImageLayout oldLayout,
+                                     VkImageLayout newLayout) {
+        auto copyBuffer = new SingleTimeCommand(logicalDevice);
+        copyBuffer->TransitionImage(image, format, oldLayout, newLayout);
         delete copyBuffer;
     }
 
@@ -58,34 +67,6 @@ namespace KTXCompressor {
         vkMapMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory, 0, size, 0, &mappedData);
         memcpy(mappedData, data, static_cast<size_t>(size));
         vkUnmapMemory(logicalDevice->GetVulkanDevice(), stagingBufferMemory);
-    }
-
-    void BufferUtil::CreateImage(VkImageCreateInfo imageCreateInfo,
-                                 VkImage &image,
-                                 VkDeviceMemory &imageMemory,
-                                 VkMemoryPropertyFlags memoryPropertyFlags) {
-        VkResult createImageResult = vkCreateImage(logicalDevice->GetVulkanDevice(), &imageCreateInfo, nullptr,
-                                                   &image);
-        if (createImageResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create Image");
-        }
-
-        cout << "Successfully Created Vulkan Image" << endl;
-
-        VkMemoryRequirements memoryRequirements;
-        vkGetImageMemoryRequirements(logicalDevice->GetVulkanDevice(), image, &memoryRequirements);
-
-        VkMemoryAllocateInfo memoryAllocateInfo = {};
-        memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-
-        AllocateMemory(memoryPropertyFlags, imageMemory, memoryRequirements);
-
-        VkResult bindImageResult = vkBindImageMemory(logicalDevice->GetVulkanDevice(), image, imageMemory, 0);
-        if (bindImageResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Bind Image to Image Memory");
-        }
-
-        cout << "Successfully Bound Image To Image Memory" << endl;
     }
 
     void BufferUtil::CleanUpBuffer(VkBuffer stagingBuffer, VkDeviceMemory stagingBufferMemory) {
@@ -181,13 +162,12 @@ namespace KTXCompressor {
                                         VkDeviceMemory &imageMemory,
                                         VkFormat imageFormat,
                                         uint32_t width,
-                                        uint32_t height,
-                                        VkMemoryPropertyFlags memoryPropertyFlags) {
+                                        uint32_t height) {
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
         CreateStagingBuffer(data, size, stagingBuffer, stagingBufferMemory);
 
-        CreateImage(imageCreateInfo, image, imageMemory, memoryPropertyFlags);
+        CreateImage(imageCreateInfo, image, imageMemory, imageFormat);
 
         CopyImage(image, imageFormat, stagingBuffer, width, height);
 
@@ -196,8 +176,45 @@ namespace KTXCompressor {
 
         cout << "Successfully Created And Filled Image" << endl;
     }
-    
-    
+
+    void BufferUtil::CreateImage(VkImageCreateInfo imageCreateInfo,
+                                 VkImage &image,
+                                 VkDeviceMemory &imageMemory,
+                                 VkFormat format,
+                                 bool transition,
+                                 VkImageLayout oldLayout,
+                                 VkImageLayout newLayout,
+                                 VkMemoryPropertyFlags memoryPropertyFlags) {
+        VkResult createImageResult = vkCreateImage(logicalDevice->GetVulkanDevice(), &imageCreateInfo, nullptr,
+                                                   &image);
+        if (createImageResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Create Image");
+        }
+
+        cout << "Successfully Created Vulkan Image" << endl;
+
+        VkMemoryRequirements memoryRequirements;
+        vkGetImageMemoryRequirements(logicalDevice->GetVulkanDevice(), image, &memoryRequirements);
+
+        VkMemoryAllocateInfo memoryAllocateInfo = {};
+        memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+
+        AllocateMemory(memoryPropertyFlags, imageMemory, memoryRequirements);
+
+        VkResult bindImageResult = vkBindImageMemory(logicalDevice->GetVulkanDevice(), image, imageMemory, 0);
+        if (bindImageResult != VK_SUCCESS) {
+            throw runtime_error("Failed to Bind Image to Image Memory");
+        }
+
+        cout << "Successfully Bound Image To Image Memory" << endl;
+
+        if (transition) {
+            cout << "Transitioning New Image from " << oldLayout << " To " << newLayout << endl;
+
+            TransitionImage(image, format, oldLayout, newLayout);
+        }
+    }
+
 
 
     // #endregion

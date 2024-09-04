@@ -2,20 +2,22 @@
 // Created by ShaneMonck on 10/08/2024.
 //
 
-#include "CopyBufferCommand.h"
+#include "SingleTimeCommand.h"
+#include "../Graphics/Textures/DepthTexture.h"
 
 namespace KTXCompressor {
 
     // #region Private Methods
 
-    void CopyBufferCommand::GetPipelineStageFlags(VkImageLayout oldLayout,
+    void SingleTimeCommand::GetPipelineStageFlags(VkImageLayout oldLayout,
                                                   VkImageLayout newLayout,
+                                                  VkFormat format,
                                                   VkImageMemoryBarrier &imageMemoryBarrier,
                                                   VkPipelineStageFlags &sourceStage,
                                                   VkPipelineStageFlags &destinationStage) {
         // Undefined -> transfer destination: transfer writes that don't need to wait on anything
         // Transfer Destination -> shader reading: shader reads should wait on transfer writes,
-        // specifically the shader reads in the fragment shader, because ttha'ts where were going to use the image
+        // specifically the shader reads in the fragment shader, because tha'ts where were going to use the image
 
         if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
             imageMemoryBarrier.srcAccessMask = 0;
@@ -30,12 +32,21 @@ namespace KTXCompressor {
 
             sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
+                   newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+            imageMemoryBarrier.srcAccessMask = 0;
+            imageMemoryBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT
+                                               | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
         } else {
             throw invalid_argument("Unsupported Layout Transition");
         }
+
     }
 
-    VkCommandBuffer CopyBufferCommand::CreatCommandBuffer() {
+    VkCommandBuffer SingleTimeCommand::CreatCommandBuffer() {
         VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
         commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -47,28 +58,28 @@ namespace KTXCompressor {
                                                                         &commandBufferAllocateInfo,
                                                                         &commandBuffer);
         if (allocateCommandBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Allocate CopyBuffers Command Buffer");
+            throw runtime_error("Failed to Allocate Single Time Command Buffer");
         }
 
-        cout << "Successfully Allocated CopyBuffers Command Buffer" << endl;
+        cout << "Successfully Allocated Single Time Command Buffer" << endl;
 
         return commandBuffer;
     }
 
-    void CopyBufferCommand::Begin() {
+    void SingleTimeCommand::Begin() {
         VkCommandBufferBeginInfo commandBufferBeginInfo = {};
         commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         commandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
         VkResult beginCommandBufferResult = vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo);
         if (beginCommandBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Being CopyBuffers Command Buffer");
+            throw runtime_error("Failed to Being Single Time Command Buffer");
         }
 
-        cout << "Successfully Began CopyBuffers Command Buffer" << endl;
+        cout << "Successfully Began Single Time Command Buffer" << endl;
     }
 
-    void CopyBufferCommand::CopyBuffers(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    void SingleTimeCommand::CopyBuffers(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
         VkBufferCopy bufferCopy = {};
         bufferCopy.srcOffset = 0;
         bufferCopy.dstOffset = 0;
@@ -76,7 +87,7 @@ namespace KTXCompressor {
         vkCmdCopyBuffer(vulkanCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopy);
     }
 
-    void CopyBufferCommand::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+    void SingleTimeCommand::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
         VkBufferImageCopy bufferImageCopy = {};
         bufferImageCopy.bufferOffset = 0;
         bufferImageCopy.bufferRowLength = 0;
@@ -99,7 +110,7 @@ namespace KTXCompressor {
                                &bufferImageCopy);
     }
 
-    void CopyBufferCommand::Transition(VkImage image,
+    void SingleTimeCommand::Transition(VkImage image,
                                        VkFormat format,
                                        VkImageLayout oldLayout,
                                        VkImageLayout newLayout) {
@@ -112,15 +123,25 @@ namespace KTXCompressor {
         imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         imageMemoryBarrier.image = image;
-        imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
         imageMemoryBarrier.subresourceRange.levelCount = 1;
         imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
         imageMemoryBarrier.subresourceRange.layerCount = 1;
 
+        if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+            // otherwise default should be VK_IMAGE_ASPECT_COLOR_BIT
+            imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+            if (DepthTexture::HasStencilComponent(format)) {
+                imageMemoryBarrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+            }
+        } else {
+            imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        }
+
         VkPipelineStageFlags sourceFlags;
         VkPipelineStageFlags destinationStage;
-        GetPipelineStageFlags(oldLayout, newLayout, imageMemoryBarrier, sourceFlags, destinationStage);
+        GetPipelineStageFlags(oldLayout, newLayout, format, imageMemoryBarrier, sourceFlags, destinationStage);
 
 
         VkDependencyFlags dependencyFlags = 0;
@@ -149,16 +170,16 @@ namespace KTXCompressor {
              << endl;
     }
 
-    void CopyBufferCommand::End() {
+    void SingleTimeCommand::End() {
         VkResult endCommandBufferResult = vkEndCommandBuffer(vulkanCommandBuffer);
         if (endCommandBufferResult != VK_SUCCESS) {
-            throw runtime_error("Failed to End CopyBuffers Command Buffer");
+            throw runtime_error("Failed to End Single Time Command Buffer");
         }
 
-        cout << "Successfully Ended CopyBuffers Command Buffer" << endl;
+        cout << "Successfully Ended Single Time Command Buffer" << endl;
     }
 
-    void CopyBufferCommand::Submit() {
+    void SingleTimeCommand::Submit() {
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
@@ -167,7 +188,7 @@ namespace KTXCompressor {
         logicalDevice->SubmitToGraphicsQueue(submitInfo, VK_NULL_HANDLE);
         vkQueueWaitIdle(logicalDevice->GetGraphicsQueue()->GetVulkanQueue());
 
-        cout << "Successfully Submitted CopyBuffers Buffer Command" << endl;
+        cout << "Successfully Submitted Single Time Buffer Command" << endl;
     }
 
 
@@ -178,7 +199,7 @@ namespace KTXCompressor {
 
     // #region Constructors
 
-    CopyBufferCommand::CopyBufferCommand(LogicalDevice *logicalDevice) : Command(logicalDevice) {
+    SingleTimeCommand::SingleTimeCommand(LogicalDevice *logicalDevice) : Command(logicalDevice) {
         vulkanCommandBuffer = CreatCommandBuffer();
     }
 
@@ -187,8 +208,8 @@ namespace KTXCompressor {
 
     // #region Destructors
 
-    CopyBufferCommand::~CopyBufferCommand() {
-        cout << "Destroy CopyBuffers Buffer Command" << endl;
+    SingleTimeCommand::~SingleTimeCommand() {
+        cout << "Destroy Single Time Command" << endl;
 
         vkDestroyCommandPool(logicalDevice->GetVulkanDevice(), vulkanCommandPool, nullptr);
     }
@@ -198,14 +219,14 @@ namespace KTXCompressor {
 
     // #region Public Methods
 
-    void CopyBufferCommand::Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    void SingleTimeCommand::Copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
         Begin();
         CopyBuffers(srcBuffer, dstBuffer, size);
         End();
         Submit();
     }
 
-    void CopyBufferCommand::CopyImage(VkImage image,
+    void SingleTimeCommand::CopyImage(VkImage image,
                                       VkFormat format,
                                       VkBuffer stagingBuffer,
                                       uint32_t width,
@@ -225,6 +246,21 @@ namespace KTXCompressor {
                    format,
                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+        End();
+        Submit();
+    }
+
+    void SingleTimeCommand::TransitionImage(VkImage image,
+                                            VkFormat format,
+                                            VkImageLayout oldLayout,
+                                            VkImageLayout newLayout) {
+        Begin();
+
+        Transition(image,
+                   format,
+                   oldLayout,
+                   newLayout);
 
         End();
         Submit();

@@ -24,32 +24,30 @@ namespace KTXCompressor {
     protected:
         LogicalDevice *logicalDevice;
         PhysicalDevice *physicalDevice;
-
-        void CreateImage(uint32_t width,
-                         uint32_t height,
-                         const void *pixels);
-
-        void CreateImageWithoutPixels(uint32_t width,
-                                      uint32_t height,
-                                      VkFormat format,
-                                      VkImageUsageFlags imageUsageFlags);
-
-        VkSampler CreateTextureSampler();
-
-    private:
-
         BufferUtil *bufferUtil;
         VkImage vulkanImage;
         VkDeviceMemory vulkanImageMemory;
         ImageView *imageView;
 
-        VkImageCreateInfo GetImageCreateInfo(uint32_t width, uint32_t height, const VkFormat &format,  VkImageUsageFlags imageUsageFlags);
+        VkImageCreateInfo GetImageCreateInfo(uint32_t width,
+                           uint32_t height,
+                           const VkFormat &format,
+                           VkImageUsageFlags imageUsageFlags);
+
+        void CreateImage(uint32_t width,
+                         uint32_t height,
+                         const void *pixels);
+
+        VkSampler CreateTextureSampler();
+
+    private:
+
 
     public:
         ImageView *GetImageView() {
             return imageView;
         }
-        
+
     };
 
 } // KTXCompressor

@@ -68,8 +68,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Utils/BufferUtil.h
         Renderer/Commands/Command.cpp
         Renderer/Commands/Command.h
-        Renderer/Commands/CopyBufferCommand.cpp
-        Renderer/Commands/CopyBufferCommand.h
+        Renderer/Commands/SingleTimeCommand.cpp
+        Renderer/Commands/SingleTimeCommand.h
         Renderer/Graphics/DescriptorSets/DescriptorSet.cpp
         Renderer/Graphics/DescriptorSets/DescriptorSet.h
         Renderer/Graphics/DescriptorSets/ModelViewProjectionDescriptorSet.cpp
