@@ -110,6 +110,18 @@ namespace KTXCompressor {
         colorBlendStateCreateInfo.blendConstants[1] = 0.0f;// Optional
         colorBlendStateCreateInfo.blendConstants[2] = 0.0f;// Optional
         colorBlendStateCreateInfo.blendConstants[3] = 0.0f;// Optional
+        
+        VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
+        depthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+        depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+        depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS; // lower depth = closer
+        depthStencilStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
+        depthStencilStateCreateInfo.minDepthBounds = 0.0f; // Optional
+        depthStencilStateCreateInfo.maxDepthBounds = 1.0f; // Optional
+        depthStencilStateCreateInfo.stencilTestEnable = VK_FALSE;
+        depthStencilStateCreateInfo.front = {}; // Optional
+        depthStencilStateCreateInfo.back = {}; // Optional
 
         VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo = {};
         graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -120,7 +132,7 @@ namespace KTXCompressor {
         graphicsPipelineCreateInfo.pViewportState = &viewportStateCreateInfo;
         graphicsPipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
         graphicsPipelineCreateInfo.pMultisampleState = &multisampleStateCreateInfo;
-        graphicsPipelineCreateInfo.pDepthStencilState = nullptr; // Optional
+        graphicsPipelineCreateInfo.pDepthStencilState = &depthStencilStateCreateInfo;
         graphicsPipelineCreateInfo.pColorBlendState = &colorBlendStateCreateInfo;
         graphicsPipelineCreateInfo.pDynamicState = &dynamicStateCreateInfo;
         graphicsPipelineCreateInfo.layout = shader->GetVulkanPipelineLayout();
@@ -158,7 +170,7 @@ namespace KTXCompressor {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
-        renderPass = new RenderPass(logicalDevice->GetVulkanDevice(), swapChain->GetImageFormat());
+        renderPass = new RenderPass(physicalDevice, logicalDevice, swapChain->GetImageFormat());
 
         drawCommand = new DrawCommand(logicalDevice);
     }

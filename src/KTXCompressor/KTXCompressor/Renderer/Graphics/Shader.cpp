@@ -12,8 +12,6 @@ namespace KTXCompressor {
     void Shader::Init() {
         CreateVertexBuffer();
         CreateIndexBuffer();
-
-        depthTexture = new DepthTexture(extent, logicalDevice, physicalDevice);
     }
 
     vector<char> Shader::ReadFile(const string &fileName) {
@@ -76,11 +74,12 @@ namespace KTXCompressor {
                    const string &fragmentFileName) {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
-        this->extent = extent;
         this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
 
         vertexShaderModule = CreateShaderModule(vertexFileName);
         fragmentShaderModule = CreateShaderModule(fragmentFileName);
+
+        CreateDepthTexture(extent);
     }
 
     // #endregion
@@ -90,7 +89,7 @@ namespace KTXCompressor {
     Shader::~Shader() {
         cout << "Destroy Shader" << endl;
 
-        delete depthTexture;
+        DeleteDepthTexture();
         vkDestroyBuffer(logicalDevice->GetVulkanDevice(), vertexBuffer, nullptr);
         vkFreeMemory(logicalDevice->GetVulkanDevice(), vertexBufferMemory, nullptr);
         vkDestroyBuffer(logicalDevice->GetVulkanDevice(), indexBuffer, nullptr);
@@ -149,6 +148,15 @@ namespace KTXCompressor {
         return attributeDescriptions;
     }
 
+    void Shader::CreateDepthTexture(VkExtent2D extent) {
+        depthTexture = new DepthTexture(extent, logicalDevice, physicalDevice);
+    }
+
+    void Shader::DeleteDepthTexture() {
+        // cleaning up swap chain might already delete depth texture
+        delete depthTexture;
+    }
+
     void Shader::CleanUpShaderModules() {
         cout << "Destroy Shader Modules" << endl;
         vkDestroyShaderModule(logicalDevice->GetVulkanDevice(), fragmentShaderModule, nullptr);
@@ -166,7 +174,6 @@ namespace KTXCompressor {
 
         BindDescriptorSets(vulkanCommandBuffer, currentFrame);
     }
-
 
     // #endregion
 

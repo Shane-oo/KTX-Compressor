@@ -21,8 +21,8 @@ namespace KTXCompressor {
 
         uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags memoryPropertyFlags);
 
-        VkFormat FindSupportedFormat(const vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-
+        VkFormat FindDepthFormat();
+        
     private:
         VkPhysicalDevice vulkanPhysicalDevice;
         VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
@@ -41,6 +41,8 @@ namespace KTXCompressor {
         void SetAvailableTargetFormatsForKtx();
 
         bool GetVulkanFormatSupported(VkFormat format);
+
+        VkFormat FindSupportedFormat(const vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
     public:
 

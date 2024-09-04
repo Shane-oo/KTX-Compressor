@@ -7,17 +7,20 @@
 
 #include <vulkan/vulkan_core.h>
 #include "../../Common.h"
+#include "../Instance/Devices/PhysicalDevice.h"
+#include "../Instance/Devices/LogicalDevice.h"
 
 namespace KTXCompressor {
 
     class RenderPass {
     public:
-        RenderPass(VkDevice vulkanDevice, VkFormat swapChainImageFormat);
+        RenderPass(PhysicalDevice* physicalDevice,LogicalDevice* logicalDevice, VkFormat swapChainImageFormat);
 
         ~RenderPass();
 
     private:
-        VkDevice vulkanDevice;
+        PhysicalDevice* physicalDevice;
+        LogicalDevice* logicalDevice;
         VkRenderPass vulkanRenderPass;
 
         VkRenderPass CreateVulkanRenderPass(VkFormat swapChainImageFormat);

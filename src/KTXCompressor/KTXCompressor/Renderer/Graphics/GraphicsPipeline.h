@@ -50,6 +50,10 @@ namespace KTXCompressor {
         RenderPass *GetRenderPass() {
             return renderPass;
         }
+        
+        Shader *GetShader(){
+            return shader;
+        }
 
         VkPipeline GetVulkanGraphicsPipeline() {
             return vulkanGraphicsPipeline;

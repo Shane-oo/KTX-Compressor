@@ -41,7 +41,6 @@ namespace KTXCompressor {
         };
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
-        VkExtent2D extent;
         BufferUtil *bufferUtil;
         VkPipelineLayout vulkanPipelineLayout = nullptr;
         VkBuffer vertexBuffer;
@@ -87,11 +86,19 @@ namespace KTXCompressor {
             return fragmentShaderModule;
         }
 
+        DepthTexture *GetDepthTexture() {
+            return depthTexture;
+        }
+
         VkPipelineLayout GetVulkanPipelineLayout();
 
         VkVertexInputBindingDescription GetBindingDescription();
 
         vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
+
+        void CreateDepthTexture(VkExtent2D extent);
+        
+        void DeleteDepthTexture();
 
         void CleanUpShaderModules();
 
