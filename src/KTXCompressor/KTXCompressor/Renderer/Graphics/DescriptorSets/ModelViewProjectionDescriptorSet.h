@@ -19,7 +19,7 @@ namespace KTXCompressor {
 
     class ModelViewProjectionDescriptorSet : public DescriptorSet {
     public:
-        ModelViewProjectionDescriptorSet(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice);
+        ModelViewProjectionDescriptorSet(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, uint32_t speed);
 
         ~ModelViewProjectionDescriptorSet();
 
@@ -41,6 +41,7 @@ namespace KTXCompressor {
     private:
         int binding = 0;
 
+        uint32_t speed;
         struct ModelViewProjectionUbo {
             alignas(16)  glm::mat4 model;
             alignas(16) glm::mat4 view;

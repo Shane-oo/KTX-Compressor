@@ -20,61 +20,33 @@ namespace KTXCompressor {
     }
 
     void RendererApp::DrawFrame() {
+        // TODO: How can i render multiple renderPasses to the one swap chain present image/framebuffe?
+        
+        synchronization->WaitForFence(currentFrame);
+
+        bool nextImageReady = swapChain->NextImage(synchronization->GetWaitSemaphore(currentFrame));
+        if (!nextImageReady) {
+            return;
+        }
+        synchronization->ResetFence(currentFrame);
+        
+        VkFramebuffer vulkanFrameBuffer ;
         for (size_t i = 0; i < graphicsPipelines.size(); i++) {
-            synchronization->WaitForFence(currentFrame);
 
-            auto vulkanFrameBuffer = swapChain->NextImage(synchronization->GetWaitSemaphore(currentFrame), i);
+            // Get the correct framebuffer for the current pipeline
+            vulkanFrameBuffer = swapChain->GetFramebufferForGraphicsPipeline(i);
 
-            if (!vulkanFrameBuffer) {
-                return;
-            }
-
-            synchronization->ResetFence(currentFrame);
-
+            // Draw using the current pipeline and its corresponding framebuffer
             graphicsPipelines[i]->Draw(vulkanFrameBuffer, currentFrame);
 
             graphicsPipelines[i]->Submit(synchronization, currentFrame);
-
-            swapChain->Present(synchronization, currentFrame);
-
-            currentFrame = (currentFrame + 1) % RendererConstants::MAX_FRAMES_IN_FLIGHT;
+            
         }
         
-        /*TODO Implement something like this maybe*/
-        /*void RendererApp::DrawFrame() {
-    synchronization->WaitForFence(currentFrame);
+        swapChain->Present(synchronization, currentFrame);
 
-    // Acquire the next image from the swapchain
-    VkFramebuffer vulkanFrameBuffer = nullptr;
-    VkResult acquireResult = swapChain->AcquireNextImage(synchronization->GetWaitSemaphore(currentFrame));
-    if (acquireResult == VK_ERROR_OUT_OF_DATE_KHR || acquireResult == VK_SUBOPTIMAL_KHR) {
-        RecreateSwapChain();
-        return;
-    } else if (acquireResult != VK_SUCCESS) {
-        throw std::runtime_error("Failed to acquire swapchain image!");
-    }
-
-    for (size_t i = 0; i < graphicsPipelines.size(); i++) {
-        // Get the correct framebuffer for the current pipeline
-        vulkanFrameBuffer = swapChain->GetFramebufferForPipeline(i);
-
-        // Draw using the current pipeline and its corresponding framebuffer
-        graphicsPipelines[i]->Draw(vulkanFrameBuffer, currentFrame);
-    }
-
-    // Submit commands and present the image
-    for (size_t i = 0; i < graphicsPipelines.size(); i++) {
-        graphicsPipelines[i]->Submit(synchronization, currentFrame);
-    }
-
-    swapChain->Present(synchronization, currentFrame);
-
-    // Reset the fence and advance to the next frame
-    synchronization->ResetFence(currentFrame);
-    currentFrame = (currentFrame + 1) % RendererConstants::MAX_FRAMES_IN_FLIGHT;
-}*/
-        
-        //cout << currentFrame << endl;
+        currentFrame = (currentFrame + 1) % RendererConstants::MAX_FRAMES_IN_FLIGHT;
+    
     }
 
     // #endregion
@@ -97,12 +69,14 @@ namespace KTXCompressor {
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
-                                                                       physicalDevice->GetGraphicsFamilyIndex()));
+                                                                       physicalDevice->GetGraphicsFamilyIndex(),
+                                                                       1));
         // todo undo this...
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
-                                                                       physicalDevice->GetGraphicsFamilyIndex()));
+                                                                       physicalDevice->GetGraphicsFamilyIndex(),
+                                                                       2));
         // SetGraphicsPipelines
         swapChain->SetGraphicsPipelines(graphicsPipelines);
 

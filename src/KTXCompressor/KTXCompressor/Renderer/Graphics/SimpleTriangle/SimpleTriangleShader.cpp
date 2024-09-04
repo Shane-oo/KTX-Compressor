@@ -11,11 +11,12 @@ namespace KTXCompressor {
     // #region Constructors
 
     SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice,
-                                               LogicalDevice *logicalDevice)
+                                               LogicalDevice *logicalDevice,
+                                               uint32_t speed)
             : Shader(physicalDevice, logicalDevice, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
         Init();
 
-        modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
+        modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice, speed);
         descriptorSets.push_back(modelViewProjectionDescriptorSet);
 
         ktxTexture = new KTXTexture("textures/SAMPLE_2d_rgba8.ktx2", logicalDevice, physicalDevice);

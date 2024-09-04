@@ -70,7 +70,9 @@ namespace KTXCompressor {
         static SwapChainSupportDetails
         QuerySwapChainSupport(VkPhysicalDevice vulkanPhysicalDevice, VkSurfaceKHR vulkanSurface);
 
-        VkFramebuffer NextImage(VkSemaphore imageAvailableSemaphore, size_t graphicsPipelineIndex);
+        bool NextImage(VkSemaphore imageAvailableSemaphore);
+
+        VkFramebuffer GetFramebufferForGraphicsPipeline(size_t graphicsPipelineIndex); 
 
         void Present(Synchronization *synchronization, uint32_t currentFrame);
 

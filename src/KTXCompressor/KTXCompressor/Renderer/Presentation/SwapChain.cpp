@@ -277,7 +277,7 @@ namespace KTXCompressor {
         frameBuffers = CreateFrameBuffers();
     }
 
-    VkFramebuffer SwapChain::NextImage(VkSemaphore imageAvailableSemaphore, size_t graphicsPipelineIndex) {
+    bool SwapChain::NextImage(VkSemaphore imageAvailableSemaphore) {
         VkResult acquireNextImageResult = vkAcquireNextImageKHR(logicalDevice->GetVulkanDevice(),
                                                                 vulkanSwapChain,
                                                                 UINT64_MAX,
@@ -287,17 +287,19 @@ namespace KTXCompressor {
 
         if (acquireNextImageResult == VK_ERROR_OUT_OF_DATE_KHR) {
             RecreateVulkanSwapChain();
-            return nullptr;
+            return false;
         }
 
         if (acquireNextImageResult != VK_SUCCESS && acquireNextImageResult != VK_SUBOPTIMAL_KHR) {
             throw runtime_error("Failed to Acquire Swap Chain Image!");
         }
 
-        size_t framebufferIndex = imageIndex * graphicsPipelines.size() + graphicsPipelineIndex;
-
-        return (*frameBuffers)[framebufferIndex]->GetVulkanFrameBuffer();
+        return true;
     }
+
+    /*        size_t framebufferIndex = imageIndex * graphicsPipelines.size() + graphicsPipelineIndex;
+
+        return (*frameBuffers)[framebufferIndex]->GetVulkanFrameBuffer();*/
 
     void SwapChain::Present(Synchronization *synchronization, uint32_t currentFrame) {
         VkPresentInfoKHR presentInfo = {};
@@ -328,6 +330,12 @@ namespace KTXCompressor {
         if (presentResult != VK_SUCCESS) {
             throw runtime_error("Failed to Present Swap Chain Image");
         }
+    }
+
+    VkFramebuffer SwapChain::GetFramebufferForGraphicsPipeline(size_t graphicsPipelineIndex) {
+        size_t framebufferIndex = imageIndex * graphicsPipelines.size() + graphicsPipelineIndex;
+
+        return (*frameBuffers)[framebufferIndex]->GetVulkanFrameBuffer();
     }
 
 

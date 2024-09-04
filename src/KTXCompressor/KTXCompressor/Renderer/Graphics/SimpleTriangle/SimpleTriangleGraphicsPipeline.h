@@ -17,13 +17,17 @@ namespace KTXCompressor {
                 PhysicalDevice *physicalDevice,
                 LogicalDevice *logicalDevice,
                 SwapChain *swapChain,
-                uint32_t graphicsFamilyIndex);
+                uint32_t graphicsFamilyIndex,
+                uint32_t speed);
 
     protected:
         Shader *CreateShader() override;
 
         void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;
+        
+    private:
+       uint32_t speed;
     };
 
 } // KTXCompressor

@@ -17,7 +17,7 @@ namespace KTXCompressor {
     class SimpleTriangleShader : public Shader {
 
     public:
-        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice);
+        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice, uint32_t speed);
 
         ~SimpleTriangleShader();
 

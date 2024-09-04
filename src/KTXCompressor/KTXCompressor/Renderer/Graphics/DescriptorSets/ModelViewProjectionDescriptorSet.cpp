@@ -40,9 +40,11 @@ namespace KTXCompressor {
     // #region Constructors
 
     ModelViewProjectionDescriptorSet::ModelViewProjectionDescriptorSet(LogicalDevice *logicalDevice,
-                                                                       PhysicalDevice *physicalDevice)
+                                                                       PhysicalDevice *physicalDevice,
+                                                                       uint32_t speed)
             : DescriptorSet(logicalDevice) {
         this->bufferUtil = new BufferUtil(logicalDevice, physicalDevice);
+        this->speed = speed;
         CreateModelViewProjectionUniformBuffers();
 
         Init();
@@ -112,7 +114,7 @@ namespace KTXCompressor {
         auto currentTime = std::chrono::high_resolution_clock::now();
 
         float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
+        deltaTime *= speed;
         ModelViewProjectionUbo mvpUbo = {};
         // rotate around z axis
         mvpUbo.model = glm::rotate(glm::mat4(1.0f), deltaTime * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
