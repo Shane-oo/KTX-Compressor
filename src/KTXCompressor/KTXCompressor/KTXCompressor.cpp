@@ -15,6 +15,8 @@ int main() {
          * KTXCompressor::TextureOld texture = KTXCompressor::TextureOld(woodDiffuseFileName);
          */
 
+        https://www.youtube.com/watch?v=sXuf_wHIHgM
+        
         auto *rendererApp = new KTXCompressor::RendererApp();
         rendererApp->Run();
 
