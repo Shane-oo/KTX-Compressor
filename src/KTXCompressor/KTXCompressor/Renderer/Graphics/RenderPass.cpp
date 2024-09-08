@@ -38,11 +38,19 @@ namespace KTXCompressor {
         VkAttachmentDescription depthAttachmentDescription = {};
         depthAttachmentDescription.format = physicalDevice->FindDepthFormat();
         depthAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
-        depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+        if (isFirstRenderPass) {
+            depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // want the depth attachment for next render pass
+            depthAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        } else {
+            depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            depthAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        }
         depthAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         depthAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
         depthAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
         VkAttachmentReference depthAttachmentReference = {};

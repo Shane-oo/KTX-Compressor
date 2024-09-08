@@ -82,7 +82,8 @@ namespace KTXCompressor {
     void SimpleTriangleShader::CreateVertexBuffer() {
         if(speed == 1){
             for (auto& vertex : vertices) {
-                vertex.pos.y += 0.25f;
+                vertex.pos.x += 0.25f;
+                vertex.pos.z += 0.25f;
             }
         }
         
