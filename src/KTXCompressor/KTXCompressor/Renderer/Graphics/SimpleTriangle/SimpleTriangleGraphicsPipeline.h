@@ -18,7 +18,7 @@ namespace KTXCompressor {
                 LogicalDevice *logicalDevice,
                 SwapChain *swapChain,
                 uint32_t graphicsFamilyIndex,
-                int index,
+                bool isFirstToRender,
                 uint32_t speed);
 
     protected:

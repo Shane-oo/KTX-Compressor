@@ -167,14 +167,14 @@ namespace KTXCompressor {
                                        LogicalDevice *logicalDevice,
                                        SwapChain *swapChain,
                                        uint32_t graphicsFamilyIndex,
-                                       int index) {
+                                       bool isFirstToRender) {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
         renderPass = new RenderPass(physicalDevice,
                                     logicalDevice,
                                     swapChain->GetImageFormat(),
-                                    index == 0);
+                                    isFirstToRender);
 
         drawCommand = new DrawCommand(logicalDevice);
     }

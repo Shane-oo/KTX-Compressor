@@ -38,9 +38,9 @@ namespace KTXCompressor {
                                                                    LogicalDevice *logicalDevice,
                                                                    SwapChain *swapChain,
                                                                    uint32_t graphicsFamilyIndex,
-                                                                   int index,
+                                                                   bool isFirstToRender,
                                                                    uint32_t speed)
-            : GraphicsPipeline(physicalDevice, logicalDevice, swapChain, graphicsFamilyIndex, index) {
+            : GraphicsPipeline(physicalDevice, logicalDevice, swapChain, graphicsFamilyIndex, isFirstToRender) {
         this->speed = speed;
         Init();
     }
