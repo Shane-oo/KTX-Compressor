@@ -14,7 +14,7 @@ namespace KTXCompressor {
 
     class RenderPass {
     public:
-        RenderPass(PhysicalDevice* physicalDevice,LogicalDevice* logicalDevice, VkFormat swapChainImageFormat);
+        RenderPass(PhysicalDevice* physicalDevice,LogicalDevice* logicalDevice, VkFormat swapChainImageFormat, bool isFirstRenderPass);
 
         ~RenderPass();
 
@@ -23,7 +23,7 @@ namespace KTXCompressor {
         LogicalDevice* logicalDevice;
         VkRenderPass vulkanRenderPass;
 
-        VkRenderPass CreateVulkanRenderPass(VkFormat swapChainImageFormat);
+        VkRenderPass CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass);
 
     public:
         void Begin(VkCommandBuffer vulkanCommandBuffer, VkFramebuffer vulkanFrameBuffer, VkExtent2D extent);

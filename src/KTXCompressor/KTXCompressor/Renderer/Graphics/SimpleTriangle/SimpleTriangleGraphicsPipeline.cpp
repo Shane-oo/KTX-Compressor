@@ -37,8 +37,10 @@ namespace KTXCompressor {
     SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(PhysicalDevice *physicalDevice,
                                                                    LogicalDevice *logicalDevice,
                                                                    SwapChain *swapChain,
-                                                                   uint32_t graphicsFamilyIndex, uint32_t speed)
-            : GraphicsPipeline(physicalDevice, logicalDevice, swapChain, graphicsFamilyIndex) {
+                                                                   uint32_t graphicsFamilyIndex,
+                                                                   int index,
+                                                                   uint32_t speed)
+            : GraphicsPipeline(physicalDevice, logicalDevice, swapChain, graphicsFamilyIndex, index) {
         this->speed = speed;
         Init();
     }

@@ -14,15 +14,17 @@ namespace KTXCompressor {
                                                LogicalDevice *logicalDevice,
                                                uint32_t speed)
             : Shader(physicalDevice, logicalDevice, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
+        this->speed = speed;
         Init();
 
-        modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice, speed);
+        modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
         descriptorSets.push_back(modelViewProjectionDescriptorSet);
 
         ktxTexture = new KTXTexture("textures/SAMPLE_2d_rgba8.ktx2", logicalDevice, physicalDevice);
         imageTexture = new ImageTexture("textures/wood_diffuse_4096x4096.png", logicalDevice, physicalDevice);
 
-        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, imageTexture);
+        auto texture = speed == 1 ? reinterpret_cast<ImageTexture *>(ktxTexture) : imageTexture;
+        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, texture);
         descriptorSets.push_back(combinedImageSamplerDescriptorSet);
     }
 
@@ -78,6 +80,12 @@ namespace KTXCompressor {
     }
 
     void SimpleTriangleShader::CreateVertexBuffer() {
+        if(speed == 1){
+            for (auto& vertex : vertices) {
+                vertex.pos.y += 0.25f;
+            }
+        }
+        
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
         bufferUtil->CreateAndFillBuffer(vertices.data(),

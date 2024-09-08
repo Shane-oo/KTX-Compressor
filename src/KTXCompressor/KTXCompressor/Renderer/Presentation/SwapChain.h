@@ -24,6 +24,8 @@ namespace KTXCompressor {
 
         ~SwapChain();
 
+        void Submit(Synchronization *synchronization, uint32_t currentFrame, vector<VkCommandBuffer> allDrawCommands);
+
     private:
         Window *window;
         LogicalDevice *logicalDevice;

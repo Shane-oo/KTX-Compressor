@@ -9,18 +9,25 @@ namespace KTXCompressor {
     // #region Private Methods
 
     // this should be SimpleTriangleRenderPass...
-    VkRenderPass RenderPass::CreateVulkanRenderPass(VkFormat swapChainImageFormat) {
+    VkRenderPass RenderPass::CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass) {
         VkAttachmentDescription colorAttachmentDescription = {};
         colorAttachmentDescription.format = swapChainImageFormat;
         colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
 
-        colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // clear the values to a constant at the start
+        if (isFirstRenderPass) {
+            // clear the values to a constant at the start
+            colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        } else {
+            // Load what was in a previous render pass
+            colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        }
         colorAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // rendered contents will be stored in memory to be read later 
 
         colorAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-        colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         colorAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         VkAttachmentReference colorAttachmentReference = {};
@@ -92,10 +99,11 @@ namespace KTXCompressor {
 
     RenderPass::RenderPass(PhysicalDevice *physicalDevice,
                            LogicalDevice *logicalDevice,
-                           VkFormat swapChainImageFormat) {
+                           VkFormat swapChainImageFormat,
+                           bool isFirstRenderPass) {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
-        vulkanRenderPass = CreateVulkanRenderPass(swapChainImageFormat);
+        vulkanRenderPass = CreateVulkanRenderPass(swapChainImageFormat, isFirstRenderPass);
     }
 
     // #endregion

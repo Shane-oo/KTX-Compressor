@@ -10,11 +10,13 @@ namespace KTXCompressor {
     ImGuiGraphicsPipeline::ImGuiGraphicsPipeline(PhysicalDevice *physicalDevice,
                                                  LogicalDevice *logicalDevice,
                                                  SwapChain *swapChain,
-                                                 uint32_t graphicsFamilyIndex)
+                                                 uint32_t graphicsFamilyIndex,
+                                                 int index)
             : GraphicsPipeline(physicalDevice,
                                logicalDevice,
                                swapChain,
-                               graphicsFamilyIndex) {
+                               graphicsFamilyIndex,
+                               index) {
 
     }
 

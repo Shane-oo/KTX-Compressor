@@ -99,7 +99,7 @@ namespace KTXCompressor {
     void Synchronization::ResetFence(uint32_t currentFrame) {
         // reset to the unsignaled state
         vkResetFences(vulkanDevice, 1, &inFlightFences[currentFrame]);
-    }                             --
+    }
 
     // #endregion
 

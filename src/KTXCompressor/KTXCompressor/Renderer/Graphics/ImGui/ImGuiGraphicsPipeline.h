@@ -14,7 +14,8 @@ namespace KTXCompressor {
         ImGuiGraphicsPipeline(PhysicalDevice *physicalDevice,
                               LogicalDevice *logicalDevice,
                               SwapChain *swapChain,
-                              uint32_t graphicsFamilyIndex);
+                              uint32_t graphicsFamilyIndex,
+                              int index);
     };
 
 } // KTXCompressor

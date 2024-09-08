@@ -110,7 +110,7 @@ namespace KTXCompressor {
         colorBlendStateCreateInfo.blendConstants[1] = 0.0f;// Optional
         colorBlendStateCreateInfo.blendConstants[2] = 0.0f;// Optional
         colorBlendStateCreateInfo.blendConstants[3] = 0.0f;// Optional
-        
+
         VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
         depthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
@@ -166,11 +166,15 @@ namespace KTXCompressor {
     GraphicsPipeline::GraphicsPipeline(PhysicalDevice *physicalDevice,
                                        LogicalDevice *logicalDevice,
                                        SwapChain *swapChain,
-                                       uint32_t graphicsFamilyIndex) {
+                                       uint32_t graphicsFamilyIndex,
+                                       int index) {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
-        renderPass = new RenderPass(physicalDevice, logicalDevice, swapChain->GetImageFormat());
+        renderPass = new RenderPass(physicalDevice,
+                                    logicalDevice,
+                                    swapChain->GetImageFormat(),
+                                    index == 0);
 
         drawCommand = new DrawCommand(logicalDevice);
     }
@@ -206,7 +210,7 @@ namespace KTXCompressor {
 
     // #region Public Methods
 
-    void GraphicsPipeline::Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) {
+    VkCommandBuffer GraphicsPipeline::Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) {
         drawCommand->Begin(currentFrame);
 
         auto vulkanCommandBuffer = drawCommand->GetVulkanCommandBuffer(currentFrame);
@@ -242,29 +246,8 @@ namespace KTXCompressor {
         renderPass->End(vulkanCommandBuffer);
 
         drawCommand->End(currentFrame);
-    }
 
-    void GraphicsPipeline::Submit(Synchronization *synchronization, uint32_t currentFrame) {
-        VkSubmitInfo submitInfo = {};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-        VkSemaphore waitSemaphores[] = {synchronization->GetWaitSemaphore(currentFrame)};
-        VkPipelineStageFlags waitStages[]{VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-
-        auto commandBuffer = drawCommand->GetVulkanCommandBuffer(currentFrame);
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffer;
-
-        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore(currentFrame)};
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        logicalDevice->SubmitToGraphicsQueue(submitInfo, synchronization->GetInFlightFence(currentFrame));
-
-        //cout << "Successful Submitted" << endl;
+        return drawCommand->GetVulkanCommandBuffer(currentFrame);
     }
 
     // #endregion

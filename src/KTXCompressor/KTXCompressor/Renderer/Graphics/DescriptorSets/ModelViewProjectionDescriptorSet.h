@@ -19,7 +19,7 @@ namespace KTXCompressor {
 
     class ModelViewProjectionDescriptorSet : public DescriptorSet {
     public:
-        ModelViewProjectionDescriptorSet(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice, uint32_t speed);
+        ModelViewProjectionDescriptorSet(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice);
 
         ~ModelViewProjectionDescriptorSet();
 

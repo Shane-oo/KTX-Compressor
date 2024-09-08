@@ -21,7 +21,7 @@ namespace KTXCompressor {
 
     void RendererApp::DrawFrame() {
         // TODO: How can i render multiple renderPasses to the one swap chain present image/framebuffe?
-        
+
         synchronization->WaitForFence(currentFrame);
 
         bool nextImageReady = swapChain->NextImage(synchronization->GetWaitSemaphore(currentFrame));
@@ -29,24 +29,25 @@ namespace KTXCompressor {
             return;
         }
         synchronization->ResetFence(currentFrame);
-        
-        VkFramebuffer vulkanFrameBuffer ;
-        for (size_t i = 0; i < graphicsPipelines.size(); i++) {
 
+
+        vector<VkCommandBuffer> drawCommands;
+        for (size_t i = 0; i < graphicsPipelines.size(); i++) {
             // Get the correct framebuffer for the current pipeline
-            vulkanFrameBuffer = swapChain->GetFramebufferForGraphicsPipeline(i);
+            VkFramebuffer vulkanFrameBuffer = swapChain->GetFramebufferForGraphicsPipeline(i);
 
             // Draw using the current pipeline and its corresponding framebuffer
-            graphicsPipelines[i]->Draw(vulkanFrameBuffer, currentFrame);
+            auto drawCommand = graphicsPipelines[i]->Draw(vulkanFrameBuffer, currentFrame);
 
-            graphicsPipelines[i]->Submit(synchronization, currentFrame);
-            
+            drawCommands.push_back(drawCommand);
         }
-        
+
+        swapChain->Submit(synchronization, currentFrame, drawCommands);
+
         swapChain->Present(synchronization, currentFrame);
 
         currentFrame = (currentFrame + 1) % RendererConstants::MAX_FRAMES_IN_FLIGHT;
-    
+
     }
 
     // #endregion
@@ -66,16 +67,18 @@ namespace KTXCompressor {
 
         swapChain = new SwapChain(physicalDevice, window, logicalDevice);
 
+        // todo a better way of setting each ones index...
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
                                                                        physicalDevice->GetGraphicsFamilyIndex(),
+                                                                       0,
                                                                        1));
-        // todo undo this...
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
                                                                        physicalDevice->GetGraphicsFamilyIndex(),
+                                                                       1,
                                                                        2));
         // SetGraphicsPipelines
         swapChain->SetGraphicsPipelines(graphicsPipelines);

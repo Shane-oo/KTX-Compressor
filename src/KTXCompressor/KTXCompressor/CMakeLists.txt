@@ -119,7 +119,8 @@ find_package(glm REQUIRED)
 # Link GLM Library
 target_link_directories(KTXCompressor PRIVATE glm)
 
-## Find imgui
+#.\vcpkg install imgui[glfw-binding,core,vulkan-binding]:x64-windows --recurse
+# Find imgui
 find_package(imgui CONFIG REQUIRED)
 # Link imgui
 target_link_libraries(KTXCompressor PRIVATE imgui::imgui)

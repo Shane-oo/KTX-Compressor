@@ -338,7 +338,28 @@ namespace KTXCompressor {
         return (*frameBuffers)[framebufferIndex]->GetVulkanFrameBuffer();
     }
 
+    void SwapChain::Submit(Synchronization *synchronization, uint32_t currentFrame, vector<VkCommandBuffer> allDrawCommands) {
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
+        VkSemaphore waitSemaphores[] = {synchronization->GetWaitSemaphore(currentFrame)};
+        VkPipelineStageFlags waitStages[]{VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+        
+        submitInfo.commandBufferCount = allDrawCommands.size();
+        submitInfo.pCommandBuffers = allDrawCommands.data();
+
+        VkSemaphore signalSemaphores[] = {synchronization->GetSignalSemaphore(currentFrame)};
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+
+        logicalDevice->SubmitToGraphicsQueue(submitInfo, synchronization->GetInFlightFence(currentFrame));
+
+        //cout << "Successful Submitted" << endl;
+    }
+    
     // #endregion
 
 
