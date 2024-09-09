@@ -14,35 +14,40 @@ namespace KTXCompressor {
 
     class RenderPass {
     public:
-        RenderPass(PhysicalDevice* physicalDevice,LogicalDevice* logicalDevice, VkFormat swapChainImageFormat, bool isFirstRenderPass);
+        RenderPass(PhysicalDevice *physicalDevice,
+                   LogicalDevice *logicalDevice,
+                   VkFormat swapChainImageFormat,
+                   bool isFirstRenderPass,
+                   bool isLastRenderPass);
 
         ~RenderPass();
 
     private:
-        PhysicalDevice* physicalDevice;
-        LogicalDevice* logicalDevice;
+        PhysicalDevice *physicalDevice;
+        LogicalDevice *logicalDevice;
         VkRenderPass vulkanRenderPass;
 
-        VkRenderPass CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass);
+        VkRenderPass
+        CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass, bool isLastRenderPass);
 
     public:
         void Begin(VkCommandBuffer vulkanCommandBuffer, VkFramebuffer vulkanFrameBuffer, VkExtent2D extent);
-        
+
         void End(VkCommandBuffer vulkanCommandBuffer);
-        
+
         VkRenderPass GetVulkanRenderPass() {
             return vulkanRenderPass;
         }
-        
-        uint32_t GetSubpassIndex(){
+
+        uint32_t GetSubpassIndex() {
             return 0;
         }
-        
-        bool NeedsDepthAttachment(){
+
+        bool NeedsDepthAttachment() {
             // im gui would be false
             return true;
         }
-        
+
     };
 
 } // KTXCompressor

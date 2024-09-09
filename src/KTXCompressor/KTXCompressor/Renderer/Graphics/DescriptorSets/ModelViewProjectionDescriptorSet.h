@@ -41,7 +41,6 @@ namespace KTXCompressor {
     private:
         int binding = 0;
 
-        uint32_t speed;
         struct ModelViewProjectionUbo {
             alignas(16)  glm::mat4 model;
             alignas(16) glm::mat4 view;

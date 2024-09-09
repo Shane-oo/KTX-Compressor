@@ -17,14 +17,13 @@ namespace KTXCompressor {
     class SimpleTriangleShader : public Shader {
 
     public:
-        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice, uint32_t speed);
+        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice);
 
         ~SimpleTriangleShader();
 
         void Render(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame, VkExtent2D extent) override;
 
     private:
-        uint32_t speed;
         vector<Vertex> vertices = {
                 {{-0.5f, -0.5f, 0.0f},  {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
                 {{0.5f,  -0.5f, 0.0f},  {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},

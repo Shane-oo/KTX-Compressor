@@ -20,7 +20,8 @@ namespace KTXCompressor {
                          LogicalDevice *logicalDevice,
                          SwapChain *swapChain,
                          uint32_t graphicsFamilyIndex,
-                         bool isFirstToRender);
+                         bool isFirstToRender,
+                         bool isLastToRender);
 
         ~GraphicsPipeline();
 

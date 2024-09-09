@@ -73,13 +73,19 @@ namespace KTXCompressor {
                                                                        swapChain,
                                                                        physicalDevice->GetGraphicsFamilyIndex(),
                                                                        true,
-                                                                       1));
+                                                                       false));
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
                                                                        physicalDevice->GetGraphicsFamilyIndex(),
                                                                        false,
-                                                                       2));
+                                                                       false));
+        graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
+                                                                       logicalDevice,
+                                                                       swapChain,
+                                                                       physicalDevice->GetGraphicsFamilyIndex(),
+                                                                       false,
+                                                                       true));
         // SetGraphicsPipelines
         swapChain->SetGraphicsPipelines(graphicsPipelines);
 

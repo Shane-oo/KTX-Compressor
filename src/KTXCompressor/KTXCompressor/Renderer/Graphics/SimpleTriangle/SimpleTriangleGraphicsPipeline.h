@@ -19,16 +19,14 @@ namespace KTXCompressor {
                 SwapChain *swapChain,
                 uint32_t graphicsFamilyIndex,
                 bool isFirstToRender,
-                uint32_t speed);
+                bool isLastToRender);
 
     protected:
         Shader *CreateShader() override;
 
         void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;
-        
-    private:
-       uint32_t speed;
+
     };
 
 } // KTXCompressor

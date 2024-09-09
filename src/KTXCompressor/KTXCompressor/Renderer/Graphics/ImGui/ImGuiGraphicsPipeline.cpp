@@ -10,13 +10,14 @@ namespace KTXCompressor {
     ImGuiGraphicsPipeline::ImGuiGraphicsPipeline(PhysicalDevice *physicalDevice,
                                                  LogicalDevice *logicalDevice,
                                                  SwapChain *swapChain,
-                                                 uint32_t graphicsFamilyIndex,
-                                                 int index)
+                                                 uint32_t graphicsFamilyIndex)
             : GraphicsPipeline(physicalDevice,
                                logicalDevice,
                                swapChain,
                                graphicsFamilyIndex,
-                               index) {
+                               false, 
+                               true // imgui should always be last...
+                               ) {
 
     }
 

@@ -2,6 +2,7 @@
 // Created by shane on 28/07/2024.
 //
 
+#include <random>
 #include "SimpleTriangleShader.h"
 #include "../DescriptorSets/CombinedImageSamplerDescriptorSet.h"
 
@@ -11,10 +12,8 @@ namespace KTXCompressor {
     // #region Constructors
 
     SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice,
-                                               LogicalDevice *logicalDevice,
-                                               uint32_t speed)
+                                               LogicalDevice *logicalDevice)
             : Shader(physicalDevice, logicalDevice, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
-        this->speed = speed;
         Init();
 
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
@@ -22,8 +21,23 @@ namespace KTXCompressor {
 
         ktxTexture = new KTXTexture("textures/SAMPLE_2d_rgba8.ktx2", logicalDevice, physicalDevice);
         imageTexture = new ImageTexture("textures/wood_diffuse_4096x4096.png", logicalDevice, physicalDevice);
+        
+        // Create a random device and initialize a random number generator
+        std::random_device rd;  // Non-deterministic seed
+        std::mt19937 gen(rd()); // Mersenne Twister random number generator
 
-        auto texture = speed == 1 ? reinterpret_cast<ImageTexture *>(ktxTexture) : imageTexture;
+        // Define a uniform distribution between 0 and 1
+        std::uniform_int_distribution<> distrib(0, 1);
+
+        // Randomly choose between 0 or 1
+        int randomChoice = distrib(gen);
+
+        Texture* texture;
+        if (randomChoice == 0) {
+            texture = ktxTexture;
+        } else {
+            texture = imageTexture;
+        }
         combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, texture);
         descriptorSets.push_back(combinedImageSamplerDescriptorSet);
     }
@@ -80,13 +94,21 @@ namespace KTXCompressor {
     }
 
     void SimpleTriangleShader::CreateVertexBuffer() {
-        if(speed == 1){
-            for (auto& vertex : vertices) {
-                vertex.pos.x += 0.25f;
-                vertex.pos.z += 0.25f;
-            }
-        }
+        // Create a random device and initialize a random number generator
+        std::random_device rd;     // Non-deterministic seed
+        std::mt19937 gen(rd());    // Mersenne Twister random number generator
+
+        // Define a uniform distribution for floating-point values between 0 and 1
+        std::uniform_real_distribution<float> distrib(0.0f, 1.0f);
         
+        float randomDisplacement = distrib(gen);
+        // Loop through vertices and randomly displace positions
+        for (auto &vertex : vertices) {
+            // Randomly displace x and z coordinates
+            vertex.pos.x += randomDisplacement;
+            vertex.pos.z += randomDisplacement;
+        }
+
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
         bufferUtil->CreateAndFillBuffer(vertices.data(),

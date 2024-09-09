@@ -9,7 +9,8 @@ namespace KTXCompressor {
     // #region Private Methods
 
     // this should be SimpleTriangleRenderPass...
-    VkRenderPass RenderPass::CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass) {
+    VkRenderPass
+    RenderPass::CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass, bool isLastRenderPass) {
         VkAttachmentDescription colorAttachmentDescription = {};
         colorAttachmentDescription.format = swapChainImageFormat;
         colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -18,17 +19,24 @@ namespace KTXCompressor {
             // clear the values to a constant at the start
             colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; // Optimal for subsequent passes
+        } else if (isLastRenderPass) {
+            // Load what was in a previous render pass
+            colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            colorAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;  // Ready for presentation
         } else {
             // Load what was in a previous render pass
             colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-            colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            colorAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // Optimal for subsequent passes
         }
+
         colorAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // rendered contents will be stored in memory to be read later 
 
         colorAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
-        colorAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         VkAttachmentReference colorAttachmentReference = {};
         colorAttachmentReference.attachment = 0;  // index of colorAttachmentDescription
@@ -43,10 +51,14 @@ namespace KTXCompressor {
             depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // want the depth attachment for next render pass
             depthAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        } else {
+        } else if (isLastRenderPass) {
             depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             depthAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
             depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        } else {
+            depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            depthAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // want the depth attachment for next render pass
         }
         depthAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         depthAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -108,10 +120,11 @@ namespace KTXCompressor {
     RenderPass::RenderPass(PhysicalDevice *physicalDevice,
                            LogicalDevice *logicalDevice,
                            VkFormat swapChainImageFormat,
-                           bool isFirstRenderPass) {
+                           bool isFirstRenderPass,
+                           bool isLastRenderPass) {
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
-        vulkanRenderPass = CreateVulkanRenderPass(swapChainImageFormat, isFirstRenderPass);
+        vulkanRenderPass = CreateVulkanRenderPass(swapChainImageFormat, isFirstRenderPass, isLastRenderPass);
     }
 
     // #endregion
