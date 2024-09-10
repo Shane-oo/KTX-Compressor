@@ -74,7 +74,7 @@ namespace KTXCompressor {
 
         bool NextImage(VkSemaphore imageAvailableSemaphore);
 
-        VkFramebuffer GetFramebufferForGraphicsPipeline(size_t graphicsPipelineIndex); 
+        VkFramebuffer GetFramebufferForGraphicsPipeline(size_t graphicsPipelineIndex);
 
         void Present(Synchronization *synchronization, uint32_t currentFrame);
 
@@ -88,6 +88,10 @@ namespace KTXCompressor {
         }
 
         void SetGraphicsPipelines(vector<GraphicsPipeline *> pipelines);
+
+        uint32_t GetImagesCount() {
+            return static_cast<uint32_t>(images.size());
+        }
     };
 
 } // KTXCompressor

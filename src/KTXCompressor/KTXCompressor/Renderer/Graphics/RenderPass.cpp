@@ -8,7 +8,8 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
-    // this should be SimpleTriangleRenderPass...
+    // this will need extracting, for one im gui render pass wont have a depth attachment
+    // this render pass here should be used for all 3d object renderings...
     VkRenderPass
     RenderPass::CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass, bool isLastRenderPass) {
         VkAttachmentDescription colorAttachmentDescription = {};

@@ -49,6 +49,10 @@ namespace KTXCompressor {
         VkDescriptorSetLayout GetVulkanDescriptorSetLayout() {
             return vulkanDescriptorSetLayout;
         }
+        
+        VkDescriptorPool GetVulkanDescriptorPool(){
+            return vulkanDescriptorPool;
+        }
     };
 
 } // KTXCompressor

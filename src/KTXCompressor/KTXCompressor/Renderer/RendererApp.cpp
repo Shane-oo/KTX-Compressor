@@ -6,6 +6,7 @@
 #include "RendererApp.h"
 #include "Graphics/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
 #include "RendererConstants.h"
+#include "Graphics/ImGui/ImGuiGraphicsPipeline.h"
 
 namespace KTXCompressor {
 
@@ -85,11 +86,19 @@ namespace KTXCompressor {
                                                                        swapChain,
                                                                        physicalDevice->GetGraphicsFamilyIndex(),
                                                                        false,
-                                                                       true));
+                                                                       false));
+
+        // ImGui is last to render!
+        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(physicalDevice,
+                                                              logicalDevice,
+                                                              swapChain,
+                                                              physicalDevice->GetGraphicsFamilyIndex()));
         // SetGraphicsPipelines
         swapChain->SetGraphicsPipelines(graphicsPipelines);
 
         synchronization = new Synchronization(logicalDevice->GetVulkanDevice());
+        
+        
     }
 
     // #endregion
