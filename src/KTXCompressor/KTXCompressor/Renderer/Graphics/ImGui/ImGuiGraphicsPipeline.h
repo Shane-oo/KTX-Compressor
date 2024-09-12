@@ -11,17 +11,22 @@ namespace KTXCompressor {
 
     class ImGuiGraphicsPipeline : public GraphicsPipeline {
     public:
-        ImGuiGraphicsPipeline(Window *window,
-                              PhysicalDevice *physicalDevice,
-                              LogicalDevice *logicalDevice,
-                              SwapChain *swapChain,
-                              uint32_t graphicsFamilyIndex);
+        ImGuiGraphicsPipeline( Window *window,
+                               Instance *instance,
+                               PhysicalDevice *physicalDevice,
+                               LogicalDevice *logicalDevice,
+                               SwapChain *swapChain,
+                               uint32_t graphicsFamilyIndex);
 
     protected:
         Shader *CreateShader() override;
 
         void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;
+        
+    private:
+        DescriptorPool* descriptorPool;
+        DescriptorPool* CreateImGuiDescriptorPool();
     };
 
 } // KTXCompressor

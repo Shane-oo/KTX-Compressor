@@ -8,6 +8,31 @@
 #include "ImGuiGraphicsPipeline.h"
 
 namespace KTXCompressor {
+    // #region Private Methods
+
+    DescriptorPool *ImGuiGraphicsPipeline::CreateImGuiDescriptorPool() {
+        vector<VkDescriptorPoolSize> descriptorPoolSizes = {
+                {VK_DESCRIPTOR_TYPE_SAMPLER,                1000},
+                {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
+                {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,          1000},
+                {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,          1000},
+                {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,   1000},
+                {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,   1000},
+                {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         1000},
+                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,         1000},
+                {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+                {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+                {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,       1000}};
+
+        auto descriptorPoolSizeModel = DescriptorPoolSizeModel(descriptorPoolSizes,
+                                                               VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
+                                                               1);
+
+        return new DescriptorPool(logicalDevice, descriptorPoolSizeModel);
+    }
+
+    // #endregion
+
     // #region Protected Methods
 
     Shader *ImGuiGraphicsPipeline::CreateShader() {
@@ -38,6 +63,12 @@ namespace KTXCompressor {
                                false,
                                true // imgui should always be last...
     ) {
+
+        descriptorPool = CreateImGuiDescriptorPool();
+
+
+
+
         // Setup Dear ImGui Context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -56,7 +87,7 @@ namespace KTXCompressor {
         imGuiImplVulkanInitInfo.Device = logicalDevice->GetVulkanDevice();
         imGuiImplVulkanInitInfo.QueueFamily = graphicsFamilyIndex;
         imGuiImplVulkanInitInfo.PipelineCache = VK_NULL_HANDLE; // Optional
-        imGuiImplVulkanInitInfo.DescriptorPool = todo;
+        imGuiImplVulkanInitInfo.DescriptorPool = descriptorPool->GetVulkanDescriptorPool();
         imGuiImplVulkanInitInfo.Allocator = nullptr;
 
         auto imageCount = swapChain->GetImagesCount();

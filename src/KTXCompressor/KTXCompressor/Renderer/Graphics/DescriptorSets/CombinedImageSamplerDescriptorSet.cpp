@@ -22,7 +22,7 @@ namespace KTXCompressor {
 
     VkDescriptorSetLayoutBinding CombinedImageSamplerDescriptorSet::GetDescriptorSetLayoutBinding() {
         VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-        
+
         //note: if want to have multiple textures this should probs not be here and should be passed in through the constructor
         samplerLayoutBinding.binding = GetBinding();
 
@@ -34,12 +34,17 @@ namespace KTXCompressor {
         return samplerLayoutBinding;
     }
 
-    VkDescriptorPoolSize CombinedImageSamplerDescriptorSet::GetDescriptorPoolSize() {
+    DescriptorPoolSizeModel CombinedImageSamplerDescriptorSet::GetDescriptorPoolSize() {
         VkDescriptorPoolSize descriptorPoolSize = {};
         descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorPoolSize.descriptorCount = static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT);
 
-        return descriptorPoolSize;
+        vector<VkDescriptorPoolSize> poolSizes = {descriptorPoolSize};
+
+
+        return DescriptorPoolSizeModel({descriptorPoolSize},
+                                       0,
+                                       static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT));
     }
 
     void CombinedImageSamplerDescriptorSet::SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet, size_t i) {

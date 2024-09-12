@@ -18,7 +18,7 @@ namespace KTXCompressor {
     protected:
         VkDescriptorSetLayoutBinding GetDescriptorSetLayoutBinding() override;
 
-        VkDescriptorPoolSize GetDescriptorPoolSize() override;
+        DescriptorPoolSizeModel GetDescriptorPoolSize() override;
 
         void SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
                                    size_t i) override;

@@ -20,8 +20,7 @@ namespace KTXCompressor {
     DescriptorSet::~DescriptorSet() {
         cout << "Destroy Descriptor Set" << endl;
 
-        vkDestroyDescriptorPool(logicalDevice->GetVulkanDevice(), vulkanDescriptorPool, nullptr);
-
+        delete descriptorPool;
         vkDestroyDescriptorSetLayout(logicalDevice->GetVulkanDevice(), vulkanDescriptorSetLayout, nullptr);
     }
 
@@ -35,7 +34,7 @@ namespace KTXCompressor {
         // Unfortunately the way this currently set up is I cant have just one set.
 
         vulkanDescriptorSetLayout = CreateDescriptorSetLayout();
-        vulkanDescriptorPool = CreateDescriptorPool();
+        descriptorPool = CreateDescriptorPool();
         vulkanDescriptorSets = CreateDescriptorSets();
     }
 
@@ -68,28 +67,11 @@ namespace KTXCompressor {
         return descriptorSetLayout;
     }
 
-    VkDescriptorPool DescriptorSet::CreateDescriptorPool() {
+    DescriptorPool *DescriptorSet::CreateDescriptorPool() {
         // Get descriptorPoolSize from child
-        VkDescriptorPoolSize descriptorPoolSize = GetDescriptorPoolSize();
+        DescriptorPoolSizeModel descriptorPoolSize = GetDescriptorPoolSize();
 
-        VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
-        descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        descriptorPoolCreateInfo.poolSizeCount = 1;
-        descriptorPoolCreateInfo.pPoolSizes = &descriptorPoolSize;
-        descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT);
-
-        VkDescriptorPool descriptorPool;
-        VkResult createDescriptorPoolResult = vkCreateDescriptorPool(logicalDevice->GetVulkanDevice(),
-                                                                     &descriptorPoolCreateInfo,
-                                                                     nullptr,
-                                                                     &descriptorPool);
-        if (createDescriptorPoolResult != VK_SUCCESS) {
-            throw runtime_error("Failed to Create Descriptor Pool");
-        }
-
-        cout << "Successfully Created Descriptor Pool" << endl;
-
-        return descriptorPool;
+        return new DescriptorPool(logicalDevice, descriptorPoolSize);
     }
 
     vector<VkDescriptorSet> DescriptorSet::CreateDescriptorSets() {
@@ -100,7 +82,7 @@ namespace KTXCompressor {
 
         VkDescriptorSetAllocateInfo descriptorSetAllocateInfo = {};
         descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        descriptorSetAllocateInfo.descriptorPool = vulkanDescriptorPool;
+        descriptorSetAllocateInfo.descriptorPool = descriptorPool->GetVulkanDescriptorPool();
         descriptorSetAllocateInfo.descriptorSetCount = static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT);
         descriptorSetAllocateInfo.pSetLayouts = descriptorSetLayouts.data();
 

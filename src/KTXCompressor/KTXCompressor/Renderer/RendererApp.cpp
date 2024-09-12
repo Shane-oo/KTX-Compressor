@@ -89,7 +89,9 @@ namespace KTXCompressor {
                                                                        false));
 
         // ImGui is last to render!
-        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(physicalDevice,
+        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(window,
+                                                              instance,
+                                                              physicalDevice,
                                                               logicalDevice,
                                                               swapChain,
                                                               physicalDevice->GetGraphicsFamilyIndex()));
@@ -97,8 +99,8 @@ namespace KTXCompressor {
         swapChain->SetGraphicsPipelines(graphicsPipelines);
 
         synchronization = new Synchronization(logicalDevice->GetVulkanDevice());
-        
-        
+
+
     }
 
     // #endregion

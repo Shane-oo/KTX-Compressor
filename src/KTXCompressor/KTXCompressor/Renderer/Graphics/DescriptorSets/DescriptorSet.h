@@ -8,6 +8,7 @@
 #include <vulkan/vulkan_core.h>
 #include "../../../Common.h"
 #include "../../Instance/Devices/LogicalDevice.h"
+#include "DescriptorPools/DescriptorPool.h"
 
 namespace KTXCompressor {
 
@@ -24,12 +25,12 @@ namespace KTXCompressor {
     protected:
         LogicalDevice *logicalDevice;
         VkDescriptorSetLayout vulkanDescriptorSetLayout;
-        VkDescriptorPool vulkanDescriptorPool;
+        DescriptorPool* descriptorPool;
         vector<VkDescriptorSet> vulkanDescriptorSets;
 
         virtual VkDescriptorSetLayoutBinding GetDescriptorSetLayoutBinding() = 0;
 
-        virtual VkDescriptorPoolSize GetDescriptorPoolSize() = 0;
+        virtual DescriptorPoolSizeModel GetDescriptorPoolSize() = 0;
 
         virtual void SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
                                            size_t i) = 0;
@@ -41,7 +42,7 @@ namespace KTXCompressor {
     private:
         VkDescriptorSetLayout CreateDescriptorSetLayout();
 
-        VkDescriptorPool CreateDescriptorPool();
+        DescriptorPool* CreateDescriptorPool();
 
         vector<VkDescriptorSet> CreateDescriptorSets();
 
@@ -49,9 +50,9 @@ namespace KTXCompressor {
         VkDescriptorSetLayout GetVulkanDescriptorSetLayout() {
             return vulkanDescriptorSetLayout;
         }
-        
-        VkDescriptorPool GetVulkanDescriptorPool(){
-            return vulkanDescriptorPool;
+
+        DescriptorPool* GetDescriptorPool(){
+            return descriptorPool;
         }
     };
 

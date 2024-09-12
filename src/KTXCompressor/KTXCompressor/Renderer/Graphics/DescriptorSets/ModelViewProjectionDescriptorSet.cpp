@@ -76,12 +76,17 @@ namespace KTXCompressor {
         return modelViewProjectionUboLayoutBinding;
     }
 
-    VkDescriptorPoolSize ModelViewProjectionDescriptorSet::GetDescriptorPoolSize() {
+    DescriptorPoolSizeModel ModelViewProjectionDescriptorSet::GetDescriptorPoolSize() {
         VkDescriptorPoolSize descriptorPoolSize = {};
         descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorPoolSize.descriptorCount = static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT);
 
-        return descriptorPoolSize;
+        vector<VkDescriptorPoolSize> poolSizes = {descriptorPoolSize};
+
+
+        return DescriptorPoolSizeModel({descriptorPoolSize},
+                                       0,
+                                       static_cast<uint32_t>(RendererConstants::MAX_FRAMES_IN_FLIGHT));
     }
 
     void ModelViewProjectionDescriptorSet::SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
