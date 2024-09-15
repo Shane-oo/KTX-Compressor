@@ -1,0 +1,7 @@
+.vs/
+src/KTXCompressor/out/build/x64-debug/
+src/KTXCompressor/out/build/x64-release/
+src/KTXCompressor/out/build/x86-debug/
+src/KTXCompressor/out/build/x86-release/
+.idea/
+cmake-build-debug/
