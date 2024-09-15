@@ -12,16 +12,21 @@ namespace KTXCompressor {
     // #region Constructors
 
     SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice,
-                                               LogicalDevice *logicalDevice)
-            : Shader(physicalDevice, logicalDevice, "simple_triangle.vert.spv", "simple_triangle.frag.spv") {
-        Init();
-
+                                               LogicalDevice *logicalDevice,
+                                               RenderPass *renderPass,
+                                               VkExtent2D swapChainExtent)
+            : Shader(physicalDevice,
+                     logicalDevice,
+                     renderPass,
+                     swapChainExtent,
+                     "simple_triangle.vert.spv",
+                     "simple_triangle.frag.spv") {
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
         descriptorSets.push_back(modelViewProjectionDescriptorSet);
 
         ktxTexture = new KTXTexture("textures/SAMPLE_2d_rgba8.ktx2", logicalDevice, physicalDevice);
         imageTexture = new ImageTexture("textures/wood_diffuse_4096x4096.png", logicalDevice, physicalDevice);
-        
+
         // Create a random device and initialize a random number generator
         std::random_device rd;  // Non-deterministic seed
         std::mt19937 gen(rd()); // Mersenne Twister random number generator
@@ -32,7 +37,7 @@ namespace KTXCompressor {
         // Randomly choose between 0 or 1
         int randomChoice = distrib(gen);
 
-        Texture* texture;
+        Texture *texture;
         if (randomChoice == 0) {
             texture = ktxTexture;
         } else {
@@ -40,6 +45,8 @@ namespace KTXCompressor {
         }
         combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, texture);
         descriptorSets.push_back(combinedImageSamplerDescriptorSet);
+
+        Init(renderPass, swapChainExtent);
     }
 
     // #endregion
@@ -100,10 +107,10 @@ namespace KTXCompressor {
 
         // Define a uniform distribution for floating-point values between 0 and 1
         std::uniform_real_distribution<float> distrib(0.0f, 1.0f);
-        
+
         float randomDisplacement = distrib(gen);
         // Loop through vertices and randomly displace positions
-        for (auto &vertex : vertices) {
+        for (auto &vertex: vertices) {
             // Randomly displace x and z coordinates
             vertex.pos.x += randomDisplacement;
             vertex.pos.z += randomDisplacement;
@@ -133,6 +140,23 @@ namespace KTXCompressor {
 
         cout << "Successfully Created Simple Triangle Index Buffer" << endl;
     }
+
+    void SimpleTriangleShader::SetRasterizationStateCreateInfo(
+            VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) {
+        // cant see this changing in different shader pipelines...
+        rasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
+        rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
+        rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
+        rasterizationStateCreateInfo.lineWidth = 1.0f;
+        rasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+        rasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        rasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
+        rasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f; // Optional
+        rasterizationStateCreateInfo.depthBiasClamp = 0.0f; // Optional
+        rasterizationStateCreateInfo.depthBiasSlopeFactor = 0.0f; // Optional
+    }
+
 
     // #endregion
 

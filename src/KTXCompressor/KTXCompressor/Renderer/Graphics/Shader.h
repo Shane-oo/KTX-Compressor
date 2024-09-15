@@ -13,6 +13,7 @@
 #include "../Utils/BufferUtil.h"
 #include "DescriptorSets/DescriptorSet.h"
 #include "../Presentation/SwapChain.h"
+#include "RenderPasses/RenderPass.h"
 
 
 namespace KTXCompressor {
@@ -22,6 +23,8 @@ namespace KTXCompressor {
     public:
         Shader(PhysicalDevice *physicalDevice,
                LogicalDevice *logicalDevice,
+               RenderPass *renderPass,
+               VkExtent2D swapChainExtent,
                const string &vertexFileName,
                const string &fragmentFileName);
 
@@ -47,9 +50,14 @@ namespace KTXCompressor {
         VkDeviceMemory indexBufferMemory;
         vector<DescriptorSet *> descriptorSets;
 
-        void Init();
+        void Init(RenderPass* renderPass, VkExtent2D  swapChainExtent);
 
         virtual VkPipelineLayout CreatePipelineLayout() = 0;
+
+        VkPipeline CreateVulkanPipeline(RenderPass *renderPass, VkExtent2D swapChainExtent);
+
+        virtual void
+        SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) = 0;
 
 
         virtual void CreateVertexBuffer() = 0;
@@ -63,7 +71,6 @@ namespace KTXCompressor {
 
         VkShaderModule CreateShaderModule(const string &fileName);
 
-
     public:
         virtual const char *GetVertexEntryPointName() = 0;
 
@@ -73,6 +80,7 @@ namespace KTXCompressor {
     private:
         VkShaderModule vertexShaderModule;
         VkShaderModule fragmentShaderModule;
+        VkPipeline shaderPipeline;
 
     public:
         VkShaderModule GetVertexShaderModule() {

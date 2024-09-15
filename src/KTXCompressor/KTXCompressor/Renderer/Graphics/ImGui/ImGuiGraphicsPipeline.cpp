@@ -40,11 +40,6 @@ namespace KTXCompressor {
         return nullptr;
     }
 
-    void ImGuiGraphicsPipeline::SetRasterizationStateCreateInfo(
-            VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) {
-
-    }
-
     RenderPass *ImGuiGraphicsPipeline::CreateRenderPass() {
         return new ImGuiRenderPass(physicalDevice,
                                    logicalDevice,

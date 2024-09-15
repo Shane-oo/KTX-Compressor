@@ -21,14 +21,13 @@ namespace KTXCompressor {
                          SwapChain *swapChain,
                          bool isFirstToRender,
                          bool isLastToRender,
-                         bool usesShaders);
+                         bool usesShader);
 
         virtual ~GraphicsPipeline();
 
         virtual VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame);
 
     private:
-        VkPipeline CreateVulkanGraphicsPipeline();
 
         Shader *shader;
     protected:
@@ -37,10 +36,9 @@ namespace KTXCompressor {
         SwapChain *swapChain;
         RenderPass *renderPass;
         DrawCommand *drawCommand;
-        VkPipeline vulkanGraphicsPipeline;
         bool isFirstToRender;
         bool isLastToRender;
-        bool usesShaders;
+        bool usesShader;
 
 
         virtual Shader *CreateShader() = 0;
@@ -49,8 +47,6 @@ namespace KTXCompressor {
 
         void Init();
 
-        virtual void
-        SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) = 0;
 
     public:
         RenderPass *GetRenderPass() {
@@ -59,10 +55,6 @@ namespace KTXCompressor {
 
         Shader *GetShader() {
             return shader;
-        }
-
-        VkPipeline GetVulkanGraphicsPipeline() {
-            return vulkanGraphicsPipeline;
         }
     };
 

@@ -25,9 +25,7 @@ namespace KTXCompressor {
         
         RenderPass *CreateRenderPass() override;
 
-        void
-        SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;
-
+     
     };
 
 } // KTXCompressor

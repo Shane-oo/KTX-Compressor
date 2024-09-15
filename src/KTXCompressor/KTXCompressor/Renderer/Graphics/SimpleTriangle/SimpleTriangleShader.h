@@ -17,9 +17,12 @@ namespace KTXCompressor {
     class SimpleTriangleShader : public Shader {
 
     public:
-        SimpleTriangleShader(PhysicalDevice *physicalDevice, LogicalDevice *logicalDevice);
+        SimpleTriangleShader(PhysicalDevice *physicalDevice,
+                             LogicalDevice *logicalDevice,
+                             RenderPass *renderPass,
+                             VkExtent2D swapChainExtent);
 
-        ~SimpleTriangleShader();
+        ~SimpleTriangleShader() override;
 
         void Render(VkCommandBuffer vulkanCommandBuffer, uint32_t currentFrame, VkExtent2D extent) override;
 
@@ -54,9 +57,13 @@ namespace KTXCompressor {
     protected:
         VkPipelineLayout CreatePipelineLayout() override;
 
+        void
+        SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;
+
         void CreateVertexBuffer() override;
 
         void CreateIndexBuffer() override;
+
     };
 
 } // KTXCompressor

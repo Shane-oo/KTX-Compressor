@@ -18,8 +18,8 @@ namespace KTXCompressor {
                               SwapChain *swapChain,
                               bool isFirstToRender,
                               bool isLastToRender);
-        
-        ~ImGuiGraphicsPipeline();
+
+        ~ImGuiGraphicsPipeline() override;
 
         VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) override;
 
@@ -27,9 +27,6 @@ namespace KTXCompressor {
         Shader *CreateShader() override;
 
         RenderPass *CreateRenderPass() override;
-
-        void
-        SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;
 
     private:
         DescriptorPool *descriptorPool;
