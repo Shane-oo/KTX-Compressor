@@ -9,8 +9,8 @@ namespace KTXCompressor {
 
     // #region Constants
 
-    static const uint32_t WIDTH = 800;
-    static const uint32_t HEIGHT = 800;
+    static const uint32_t WIDTH = 2000;
+    static const uint32_t HEIGHT = 1600;
 
     // #endregion
 

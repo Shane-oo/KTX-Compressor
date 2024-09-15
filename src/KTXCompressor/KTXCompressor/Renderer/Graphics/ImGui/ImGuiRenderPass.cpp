@@ -73,8 +73,6 @@ namespace KTXCompressor {
         renderPassBeginInfo.pClearValues = &vulkanClearValue;
     }
 
-
-
     // #endregion
 
     // #region Constructors
@@ -101,6 +99,8 @@ namespace KTXCompressor {
     // #region Public Methods
 
     void ImGuiRenderPass::Render(VkCommandBuffer vulkanCommandBuffer) {
+        ImGui::Render();  // ends the Dear ImGui frame
+
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), vulkanCommandBuffer);
     }
 

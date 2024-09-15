@@ -67,6 +67,8 @@ namespace KTXCompressor {
                                isFirstToRender,
                                isLastToRender,
                                false) {
+        fileSelectorPopUp = new ImGuiFileSelectorPopUp();
+
         Init();
 
         descriptorPool = CreateImGuiDescriptorPool();
@@ -117,6 +119,8 @@ namespace KTXCompressor {
     ImGuiGraphicsPipeline::~ImGuiGraphicsPipeline() {
         cout << "Destroy ImGui Graphics Pipeline" << endl;
 
+        delete fileSelectorPopUp;
+
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -135,10 +139,15 @@ namespace KTXCompressor {
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
 
-        // Rendering
-        ImGui::Render();
+        // everything want render must be between ImGui::NewFrame() 
+        // and ImGui::Render that happens in the ImGuiRenderPass
+
+
+
+        // Create a button to open the file selector
+        fileSelectorPopUp->Show();
+
 
         return GraphicsPipeline::Draw(vulkanFrameBuffer, currentFrame);
     }

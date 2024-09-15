@@ -6,6 +6,7 @@
 #define KTX_COMPRESSOR_IMGUIGRAPHICSPIPELINE_H
 
 #include "../GraphicsPipeline.h"
+#include "PopUps/ImGuiFileSelectorPopUp.h"
 
 namespace KTXCompressor {
 
@@ -30,6 +31,8 @@ namespace KTXCompressor {
 
     private:
         DescriptorPool *descriptorPool;
+        ImGuiFileSelectorPopUp *fileSelectorPopUp;
+
 
         DescriptorPool *CreateImGuiDescriptorPool();
     };
