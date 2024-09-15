@@ -18,6 +18,8 @@ namespace KTXCompressor {
                               SwapChain *swapChain,
                               bool isFirstToRender,
                               bool isLastToRender);
+        
+        ~ImGuiGraphicsPipeline();
 
         VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) override;
 

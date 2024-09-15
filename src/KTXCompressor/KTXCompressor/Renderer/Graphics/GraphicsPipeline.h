@@ -23,7 +23,7 @@ namespace KTXCompressor {
                          bool isLastToRender,
                          bool usesShaders);
 
-        ~GraphicsPipeline();
+        virtual ~GraphicsPipeline();
 
         virtual VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame);
 

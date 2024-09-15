@@ -117,6 +117,21 @@ namespace KTXCompressor {
 
     // #endregion
 
+    // #region Destructors
+
+    ImGuiGraphicsPipeline::~ImGuiGraphicsPipeline() {
+        cout << "Destroy ImGui Graphics Pipeline" << endl;
+
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+
+        delete descriptorPool;
+    }
+
+
+    // #endregion
+
 
     // #region Public Methods
 
@@ -132,6 +147,7 @@ namespace KTXCompressor {
 
         return GraphicsPipeline::Draw(vulkanFrameBuffer, currentFrame);
     }
+
 
     // #endregion
 
