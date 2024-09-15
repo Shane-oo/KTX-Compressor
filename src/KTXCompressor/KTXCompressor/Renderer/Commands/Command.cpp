@@ -6,16 +6,6 @@
 
 namespace KTXCompressor {
 
-
-    // #region Constructors
-
-    Command::Command(LogicalDevice* logicalDevice) {
-        this->logicalDevice = logicalDevice;
-        vulkanCommandPool = CreateVulkanCommandPool();
-    }
-
-    // #endregion
-
     // #region Protected Methods
 
     VkCommandPool Command::CreateVulkanCommandPool() {
@@ -41,4 +31,15 @@ namespace KTXCompressor {
     }
 
     // #endregion
+
+    // #region Constructors
+
+    Command::Command(LogicalDevice *logicalDevice) {
+        this->logicalDevice = logicalDevice;
+        vulkanCommandPool = CreateVulkanCommandPool();
+    }
+
+    // #endregion
+
+
 } // KTXCompressor

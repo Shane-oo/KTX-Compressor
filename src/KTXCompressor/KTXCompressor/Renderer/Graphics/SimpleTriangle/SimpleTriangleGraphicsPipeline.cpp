@@ -4,6 +4,7 @@
 
 #include "SimpleTriangleGraphicsPipeline.h"
 #include "SimpleTriangleShader.h"
+#include "../RenderPasses/ColourAndDepthRenderPass.h"
 
 namespace KTXCompressor {
 
@@ -47,6 +48,14 @@ namespace KTXCompressor {
                                isFirstToRender,
                                isLastToRender) {
         Init();
+    }
+
+    RenderPass *SimpleTriangleGraphicsPipeline::CreateRenderPass() {
+        return new ColourAndDepthRenderPass(physicalDevice,
+                                            logicalDevice,
+                                            swapChain->GetImageFormat(),
+                                            isFirstToRender,
+                                            isLastToRender);
     }
 
 

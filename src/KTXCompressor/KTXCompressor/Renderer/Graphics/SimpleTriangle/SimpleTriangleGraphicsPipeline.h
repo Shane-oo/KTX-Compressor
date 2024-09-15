@@ -23,6 +23,8 @@ namespace KTXCompressor {
 
     protected:
         Shader *CreateShader() override;
+        
+        RenderPass *CreateRenderPass() override;
 
         void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) override;

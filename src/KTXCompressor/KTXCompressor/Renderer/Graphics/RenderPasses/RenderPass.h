@@ -6,9 +6,9 @@
 #define KTXCOMPRESSOR_RENDERPASS_H
 
 #include <vulkan/vulkan_core.h>
-#include "../../Common.h"
-#include "../Instance/Devices/PhysicalDevice.h"
-#include "../Instance/Devices/LogicalDevice.h"
+#include "../../../Common.h"
+#include "../../Instance/Devices/PhysicalDevice.h"
+#include "../../Instance/Devices/LogicalDevice.h"
 
 namespace KTXCompressor {
 
@@ -22,14 +22,18 @@ namespace KTXCompressor {
 
         ~RenderPass();
 
-    private:
+    protected:
+        void Init();
+
+        virtual VkRenderPass CreateVulkanRenderPass() = 0;
+
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
+        VkFormat swapChainImageFormat;
+        bool isFirstRenderPass;
+        bool isLastRenderPass;
+    private:
         VkRenderPass vulkanRenderPass;
-
-        VkRenderPass
-        CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass, bool isLastRenderPass);
-
     public:
         void Begin(VkCommandBuffer vulkanCommandBuffer, VkFramebuffer vulkanFrameBuffer, VkExtent2D extent);
 

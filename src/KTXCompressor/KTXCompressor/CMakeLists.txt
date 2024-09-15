@@ -56,8 +56,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/SimpleTriangle/SimpleTriangleShader.h
         Renderer/Graphics/SimpleTriangle/SimpleTriangleGraphicsPipeline.cpp
         Renderer/Graphics/SimpleTriangle/SimpleTriangleGraphicsPipeline.h
-        Renderer/Graphics/RenderPass.cpp
-        Renderer/Graphics/RenderPass.h
+        Renderer/Graphics/RenderPasses/RenderPass.cpp
+        Renderer/Graphics/RenderPasses/RenderPass.h
         Renderer/Presentation/FrameBuffer.cpp
         Renderer/Presentation/FrameBuffer.h
         Renderer/Commands/DrawCommand.cpp
@@ -88,6 +88,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/ImGui/ImGuiGraphicsPipeline.h
         Renderer/Graphics/DescriptorSets/DescriptorPools/DescriptorPool.cpp
         Renderer/Graphics/DescriptorSets/DescriptorPools/DescriptorPool.h
+        Renderer/Graphics/RenderPasses/ColourAndDepthRenderPass.cpp
+        Renderer/Graphics/RenderPasses/ColourAndDepthRenderPass.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

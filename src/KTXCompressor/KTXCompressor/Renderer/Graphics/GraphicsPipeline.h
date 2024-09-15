@@ -8,7 +8,7 @@
 #include "../../Common.h"
 #include "Shader.h"
 #include "../Presentation/SwapChain.h"
-#include "RenderPass.h"
+#include "RenderPasses/RenderPass.h"
 #include "../Commands/DrawCommand.h"
 #include "../Synchronization/Synchronization.h"
 
@@ -26,6 +26,7 @@ namespace KTXCompressor {
         ~GraphicsPipeline();
 
         VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame);
+
     private:
         VkPipeline CreateVulkanGraphicsPipeline();
 
@@ -37,20 +38,25 @@ namespace KTXCompressor {
         RenderPass *renderPass;
         DrawCommand *drawCommand;
         VkPipeline vulkanGraphicsPipeline;
+        bool isFirstToRender;
+        bool isLastToRender;
 
 
         virtual Shader *CreateShader() = 0;
+
+        virtual RenderPass *CreateRenderPass() = 0;
 
         void Init();
 
         virtual void
         SetRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &rasterizationStateCreateInfo) = 0;
+
     public:
         RenderPass *GetRenderPass() {
             return renderPass;
         }
-        
-        Shader *GetShader(){
+
+        Shader *GetShader() {
             return shader;
         }
 

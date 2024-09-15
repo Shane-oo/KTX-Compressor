@@ -169,15 +169,11 @@ namespace KTXCompressor {
                                        uint32_t graphicsFamilyIndex,
                                        bool isFirstToRender,
                                        bool isLastToRender) {
+        this->isFirstToRender = isFirstToRender;
+        this->isLastToRender = isLastToRender;
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
-        renderPass = new RenderPass(physicalDevice,
-                                    logicalDevice,
-                                    swapChain->GetImageFormat(),
-                                    isFirstToRender,
-                                    isLastToRender);
-
         drawCommand = new DrawCommand(logicalDevice);
     }
 
@@ -199,6 +195,8 @@ namespace KTXCompressor {
     // #region Protected Methods
 
     void GraphicsPipeline::Init() {
+        renderPass = CreateRenderPass();
+
         shader = CreateShader();
 
         vulkanGraphicsPipeline = CreateVulkanGraphicsPipeline();

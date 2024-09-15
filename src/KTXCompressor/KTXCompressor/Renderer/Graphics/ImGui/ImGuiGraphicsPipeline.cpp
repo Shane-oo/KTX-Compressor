@@ -44,6 +44,10 @@ namespace KTXCompressor {
 
     }
 
+    RenderPass *ImGuiGraphicsPipeline::CreateRenderPass() {
+        return nullptr;
+    }
+
     // #endregion
 
 
@@ -98,11 +102,12 @@ namespace KTXCompressor {
 
         imGuiImplVulkanInitInfo.CheckVkResultFn = nullptr;
 
-        bool initSuccessful = ImGui_ImplVulkan_Init(&imGuiImplVulkanInitInfo, todoRenderPass);
+       /* bool initSuccessful = ImGui_ImplVulkan_Init(&imGuiImplVulkanInitInfo, todoRenderPass);
         if (!initSuccessful) {
             throw runtime_error("failed to Init Im Gui for Vulkan");
-        }
+        }*/
     }
+
 
 
     // #endregion

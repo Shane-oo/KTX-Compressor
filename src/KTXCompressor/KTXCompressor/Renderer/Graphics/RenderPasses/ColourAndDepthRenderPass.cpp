@@ -1,17 +1,14 @@
 //
-// Created by shane on 28/07/2024.
+// Created by ShaneMonck on 15/09/2024.
 //
 
-#include "RenderPass.h"
+#include "ColourAndDepthRenderPass.h"
 
 namespace KTXCompressor {
 
-    // #region Private Methods
+    // #region Protected Methods
 
-    // this will need extracting, for one im gui render pass wont have a depth attachment
-    // this render pass here should be used for all 3d object renderings...
-    VkRenderPass
-    RenderPass::CreateVulkanRenderPass(VkFormat swapChainImageFormat, bool isFirstRenderPass, bool isLastRenderPass) {
+    VkRenderPass ColourAndDepthRenderPass::CreateVulkanRenderPass() {
         VkAttachmentDescription colorAttachmentDescription = {};
         colorAttachmentDescription.format = swapChainImageFormat;
         colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -113,55 +110,22 @@ namespace KTXCompressor {
         cout << "Successfully Created Render Pass" << endl;
 
         return renderPass;
+
     }
+
     // #endregion
 
     // #region Constructors
 
-    RenderPass::RenderPass(PhysicalDevice *physicalDevice,
-                           LogicalDevice *logicalDevice,
-                           VkFormat swapChainImageFormat,
-                           bool isFirstRenderPass,
-                           bool isLastRenderPass) {
-        this->physicalDevice = physicalDevice;
-        this->logicalDevice = logicalDevice;
-        vulkanRenderPass = CreateVulkanRenderPass(swapChainImageFormat, isFirstRenderPass, isLastRenderPass);
+    ColourAndDepthRenderPass::ColourAndDepthRenderPass(PhysicalDevice *physicalDevice,
+                                                       LogicalDevice *logicalDevice,
+                                                       VkFormat swapChainImageFormat,
+                                                       bool isFirstRenderPass,
+                                                       bool isLastRenderPass) :
+            RenderPass(physicalDevice, logicalDevice, swapChainImageFormat, isFirstRenderPass, isLastRenderPass) {
+        Init();
     }
 
-    // #endregion
-
-    // #region Destructors
-
-    RenderPass::~RenderPass() {
-        cout << "Destroy Render Pass" << endl;
-
-        vkDestroyRenderPass(logicalDevice->GetVulkanDevice(), vulkanRenderPass, nullptr);
-    }
-
-    void RenderPass::Begin(VkCommandBuffer vulkanCommandBuffer, VkFramebuffer vulkanFrameBuffer, VkExtent2D extent) {
-        VkRenderPassBeginInfo renderPassBeginInfo = {};
-        renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassBeginInfo.renderPass = vulkanRenderPass;
-        renderPassBeginInfo.framebuffer = vulkanFrameBuffer;
-
-        renderPassBeginInfo.renderArea.offset = {0, 0};
-        renderPassBeginInfo.renderArea.extent = extent;
-
-        array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-        clearValues[1].depthStencil = {1.0f, 0};
-
-        renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());;
-        renderPassBeginInfo.pClearValues = clearValues.data();
-
-        vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-    }
-
-    void RenderPass::End(VkCommandBuffer vulkanCommandBuffer) {
-        vkCmdEndRenderPass(vulkanCommandBuffer);
-    }
-
-
-    // #endregion
+// #endregion
 
 } // KTXCompressor

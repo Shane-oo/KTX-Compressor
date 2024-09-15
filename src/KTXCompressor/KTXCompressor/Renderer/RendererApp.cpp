@@ -86,15 +86,15 @@ namespace KTXCompressor {
                                                                        swapChain,
                                                                        physicalDevice->GetGraphicsFamilyIndex(),
                                                                        false,
-                                                                       false));
+                                                                       true));
 
         // ImGui is last to render!
-        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(window,
+/*        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(window,
                                                               instance,
                                                               physicalDevice,
                                                               logicalDevice,
                                                               swapChain,
-                                                              physicalDevice->GetGraphicsFamilyIndex()));
+                                                              physicalDevice->GetGraphicsFamilyIndex()));*/
         // SetGraphicsPipelines
         swapChain->SetGraphicsPipelines(graphicsPipelines);
 
