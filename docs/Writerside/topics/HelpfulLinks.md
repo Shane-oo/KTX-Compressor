@@ -16,3 +16,5 @@ https://github.com/KhronosGroup/3D-Formats-Guidelines/blob/main/KTXDeveloperGuid
 
 where output stream exits:
 https://github.dev/KhronosGroup/KTX-Software/blob/main/tools/ktx/command.cpp
+
+https://docs.vulkan.org/samples/latest/samples/performance/texture_compression_basisu/README.html

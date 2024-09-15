@@ -29,7 +29,8 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "PATH",
-                    "value": "C://Users/shane/Documents/repos/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                    //"value": "C://Users/shane/Documents/repos/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                    "value": "C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake"
                 }
             }
         },
