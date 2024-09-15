@@ -16,7 +16,10 @@ namespace KTXCompressor {
                               PhysicalDevice *physicalDevice,
                               LogicalDevice *logicalDevice,
                               SwapChain *swapChain,
-                              uint32_t graphicsFamilyIndex);
+                              bool isFirstToRender,
+                              bool isLastToRender);
+
+        VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) override;
 
     protected:
         Shader *CreateShader() override;

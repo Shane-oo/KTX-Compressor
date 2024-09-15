@@ -6,6 +6,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
 #include "ImGuiGraphicsPipeline.h"
+#include "ImGuiRenderPass.h"
 
 namespace KTXCompressor {
     // #region Private Methods
@@ -45,7 +46,11 @@ namespace KTXCompressor {
     }
 
     RenderPass *ImGuiGraphicsPipeline::CreateRenderPass() {
-        return nullptr;
+        return new ImGuiRenderPass(physicalDevice,
+                                   logicalDevice,
+                                   swapChain->GetImageFormat(),
+                                   isFirstToRender,
+                                   isLastToRender);
     }
 
     // #endregion
@@ -59,19 +64,17 @@ namespace KTXCompressor {
             PhysicalDevice *physicalDevice,
             LogicalDevice *logicalDevice,
             SwapChain *swapChain,
-            uint32_t graphicsFamilyIndex)
+            bool isFirstToRender,
+            bool isLastToRender)
             : GraphicsPipeline(physicalDevice,
                                logicalDevice,
                                swapChain,
-                               graphicsFamilyIndex,
-                               false,
-                               true // imgui should always be last...
-    ) {
+                               isFirstToRender,
+                               isLastToRender,
+                               false) {
+        Init();
 
         descriptorPool = CreateImGuiDescriptorPool();
-
-
-
 
         // Setup Dear ImGui Context
         IMGUI_CHECKVERSION();
@@ -89,7 +92,9 @@ namespace KTXCompressor {
         imGuiImplVulkanInitInfo.Instance = instance->GetVulkanInstance();
         imGuiImplVulkanInitInfo.PhysicalDevice = physicalDevice->GetVulkanPhysicalDevice();
         imGuiImplVulkanInitInfo.Device = logicalDevice->GetVulkanDevice();
-        imGuiImplVulkanInitInfo.QueueFamily = graphicsFamilyIndex;
+        auto graphicsQueue = logicalDevice->GetGraphicsQueue();
+        imGuiImplVulkanInitInfo.QueueFamily = graphicsQueue->GetQueueFamilyIndex();
+        imGuiImplVulkanInitInfo.Queue = graphicsQueue->GetVulkanQueue();
         imGuiImplVulkanInitInfo.PipelineCache = VK_NULL_HANDLE; // Optional
         imGuiImplVulkanInitInfo.DescriptorPool = descriptorPool->GetVulkanDescriptorPool();
         imGuiImplVulkanInitInfo.Allocator = nullptr;
@@ -102,13 +107,32 @@ namespace KTXCompressor {
 
         imGuiImplVulkanInitInfo.CheckVkResultFn = nullptr;
 
-       /* bool initSuccessful = ImGui_ImplVulkan_Init(&imGuiImplVulkanInitInfo, todoRenderPass);
+        bool initSuccessful = ImGui_ImplVulkan_Init(&imGuiImplVulkanInitInfo, renderPass->GetVulkanRenderPass());
         if (!initSuccessful) {
             throw runtime_error("failed to Init Im Gui for Vulkan");
-        }*/
+        }
+
+        cout << "Successfully Created ImGui for Vulkan" << endl;
     }
 
+    // #endregion
 
+
+    // #region Public Methods
+
+    VkCommandBuffer ImGuiGraphicsPipeline::Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame) {
+        // Start the Dear ImGui frame
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::ShowDemoWindow();
+
+        // Rendering
+        ImGui::Render();
+
+        return GraphicsPipeline::Draw(vulkanFrameBuffer, currentFrame);
+    }
 
     // #endregion
+
 } // KTXCompressor

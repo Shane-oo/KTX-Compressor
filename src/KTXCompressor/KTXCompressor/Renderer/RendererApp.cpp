@@ -21,8 +21,6 @@ namespace KTXCompressor {
     }
 
     void RendererApp::DrawFrame() {
-        // TODO: How can i render multiple renderPasses to the one swap chain present image/framebuffe?
-
         synchronization->WaitForFence(currentFrame);
 
         bool nextImageReady = swapChain->NextImage(synchronization->GetWaitSemaphore(currentFrame));
@@ -68,39 +66,35 @@ namespace KTXCompressor {
 
         swapChain = new SwapChain(physicalDevice, window, logicalDevice);
 
-        // todo a better way of setting each ones index...
+        // todo find a better way of setting each ones order of rendering
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
-                                                                       physicalDevice->GetGraphicsFamilyIndex(),
                                                                        true,
                                                                        false));
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
-                                                                       physicalDevice->GetGraphicsFamilyIndex(),
                                                                        false,
                                                                        false));
         graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
-                                                                       physicalDevice->GetGraphicsFamilyIndex(),
                                                                        false,
-                                                                       true));
+                                                                       false));
 
         // ImGui is last to render!
-/*        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(window,
+        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(window,
                                                               instance,
                                                               physicalDevice,
                                                               logicalDevice,
                                                               swapChain,
-                                                              physicalDevice->GetGraphicsFamilyIndex()));*/
+                                                              false,
+                                                              true));
         // SetGraphicsPipelines
         swapChain->SetGraphicsPipelines(graphicsPipelines);
 
         synchronization = new Synchronization(logicalDevice->GetVulkanDevice());
-
-
     }
 
     // #endregion

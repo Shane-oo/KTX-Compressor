@@ -27,6 +27,9 @@ namespace KTXCompressor {
 
         virtual VkRenderPass CreateVulkanRenderPass() = 0;
 
+        virtual void SetClearValues(VkRenderPassBeginInfo &renderPassBeginInfo);
+
+
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
         VkFormat swapChainImageFormat;
@@ -34,6 +37,9 @@ namespace KTXCompressor {
         bool isLastRenderPass;
     private:
         VkRenderPass vulkanRenderPass;
+
+        array<VkClearValue, 2> defaultClearValues{};
+
     public:
         void Begin(VkCommandBuffer vulkanCommandBuffer, VkFramebuffer vulkanFrameBuffer, VkExtent2D extent);
 
@@ -47,10 +53,11 @@ namespace KTXCompressor {
             return 0;
         }
 
-        bool NeedsDepthAttachment() {
-            // im gui would be false
+        virtual bool NeedsDepthAttachment() {
             return true;
         }
+
+        virtual void Render(VkCommandBuffer vulkanCommandBuffer);
 
     };
 

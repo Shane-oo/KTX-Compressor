@@ -38,15 +38,14 @@ namespace KTXCompressor {
     SimpleTriangleGraphicsPipeline::SimpleTriangleGraphicsPipeline(PhysicalDevice *physicalDevice,
                                                                    LogicalDevice *logicalDevice,
                                                                    SwapChain *swapChain,
-                                                                   uint32_t graphicsFamilyIndex,
                                                                    bool isFirstToRender,
                                                                    bool isLastToRender)
             : GraphicsPipeline(physicalDevice,
                                logicalDevice,
                                swapChain,
-                               graphicsFamilyIndex,
                                isFirstToRender,
-                               isLastToRender) {
+                               isLastToRender,
+                               true) {
         Init();
     }
 

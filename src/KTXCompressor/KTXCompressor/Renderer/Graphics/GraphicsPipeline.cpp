@@ -166,11 +166,12 @@ namespace KTXCompressor {
     GraphicsPipeline::GraphicsPipeline(PhysicalDevice *physicalDevice,
                                        LogicalDevice *logicalDevice,
                                        SwapChain *swapChain,
-                                       uint32_t graphicsFamilyIndex,
                                        bool isFirstToRender,
-                                       bool isLastToRender) {
+                                       bool isLastToRender,
+                                       bool usesShaders) {
         this->isFirstToRender = isFirstToRender;
         this->isLastToRender = isLastToRender;
+        this->usesShaders = usesShaders;
         this->physicalDevice = physicalDevice;
         this->logicalDevice = logicalDevice;
         this->swapChain = swapChain;
@@ -185,8 +186,11 @@ namespace KTXCompressor {
         cout << "Destroy Graphics Pipeline" << endl;
 
         delete renderPass;
-        vkDestroyPipeline(logicalDevice->GetVulkanDevice(), vulkanGraphicsPipeline, nullptr);
-        delete shader;
+        if (usesShaders) {
+            vkDestroyPipeline(logicalDevice->GetVulkanDevice(), vulkanGraphicsPipeline, nullptr);
+            delete shader;
+        }
+
         delete drawCommand;
     }
 
@@ -197,12 +201,14 @@ namespace KTXCompressor {
     void GraphicsPipeline::Init() {
         renderPass = CreateRenderPass();
 
-        shader = CreateShader();
+        if (usesShaders) {
+            shader = CreateShader();
 
-        vulkanGraphicsPipeline = CreateVulkanGraphicsPipeline();
+            vulkanGraphicsPipeline = CreateVulkanGraphicsPipeline();
 
-        // no longer need shader modules
-        shader->CleanUpShaderModules();
+            // no longer need shader modules
+            shader->CleanUpShaderModules();
+        }
     }
 
 
@@ -220,11 +226,13 @@ namespace KTXCompressor {
                           vulkanFrameBuffer,
                           extent);
 
-        vkCmdBindPipeline(vulkanCommandBuffer,
-                          VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          vulkanGraphicsPipeline);
+        if (usesShaders) {
+            vkCmdBindPipeline(vulkanCommandBuffer,
+                              VK_PIPELINE_BIND_POINT_GRAPHICS,
+                              vulkanGraphicsPipeline);
 
-        shader->Bind(vulkanCommandBuffer, currentFrame);
+            shader->Bind(vulkanCommandBuffer, currentFrame);
+        }
 
         // Dynamic viewport and scissor
         VkViewport viewport = {};
@@ -241,7 +249,11 @@ namespace KTXCompressor {
         scissor.extent = extent;
         vkCmdSetScissor(vulkanCommandBuffer, 0, 1, &scissor);
 
-        shader->Render(vulkanCommandBuffer, currentFrame, extent);
+        if (usesShaders) {
+            shader->Render(vulkanCommandBuffer, currentFrame, extent);
+        }
+
+        renderPass->Render(vulkanCommandBuffer);
 
         renderPass->End(vulkanCommandBuffer);
 

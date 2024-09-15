@@ -19,13 +19,13 @@ namespace KTXCompressor {
         GraphicsPipeline(PhysicalDevice *physicalDevice,
                          LogicalDevice *logicalDevice,
                          SwapChain *swapChain,
-                         uint32_t graphicsFamilyIndex,
                          bool isFirstToRender,
-                         bool isLastToRender);
+                         bool isLastToRender,
+                         bool usesShaders);
 
         ~GraphicsPipeline();
 
-        VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame);
+        virtual VkCommandBuffer Draw(VkFramebuffer vulkanFrameBuffer, uint32_t currentFrame);
 
     private:
         VkPipeline CreateVulkanGraphicsPipeline();
@@ -40,6 +40,7 @@ namespace KTXCompressor {
         VkPipeline vulkanGraphicsPipeline;
         bool isFirstToRender;
         bool isLastToRender;
+        bool usesShaders;
 
 
         virtual Shader *CreateShader() = 0;

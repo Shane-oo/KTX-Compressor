@@ -13,6 +13,14 @@ namespace KTXCompressor {
     }
 
 
+    void RenderPass::SetClearValues(VkRenderPassBeginInfo &renderPassBeginInfo) {
+
+        renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(defaultClearValues.size());;
+        renderPassBeginInfo.pClearValues = defaultClearValues.data();
+    }
+
+
+
     // #endregion
 
     // #region Constructors
@@ -27,6 +35,10 @@ namespace KTXCompressor {
         this->swapChainImageFormat = swapChainImageFormat;
         this->isFirstRenderPass = isFirstRenderPass;
         this->isLastRenderPass = isLastRenderPass;
+
+        // not used in ImGui
+        defaultClearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+        defaultClearValues[1].depthStencil = {1.0f, 0};
     }
 
     // #endregion
@@ -48,19 +60,21 @@ namespace KTXCompressor {
         renderPassBeginInfo.renderArea.offset = {0, 0};
         renderPassBeginInfo.renderArea.extent = extent;
 
-        array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-        clearValues[1].depthStencil = {1.0f, 0};
-
-        renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());;
-        renderPassBeginInfo.pClearValues = clearValues.data();
+        SetClearValues(renderPassBeginInfo);
 
         vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
+    // perform additional rendering from render pass if required
+    // is overridden by the ImGui Render pass to render its data
+    // could be done better
+    void RenderPass::Render(VkCommandBuffer vulkanCommandBuffer) {}
+
     void RenderPass::End(VkCommandBuffer vulkanCommandBuffer) {
         vkCmdEndRenderPass(vulkanCommandBuffer);
     }
+
+
 
     // #endregion
 
