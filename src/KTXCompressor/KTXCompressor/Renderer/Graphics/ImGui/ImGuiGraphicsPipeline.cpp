@@ -104,6 +104,7 @@ namespace KTXCompressor {
 
         imGuiImplVulkanInitInfo.CheckVkResultFn = nullptr;
 
+
         bool initSuccessful = ImGui_ImplVulkan_Init(&imGuiImplVulkanInitInfo, renderPass->GetVulkanRenderPass());
         if (!initSuccessful) {
             throw runtime_error("failed to Init Im Gui for Vulkan");
@@ -143,11 +144,19 @@ namespace KTXCompressor {
         // everything want render must be between ImGui::NewFrame() 
         // and ImGui::Render that happens in the ImGuiRenderPass
 
+        ImGui::Begin(GUI_MAIN_NAME);
+        // todo make main window not draggable or moveable...
+        
+        ImGui::SetWindowSize(ImVec2(250.f, 250.f));
+        ImGui::SetWindowPos(ImVec2(0.f, 0.f));
+        
 
 
         // Create a button to open the file selector
         fileSelectorPopUp->Show();
 
+
+        ImGui::End(); // ends main window
 
         return GraphicsPipeline::Draw(vulkanFrameBuffer, currentFrame);
     }

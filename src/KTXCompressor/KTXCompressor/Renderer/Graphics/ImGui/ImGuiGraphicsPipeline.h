@@ -12,6 +12,8 @@ namespace KTXCompressor {
 
     class ImGuiGraphicsPipeline : public GraphicsPipeline {
     public:
+        static constexpr const char* GUI_MAIN_NAME = "Menu";
+
         ImGuiGraphicsPipeline(Window *window,
                               Instance *instance,
                               PhysicalDevice *physicalDevice,

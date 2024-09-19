@@ -72,7 +72,7 @@ namespace KTXCompressor {
                                                                        swapChain,
                                                                        true,
                                                                        false));
-        graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
+/*        graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
                                                                        false,
@@ -81,7 +81,7 @@ namespace KTXCompressor {
                                                                        logicalDevice,
                                                                        swapChain,
                                                                        false,
-                                                                       false));
+                                                                       false));*/
 
         // ImGui is last to render!
         graphicsPipelines.push_back(new ImGuiGraphicsPipeline(window,
