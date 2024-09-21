@@ -14,6 +14,16 @@ namespace KTXCompressor {
 
     void RendererApp::MainLoop() {
         while (!window->GetWindowShouldClose()) {
+            if (newGraphicsPipeline) {
+                cout << "We need to add a new graphics pipleine to render" << endl;
+
+                graphicsPipelines.insert(graphicsPipelines.end() - 1, newGraphicsPipeline);
+
+                swapChain->AddGraphicsPipelines({newGraphicsPipeline});
+
+                newGraphicsPipeline = nullptr;
+            }
+
             DrawFrame();
         }
 
@@ -29,11 +39,10 @@ namespace KTXCompressor {
         }
         synchronization->ResetFence(currentFrame);
 
-
         vector<VkCommandBuffer> drawCommands;
         for (size_t i = 0; i < graphicsPipelines.size(); i++) {
             // Get the correct framebuffer for the current pipeline
-            VkFramebuffer vulkanFrameBuffer = swapChain->GetFramebufferForGraphicsPipeline(i);
+            VkFramebuffer vulkanFrameBuffer = swapChain->GetFramebufferForGraphicsPipeline(graphicsPipelines[i]);
 
             // Draw using the current pipeline and its corresponding framebuffer
             auto drawCommand = graphicsPipelines[i]->Draw(vulkanFrameBuffer, currentFrame);
@@ -71,7 +80,8 @@ namespace KTXCompressor {
                                                                        logicalDevice,
                                                                        swapChain,
                                                                        true,
-                                                                       false));
+                                                                       false,
+                                                                       "textures/wood_diffuse_4096x4096.png"));
 /*        graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
@@ -84,17 +94,31 @@ namespace KTXCompressor {
                                                                        false));*/
 
         // ImGui is last to render!
-        graphicsPipelines.push_back(new ImGuiGraphicsPipeline(window,
-                                                              instance,
-                                                              physicalDevice,
-                                                              logicalDevice,
-                                                              swapChain,
-                                                              false,
-                                                              true));
-        // SetGraphicsPipelines
-        swapChain->SetGraphicsPipelines(graphicsPipelines);
+        auto imGuiGraphicsPipeline = new ImGuiGraphicsPipeline(window,
+                                                               instance,
+                                                               physicalDevice,
+                                                               logicalDevice,
+                                                               swapChain,
+                                                               false,
+                                                               true);
+        auto imageSelectedSubscription = imGuiGraphicsPipeline->GetMainMenuObservables()
+                .ImageToCompressSelected->Subscribe([this](const string &newValue) {
+                    newGraphicsPipeline = new SimpleTriangleGraphicsPipeline(physicalDevice,
+                                                                             logicalDevice,
+                                                                             swapChain,
+                                                                             false,
+                                                                             false,
+                                                                             newValue);
+                });
+
+        graphicsPipelines.push_back(imGuiGraphicsPipeline);
+
+
+        swapChain->AddGraphicsPipelines(graphicsPipelines);
 
         synchronization = new Synchronization(logicalDevice->GetVulkanDevice());
+
+        render = true;
     }
 
     // #endregion

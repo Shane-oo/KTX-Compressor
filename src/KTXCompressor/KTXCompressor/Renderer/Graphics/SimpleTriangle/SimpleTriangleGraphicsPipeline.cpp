@@ -11,7 +11,7 @@ namespace KTXCompressor {
 
     // #region Protected Methods
     Shader *SimpleTriangleGraphicsPipeline::CreateShader() {
-        return new SimpleTriangleShader(physicalDevice, logicalDevice, renderPass, swapChain->GetExtent());
+        return new SimpleTriangleShader(physicalDevice, logicalDevice, renderPass, swapChain->GetExtent(), imagePath);
     }
 
 
@@ -24,13 +24,15 @@ namespace KTXCompressor {
                                                                    LogicalDevice *logicalDevice,
                                                                    SwapChain *swapChain,
                                                                    bool isFirstToRender,
-                                                                   bool isLastToRender)
+                                                                   bool isLastToRender,
+                                                                   string imagePath)
             : GraphicsPipeline(physicalDevice,
                                logicalDevice,
                                swapChain,
                                isFirstToRender,
                                isLastToRender,
                                true) {
+        this->imagePath = imagePath;
         Init();
     }
 

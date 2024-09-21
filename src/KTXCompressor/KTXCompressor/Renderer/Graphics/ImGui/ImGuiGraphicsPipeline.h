@@ -6,12 +6,13 @@
 #define KTX_COMPRESSOR_IMGUIGRAPHICSPIPELINE_H
 
 #include "../GraphicsPipeline.h"
+#include "Menu/ImGuiMainMenu.h"
 
 namespace KTXCompressor {
 
     class ImGuiGraphicsPipeline : public GraphicsPipeline {
     public:
-        static constexpr const char* GUI_MAIN_NAME = "Menu";
+        static constexpr const char *GUI_MAIN_NAME = "Menu";
 
         ImGuiGraphicsPipeline(Window *window,
                               Instance *instance,
@@ -34,6 +35,13 @@ namespace KTXCompressor {
         DescriptorPool *descriptorPool;
 
         DescriptorPool *CreateImGuiDescriptorPool();
+
+        ImGuiMainMenu *mainMenu;
+
+    public:
+        MainMenuObservables GetMainMenuObservables() {
+            return mainMenu->GetMainMenuObservable();
+        }
     };
 
 } // KTXCompressor

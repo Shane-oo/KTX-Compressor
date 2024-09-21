@@ -14,7 +14,8 @@ namespace KTXCompressor {
     SimpleTriangleShader::SimpleTriangleShader(PhysicalDevice *physicalDevice,
                                                LogicalDevice *logicalDevice,
                                                RenderPass *renderPass,
-                                               VkExtent2D swapChainExtent)
+                                               VkExtent2D swapChainExtent,
+                                               string imagePath)
             : Shader(physicalDevice,
                      logicalDevice,
                      renderPass,
@@ -25,25 +26,10 @@ namespace KTXCompressor {
         descriptorSets.push_back(modelViewProjectionDescriptorSet);
 
         ktxTexture = new KTXTexture("textures/SAMPLE_2d_rgba8.ktx2", logicalDevice, physicalDevice);
-        imageTexture = new ImageTexture("textures/wood_diffuse_4096x4096.png", logicalDevice, physicalDevice);
 
-        // Create a random device and initialize a random number generator
-        std::random_device rd;  // Non-deterministic seed
-        std::mt19937 gen(rd()); // Mersenne Twister random number generator
+        imageTexture = new ImageTexture(imagePath, logicalDevice, physicalDevice);
 
-        // Define a uniform distribution between 0 and 1
-        std::uniform_int_distribution<> distrib(0, 1);
-
-        // Randomly choose between 0 or 1
-        int randomChoice = distrib(gen);
-
-        Texture *texture;
-        if (randomChoice == 0) {
-            texture = ktxTexture;
-        } else {
-            texture = imageTexture;
-        }
-        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, texture);
+        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, imageTexture);
         descriptorSets.push_back(combinedImageSamplerDescriptorSet);
 
         Init(renderPass, swapChainExtent);

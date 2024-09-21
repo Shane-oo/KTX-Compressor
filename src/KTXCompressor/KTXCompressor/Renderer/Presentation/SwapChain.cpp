@@ -153,11 +153,11 @@ namespace KTXCompressor {
         return views;
     }
 
-    vector<FrameBuffer *> *SwapChain::CreateFrameBuffers() {
-        auto *fBuffers = new vector<FrameBuffer *>();
+    void SwapChain::CreateFrameBuffers(vector<GraphicsPipeline *> graphicsPipeLinesNeedingFrameBuffers) {
+        for (auto graphicsPipeline: graphicsPipeLinesNeedingFrameBuffers) {
+            auto fBuffers = new vector<FrameBuffer *>();
 
-        for (auto imageView: *imageViews) {
-            for (auto graphicsPipeline: graphicsPipelines) {
+            for (auto imageView: *imageViews) {
                 auto attachments = new vector<VkImageView>();
 
                 // Always add the SwapChain image view
@@ -176,9 +176,8 @@ namespace KTXCompressor {
                                         extent)
                 );
             }
+            graphicsPipelinesToFrameBuffers[graphicsPipeline] = fBuffers;
         }
-
-        return fBuffers;
     }
 
     void SwapChain::RecreateVulkanSwapChain() {
@@ -193,17 +192,25 @@ namespace KTXCompressor {
         vulkanSwapChain = CreateVulkanSwapChain();
         imageViews = CreateImageViews();
         depthTexture = new DepthTexture(extent, logicalDevice, physicalDevice);
-        frameBuffers = CreateFrameBuffers();
+
+        std::vector<GraphicsPipeline *> existingGraphicsPipelines;
+        for (const auto &entry: graphicsPipelinesToFrameBuffers) {
+            existingGraphicsPipelines.push_back(entry.first);
+        }
+        CreateFrameBuffers(existingGraphicsPipelines);
     }
 
     void SwapChain::CleanUpVulkanSwapChain() {
 
         delete depthTexture;
 
-        for (auto frameBuffer: *frameBuffers) {
-            delete frameBuffer;
+        for (const auto &graphicPipelineToFrameBuffer: graphicsPipelinesToFrameBuffers) {
+            auto frameBuffers = graphicPipelineToFrameBuffer.second;
+            for (auto frameBuffer: *frameBuffers) {
+                delete frameBuffer;
+            }
+            delete frameBuffers;
         }
-        delete frameBuffers;
 
         for (auto imageView: *imageViews) {
             delete imageView;
@@ -272,9 +279,8 @@ namespace KTXCompressor {
         return details;
     }
 
-    void SwapChain::SetGraphicsPipelines(vector<GraphicsPipeline *> pipelines) {
-        this->graphicsPipelines = pipelines;
-        frameBuffers = CreateFrameBuffers();
+    void SwapChain::AddGraphicsPipelines(vector<GraphicsPipeline *> pipelines) {
+        CreateFrameBuffers(pipelines);
     }
 
     bool SwapChain::NextImage(VkSemaphore imageAvailableSemaphore) {
@@ -332,13 +338,14 @@ namespace KTXCompressor {
         }
     }
 
-    VkFramebuffer SwapChain::GetFramebufferForGraphicsPipeline(size_t graphicsPipelineIndex) {
-        size_t framebufferIndex = imageIndex * graphicsPipelines.size() + graphicsPipelineIndex;
+    VkFramebuffer SwapChain::GetFramebufferForGraphicsPipeline(GraphicsPipeline *graphicsPipeline) {
+        auto frameBuffers = graphicsPipelinesToFrameBuffers[graphicsPipeline];
 
-        return (*frameBuffers)[framebufferIndex]->GetVulkanFrameBuffer();
+        return (*frameBuffers)[imageIndex]->GetVulkanFrameBuffer();
     }
 
-    void SwapChain::Submit(Synchronization *synchronization, uint32_t currentFrame, vector<VkCommandBuffer> allDrawCommands) {
+    void SwapChain::Submit(Synchronization *synchronization, uint32_t currentFrame,
+                           vector<VkCommandBuffer> allDrawCommands) {
         VkSubmitInfo submitInfo = {};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -347,7 +354,7 @@ namespace KTXCompressor {
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
-        
+
         submitInfo.commandBufferCount = allDrawCommands.size();
         submitInfo.pCommandBuffers = allDrawCommands.data();
 
@@ -359,7 +366,8 @@ namespace KTXCompressor {
 
         //cout << "Successful Submitted" << endl;
     }
-    
+
+
     // #endregion
 
 

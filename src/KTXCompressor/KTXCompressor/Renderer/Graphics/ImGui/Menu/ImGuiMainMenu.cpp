@@ -4,13 +4,32 @@
 
 #include <imgui.h>
 #include "ImGuiMainMenu.h"
-#include "PopUps/ImGuiFileSelectorPopUp.h"
 
 namespace KTXCompressor {
 
-    // # region Public Methods
+    // #region Constructors
 
-    void ImGuiMainMenu::Present(string &selectedFile) {
+    ImGuiMainMenu::ImGuiMainMenu() {
+        fileSelectorPopUp = new ImGuiFileSelectorPopUp();
+
+        mainMenuObservables = {
+                fileSelectorPopUp->GetSelectedFileObservable()
+       };
+    }
+
+    // #endregion
+
+    // #region Destructors
+
+    ImGuiMainMenu::~ImGuiMainMenu() {
+        delete fileSelectorPopUp;
+    }
+
+    // #endregion
+
+    // #region Public Methods
+
+    void ImGuiMainMenu::Present() {
         // everything want render must be between ImGui::NewFrame() 
         // and ImGui::Render that happens in the ImGuiRenderPass
 
@@ -21,10 +40,7 @@ namespace KTXCompressor {
         ImGui::SetWindowSize(ImVec2(250.f, 250.f));
         ImGui::SetWindowPos(ImVec2(0.f, 0.f));
 
-        ImGuiFileSelectorPopUp::Show(selectedFile);
-        if (!selectedFile.empty()) {
-            cout << selectedFile << endl;
-        }
+        fileSelectorPopUp->Show();
 
         ImGui::End(); // ends main window
     }

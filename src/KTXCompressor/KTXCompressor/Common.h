@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <array>
 #include <filesystem>
+#include <unordered_map>
 
 
 // Use the standard namespace for commonly used components

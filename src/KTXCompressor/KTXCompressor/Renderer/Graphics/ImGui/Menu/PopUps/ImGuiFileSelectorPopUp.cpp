@@ -65,13 +65,7 @@ namespace KTXCompressor {
 
     // #region Public Methods
 
-    void ImGuiFileSelectorPopUp::Show(string &selectedFile) {
-        static bool initialShow = true;
-        static vector<string> fileNames;
-        static bool isOpen = false;
-
-        static string currentPath;
-        static char fileBufferName[1000];
+    void ImGuiFileSelectorPopUp::Show() {
         if (initialShow) {
             currentPath = filesystem::current_path().string();
             strncpy_s(fileBufferName, currentPath.c_str(), sizeof(fileBufferName) - 1);
@@ -120,7 +114,7 @@ namespace KTXCompressor {
 
                         break; // messed with filenames list -> must break;
                     } else {
-                        selectedFile = fileBufferName + name;
+                        selectedFile->SetValue(fileBufferName + name);
                         isOpen = false; //Close the modal
                     }
                 }
@@ -130,6 +124,10 @@ namespace KTXCompressor {
         }
 
         initialShow = false;
+    }
+
+    ImGuiFileSelectorPopUp::ImGuiFileSelectorPopUp() {
+        selectedFile = new Observable<string>();
     }
 
 

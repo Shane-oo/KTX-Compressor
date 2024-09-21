@@ -30,10 +30,9 @@ namespace KTXCompressor {
         Window *window;
         LogicalDevice *logicalDevice;
         PhysicalDevice *physicalDevice;
-        vector<GraphicsPipeline *> graphicsPipelines;
+        unordered_map<GraphicsPipeline *, vector<FrameBuffer *> *> graphicsPipelinesToFrameBuffers;
         DepthTexture *depthTexture;
         vector<ImageView *> *imageViews;
-        vector<FrameBuffer *> *frameBuffers;
         VkSwapchainKHR vulkanSwapChain;
         vector<VkImage> images;
         VkFormat imageFormat;
@@ -52,7 +51,7 @@ namespace KTXCompressor {
 
         vector<ImageView *> *CreateImageViews();
 
-        vector<FrameBuffer *> *CreateFrameBuffers();
+        void CreateFrameBuffers(vector<GraphicsPipeline *> graphicsPipeLinesNeedingFrameBuffers);
 
         void RetrieveSwapChainImages();
 
@@ -74,7 +73,7 @@ namespace KTXCompressor {
 
         bool NextImage(VkSemaphore imageAvailableSemaphore);
 
-        VkFramebuffer GetFramebufferForGraphicsPipeline(size_t graphicsPipelineIndex);
+        VkFramebuffer GetFramebufferForGraphicsPipeline(GraphicsPipeline* graphicsPipeline);
 
         void Present(Synchronization *synchronization, uint32_t currentFrame);
 
@@ -87,7 +86,7 @@ namespace KTXCompressor {
             return imageFormat;
         }
 
-        void SetGraphicsPipelines(vector<GraphicsPipeline *> pipelines);
+        void AddGraphicsPipelines(vector<GraphicsPipeline *> pipelines);
 
         uint32_t GetImagesCount() {
             return static_cast<uint32_t>(images.size());

@@ -18,14 +18,16 @@ namespace KTXCompressor {
                 LogicalDevice *logicalDevice,
                 SwapChain *swapChain,
                 bool isFirstToRender,
-                bool isLastToRender);
+                bool isLastToRender,
+                string imagePath);
 
     protected:
         Shader *CreateShader() override;
         
         RenderPass *CreateRenderPass() override;
-
-     
+        
+    private:
+        string imagePath;
     };
 
 } // KTXCompressor

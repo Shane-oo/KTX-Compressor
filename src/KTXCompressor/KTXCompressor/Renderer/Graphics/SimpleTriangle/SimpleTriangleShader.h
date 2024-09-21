@@ -20,7 +20,8 @@ namespace KTXCompressor {
         SimpleTriangleShader(PhysicalDevice *physicalDevice,
                              LogicalDevice *logicalDevice,
                              RenderPass *renderPass,
-                             VkExtent2D swapChainExtent);
+                             VkExtent2D swapChainExtent,
+                             string imagePath);
 
         ~SimpleTriangleShader() override;
 

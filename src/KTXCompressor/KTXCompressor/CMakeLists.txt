@@ -96,6 +96,8 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/ImGui/Menu/PopUps/ImGuiFileSelectorPopUp.h
         Renderer/Graphics/ImGui/Menu/ImGuiMainMenu.cpp
         Renderer/Graphics/ImGui/Menu/ImGuiMainMenu.h
+        Utils/ObserverPattern/Subscription.h
+        Utils/ObserverPattern/Observable.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

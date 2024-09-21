@@ -24,14 +24,16 @@ namespace KTXCompressor {
         void Run();
 
     private:
+        bool render = false;
         Window *window;
         Instance *instance;
         PhysicalDevice *physicalDevice;
         LogicalDevice *logicalDevice;
         SwapChain *swapChain;
-        vector<GraphicsPipeline*> graphicsPipelines;
+        vector<GraphicsPipeline *> graphicsPipelines;
         Synchronization *synchronization;
         uint32_t currentFrame = 0;
+        GraphicsPipeline *newGraphicsPipeline = nullptr;
 
         void MainLoop();
 

@@ -68,6 +68,7 @@ namespace KTXCompressor {
                                isFirstToRender,
                                isLastToRender,
                                false) {
+        mainMenu = new ImGuiMainMenu();
         Init();
 
         descriptorPool = CreateImGuiDescriptorPool();
@@ -120,6 +121,8 @@ namespace KTXCompressor {
     ImGuiGraphicsPipeline::~ImGuiGraphicsPipeline() {
         cout << "Destroy ImGui Graphics Pipeline" << endl;
 
+        delete mainMenu;
+
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -139,7 +142,7 @@ namespace KTXCompressor {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGuiMainMenu::Present();
+        mainMenu->Present();
 
         return GraphicsPipeline::Draw(vulkanFrameBuffer, currentFrame);
     }

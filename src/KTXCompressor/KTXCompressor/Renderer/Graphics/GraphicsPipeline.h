@@ -56,6 +56,14 @@ namespace KTXCompressor {
         Shader *GetShader() {
             return shader;
         }
+
+        bool GetIsFirstToRender() {
+            return isFirstToRender;
+        }
+
+        bool GetIsLastToRender() {
+            return isLastToRender;
+        }
     };
 
 } // KTXCompressor
