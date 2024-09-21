@@ -7,6 +7,7 @@
 #include <imgui_impl_vulkan.h>
 #include "ImGuiGraphicsPipeline.h"
 #include "ImGuiRenderPass.h"
+#include "Menu/ImGuiMainMenu.h"
 
 namespace KTXCompressor {
     // #region Private Methods
@@ -67,8 +68,6 @@ namespace KTXCompressor {
                                isFirstToRender,
                                isLastToRender,
                                false) {
-        fileSelectorPopUp = new ImGuiFileSelectorPopUp();
-
         Init();
 
         descriptorPool = CreateImGuiDescriptorPool();
@@ -104,8 +103,9 @@ namespace KTXCompressor {
 
         imGuiImplVulkanInitInfo.CheckVkResultFn = nullptr;
 
+        imGuiImplVulkanInitInfo.RenderPass = renderPass->GetVulkanRenderPass();
 
-        bool initSuccessful = ImGui_ImplVulkan_Init(&imGuiImplVulkanInitInfo, renderPass->GetVulkanRenderPass());
+        bool initSuccessful = ImGui_ImplVulkan_Init(&imGuiImplVulkanInitInfo);
         if (!initSuccessful) {
             throw runtime_error("failed to Init Im Gui for Vulkan");
         }
@@ -119,8 +119,6 @@ namespace KTXCompressor {
 
     ImGuiGraphicsPipeline::~ImGuiGraphicsPipeline() {
         cout << "Destroy ImGui Graphics Pipeline" << endl;
-
-        delete fileSelectorPopUp;
 
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -141,22 +139,7 @@ namespace KTXCompressor {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // everything want render must be between ImGui::NewFrame() 
-        // and ImGui::Render that happens in the ImGuiRenderPass
-
-        ImGui::Begin(GUI_MAIN_NAME);
-        // todo make main window not draggable or moveable...
-        
-        ImGui::SetWindowSize(ImVec2(250.f, 250.f));
-        ImGui::SetWindowPos(ImVec2(0.f, 0.f));
-        
-
-
-        // Create a button to open the file selector
-        fileSelectorPopUp->Show();
-
-
-        ImGui::End(); // ends main window
+        ImGuiMainMenu::Present();
 
         return GraphicsPipeline::Draw(vulkanFrameBuffer, currentFrame);
     }

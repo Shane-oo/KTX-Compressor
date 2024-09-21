@@ -92,8 +92,10 @@ add_executable(KTXCompressor "KTXCompressor.cpp" "KTXCompressor.h"
         Renderer/Graphics/RenderPasses/ColourAndDepthRenderPass.h
         Renderer/Graphics/ImGui/ImGuiRenderPass.cpp
         Renderer/Graphics/ImGui/ImGuiRenderPass.h
-        Renderer/Graphics/ImGui/PopUps/ImGuiFileSelectorPopUp.cpp
-        Renderer/Graphics/ImGui/PopUps/ImGuiFileSelectorPopUp.h
+        Renderer/Graphics/ImGui/Menu/PopUps/ImGuiFileSelectorPopUp.cpp
+        Renderer/Graphics/ImGui/Menu/PopUps/ImGuiFileSelectorPopUp.h
+        Renderer/Graphics/ImGui/Menu/ImGuiMainMenu.cpp
+        Renderer/Graphics/ImGui/Menu/ImGuiMainMenu.h
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
