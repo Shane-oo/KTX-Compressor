@@ -15,8 +15,7 @@ namespace KTXCompressor {
     void RendererApp::MainLoop() {
         while (!window->GetWindowShouldClose()) {
             if (newGraphicsPipeline) {
-                cout << "We need to add a new graphics pipleine to render" << endl;
-
+                // hmm i don't like this, yes ImGui is always last and the new one needs to be before last but...
                 graphicsPipelines.insert(graphicsPipelines.end() - 1, newGraphicsPipeline);
 
                 swapChain->AddGraphicsPipelines({newGraphicsPipeline});
@@ -101,6 +100,8 @@ namespace KTXCompressor {
                                                                swapChain,
                                                                false,
                                                                true);
+        graphicsPipelines.push_back(imGuiGraphicsPipeline);
+
         auto imageSelectedSubscription = imGuiGraphicsPipeline->GetMainMenuObservables()
                 .ImageToCompressSelected->Subscribe([this](const string &newValue) {
                     newGraphicsPipeline = new SimpleTriangleGraphicsPipeline(physicalDevice,
@@ -110,9 +111,6 @@ namespace KTXCompressor {
                                                                              false,
                                                                              newValue);
                 });
-
-        graphicsPipelines.push_back(imGuiGraphicsPipeline);
-
 
         swapChain->AddGraphicsPipelines(graphicsPipelines);
 
