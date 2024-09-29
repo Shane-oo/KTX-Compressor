@@ -104,10 +104,8 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET KTXCompressor PROPERTY CXX_STANDARD 20)
 endif ()
 
-# Find ktx
-find_package(ktx CONFIG REQUIRED)
-# Link Kts
-target_link_libraries(KTXCompressor PRIVATE KTX::ktx)
+find_package(Ktx CONFIG REQUIRED)
+target_link_libraries(KTXCompressor PRIVATE KTX::ktx KTX::astcenc-avx2-static)
 
 # Find OpenImageIO
 find_package(OpenImageIO CONFIG REQUIRED)

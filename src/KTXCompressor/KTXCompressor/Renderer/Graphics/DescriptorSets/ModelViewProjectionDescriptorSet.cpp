@@ -5,6 +5,9 @@
 
 
 #include "ModelViewProjectionDescriptorSet.h"
+
+#include <cstring>
+
 #include "../../RendererConstants.h"
 
 namespace KTXCompressor {

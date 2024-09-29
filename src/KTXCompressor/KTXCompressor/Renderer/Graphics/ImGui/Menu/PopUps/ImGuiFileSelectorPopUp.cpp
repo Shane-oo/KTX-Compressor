@@ -68,7 +68,7 @@ namespace KTXCompressor {
     void ImGuiFileSelectorPopUp::Show() {
         if (initialShow) {
             currentPath = filesystem::current_path().string();
-            strncpy_s(fileBufferName, currentPath.c_str(), sizeof(fileBufferName) - 1);
+            strncpy(fileBufferName, currentPath.c_str(), sizeof(fileBufferName) - 1);
 
             GetFileNamesForCurrentPath(fileBufferName, fileNames);
         }
@@ -105,7 +105,7 @@ namespace KTXCompressor {
                         string directorySuffix = "\\" + name;
 
                         // Copying the directory name into fileBufferName
-                        strncpy_s(fileBufferName,
+                        strncpy(fileBufferName,
                                   (fileBufferName + directorySuffix).c_str(),
                                   sizeof(fileBufferName) - 1);
                         fileBufferName[sizeof(fileBufferName) - 1] = '\0';

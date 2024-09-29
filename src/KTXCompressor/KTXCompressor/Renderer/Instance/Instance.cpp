@@ -4,6 +4,9 @@
 
 #include <GLFW/glfw3.h>
 #include "Instance.h"
+
+#include <cstring>
+
 #include "../RendererConstants.h"
 
 namespace KTXCompressor {

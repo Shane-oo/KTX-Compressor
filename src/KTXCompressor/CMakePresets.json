@@ -87,7 +87,9 @@
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "PATH",
                     "value": "/home/shane/Documents/repos/vcpkg/scripts/buildsystems/vcpkg.cmake"
-                }
+                },
+                "VCPKG_TARGET_TRIPLET": "x64-linux",
+                "VCPKG_MANIFEST_MODE": "ON"
             },
             "condition": {
                 "type": "equals",

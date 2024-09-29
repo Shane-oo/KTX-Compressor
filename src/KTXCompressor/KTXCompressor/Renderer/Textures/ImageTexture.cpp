@@ -28,14 +28,14 @@ namespace KTXCompressor {
     }
 
     void ImageTexture::LoadImageForFile(const string &fileName) {
-        ImageInput = ImageInput::open(fileName);
-        if (!ImageInput) {
+        Image_Input = ImageInput::open(fileName);
+        if (!Image_Input) {
             throw runtime_error("Could Not Open File With Name: " + fileName);
         }
         // Always go to first sub image and first MipLevel
-        ImageInput->seek_subimage(0, 0);
+        Image_Input->seek_subimage(0, 0);
 
-        auto imageSpecs = ImageInput->spec();
+        auto imageSpecs = Image_Input->spec();
 
         auto width = static_cast<uint32_t>(imageSpecs.width);
         auto height = static_cast<uint32_t>(imageSpecs.height);
@@ -43,7 +43,7 @@ namespace KTXCompressor {
         auto originalImageSize = width * height * channels;
 
         auto pixels = std::unique_ptr<unsigned char[]>(new unsigned char[originalImageSize]);
-        ImageInput->read_image(0, 0, 0, channels, TypeDesc::UINT8, &pixels[0]);
+        Image_Input->read_image(0, 0, 0, channels, TypeDesc::UINT8, &pixels[0]);
 
         if (channels == 3) {
             // Missing Alpha
@@ -51,7 +51,7 @@ namespace KTXCompressor {
             AddAlphaChannelToImage(pixels, width, height, channels);
         }
 
-        ImageInput->close();
+        Image_Input->close();
 
         CreateImage(width, height, pixels.get());
         sampler = CreateTextureSampler();

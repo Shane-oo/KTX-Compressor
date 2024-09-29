@@ -8,6 +8,9 @@
 
 
 
+            
+go to src/KtxCompressor and simply run  ./vcpkg to install all required libs for project
+
 
 
 LINUX:

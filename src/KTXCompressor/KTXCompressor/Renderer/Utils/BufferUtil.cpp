@@ -3,6 +3,9 @@
 //
 
 #include "BufferUtil.h"
+
+#include <cstring>
+
 #include "../Commands/SingleTimeCommand.h"
 
 namespace KTXCompressor {

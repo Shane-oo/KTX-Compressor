@@ -61,7 +61,9 @@ namespace KTXCompressor {
         // Convert the narrow character string to a wide character string
         mbstowcs(wNewFileName, newFileName.c_str(), len + 1);
 
-        FILE *file = _wfopen(wNewFileName, L"wb");
+        FILE *file;
+        // broken with Linux
+        //FILE *file = _wfopen(wNewFileName, L"wb");
         delete[] wNewFileName;  // Clean up
 
         if (!file) {

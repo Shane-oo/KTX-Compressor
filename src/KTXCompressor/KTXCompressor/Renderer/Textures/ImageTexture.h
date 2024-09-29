@@ -20,7 +20,7 @@ namespace KTXCompressor {
         ~ImageTexture();
     private:
         string name;
-        unique_ptr<ImageInput> ImageInput;
+        unique_ptr<ImageInput> Image_Input;
         VkSampler sampler;
 
         void LoadImageForFile(const string &fileName);
