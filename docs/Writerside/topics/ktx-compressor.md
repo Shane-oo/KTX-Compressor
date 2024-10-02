@@ -8,7 +8,16 @@
 
 
 
-            
+Set up Vulkan Sdk on linux after install SDK and extrating somwhere
+IN TERMINAL
+1. $nano ~/.profile
+2. add to bottom of file 'source /path/to/yourVULKANSDK/1.3.283.0/setup-env.sh'
+3. Save the file by pressing Ctrl + X then Y and then Enter
+4. RESTART COMPUTER
+5. should be able to run $vulkaninfo or $vkcube in any terminal
+
+
+
 go to src/KtxCompressor and simply run  ./vcpkg to install all required libs for project
 
 
