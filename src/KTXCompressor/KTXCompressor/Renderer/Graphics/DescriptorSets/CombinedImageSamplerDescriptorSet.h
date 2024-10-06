@@ -8,33 +8,32 @@
 #include "DescriptorSet.h"
 #include "../../Textures/Texture.h"
 
-namespace KTXCompressor {
-
-    class CombinedImageSamplerDescriptorSet : public DescriptorSet {
-
+namespace KTXCompressor
+{
+    class CombinedImageSamplerDescriptorSet : public DescriptorSet
+    {
     public:
-        CombinedImageSamplerDescriptorSet(LogicalDevice *logicalDevice, Texture *texture);
+        CombinedImageSamplerDescriptorSet(LogicalDevice* logicalDevice, Texture* texture);
 
     protected:
         VkDescriptorSetLayoutBinding GetDescriptorSetLayoutBinding() override;
 
         DescriptorPoolSizeModel GetDescriptorPoolSize() override;
 
-        void SetWriteDescriptorSet(VkWriteDescriptorSet &writeDescriptorSet,
+        void SetWriteDescriptorSet(VkWriteDescriptorSet& writeDescriptorSet,
                                    size_t i) override;
 
-        int GetBinding() override {
+        int GetBinding() override
+        {
             return binding;
         }
 
     private:
         int binding = 1;
 
-        Texture *texture;
+        Texture* texture;
         vector<VkDescriptorImageInfo> descriptorImageInfos;
-
     };
-
 } // KTXCompressor
 
 #endif //KTX_COMPRESSOR_COMBINEDIMAGESAMPLERDESCRIPTORSET_H
