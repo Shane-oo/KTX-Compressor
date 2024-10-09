@@ -17,6 +17,14 @@ namespace KTXCompressor {
 
     // #endregion
 
+    // #region Destructors
+
+    CombinedImageSamplerDescriptorSet::~CombinedImageSamplerDescriptorSet() {
+        delete texture;
+    }
+
+    // #endregion
+
     // #region Protected Methods
 
 

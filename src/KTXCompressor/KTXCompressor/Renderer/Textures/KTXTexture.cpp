@@ -58,6 +58,8 @@ namespace KTXCompressor {
         cout << "Destroying KTX Texture " << name << endl;
         
         vkDestroySampler(logicalDevice->GetVulkanDevice(), sampler, nullptr);
+
+        CleanUpImageView();
     }
 
     // #endregion

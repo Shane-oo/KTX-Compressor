@@ -14,6 +14,8 @@ namespace KTXCompressor {
 
     public:
         CombinedImageSamplerDescriptorSet(LogicalDevice *logicalDevice, Texture *texture);
+        
+        ~CombinedImageSamplerDescriptorSet();
 
     protected:
         VkDescriptorSetLayoutBinding GetDescriptorSetLayoutBinding() override;

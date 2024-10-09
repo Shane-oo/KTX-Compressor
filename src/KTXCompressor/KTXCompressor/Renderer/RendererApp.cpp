@@ -12,6 +12,17 @@ namespace KTXCompressor {
 
     // #region Private Methods
 
+    void RendererApp::CompressImage(const string &newValue) {
+        newGraphicsPipeline = new SimpleTriangleGraphicsPipeline(physicalDevice,
+                                                                 logicalDevice,
+                                                                 swapChain,
+                                                                 false,
+                                                                 false,
+                                                                 newValue);
+
+
+    }
+    
     void RendererApp::MainLoop() {
         while (!window->GetWindowShouldClose()) {
             if (newGraphicsPipeline) {
@@ -80,7 +91,7 @@ namespace KTXCompressor {
                                                                        swapChain,
                                                                        true,
                                                                        false,
-                                                                       "textures/wood_diffuse_4096x4096.png"));
+                                                                       "textures/SAMPLE_2d_rgba8.ktx2"));
 /*        graphicsPipelines.push_back(new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                        logicalDevice,
                                                                        swapChain,
@@ -103,13 +114,8 @@ namespace KTXCompressor {
         graphicsPipelines.push_back(imGuiGraphicsPipeline);
 
         auto imageSelectedSubscription = imGuiGraphicsPipeline->GetMainMenuObservables()
-                .ImageToCompressSelected->Subscribe([this](const string &newValue) {
-                    newGraphicsPipeline = new SimpleTriangleGraphicsPipeline(physicalDevice,
-                                                                             logicalDevice,
-                                                                             swapChain,
-                                                                             false,
-                                                                             false,
-                                                                             newValue);
+                .ImageToCompressSelected->Subscribe([this](const string &fileName) {
+                    CompressImage(fileName);
                 });
 
         swapChain->AddGraphicsPipelines(graphicsPipelines);
@@ -118,6 +124,8 @@ namespace KTXCompressor {
 
         render = true;
     }
+
+ 
 
     // #endregion
 
