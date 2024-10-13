@@ -88,6 +88,18 @@ namespace KTXCompressor {
 
     // #endregion
 
+    // #region Protected Methods
+    
+    void Texture::CleanUpImageView() {
+        delete bufferUtil;
+        delete imageView;
+
+        vkDestroyImage(logicalDevice->GetVulkanDevice(), vulkanImage, nullptr);
+        vkFreeMemory(logicalDevice->GetVulkanDevice(), vulkanImageMemory, nullptr);
+    }
+
+    // #endregion
+
 
     // #region Constructors
 
@@ -100,17 +112,6 @@ namespace KTXCompressor {
     // #endregion
 
     // #region Destructors
-
-    Texture::~Texture() {
-        cout << "Destroying Texture" << endl;
-
-        delete bufferUtil;
-        delete imageView;
-
-        vkDestroyImage(logicalDevice->GetVulkanDevice(), vulkanImage, nullptr);
-        vkFreeMemory(logicalDevice->GetVulkanDevice(), vulkanImageMemory, nullptr);
-    }
-
 
 
     // #endregion

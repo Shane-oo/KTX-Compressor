@@ -25,11 +25,17 @@ namespace KTXCompressor {
         modelViewProjectionDescriptorSet = new ModelViewProjectionDescriptorSet(logicalDevice, physicalDevice);
         descriptorSets.push_back(modelViewProjectionDescriptorSet);
 
-        ktxTexture = new KTXTexture("textures/SAMPLE_2d_rgba8.ktx2", logicalDevice, physicalDevice);
+        Texture *texture;
 
-        imageTexture = new ImageTexture(imagePath, logicalDevice, physicalDevice);
+        if (imagePath.substr(imagePath.size() - 5) == ".ktx2") {
+            texture = new KTXTexture(imagePath, logicalDevice,
+                                     physicalDevice); // Use imagePath instead of hardcoded path
+        } else {
+            texture = new ImageTexture(imagePath, logicalDevice, physicalDevice);
+        }
 
-        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, imageTexture);
+        combinedImageSamplerDescriptorSet = new CombinedImageSamplerDescriptorSet(logicalDevice, texture);
+
         descriptorSets.push_back(combinedImageSamplerDescriptorSet);
 
         Init(renderPass, swapChainExtent);
@@ -44,8 +50,6 @@ namespace KTXCompressor {
 
         delete modelViewProjectionDescriptorSet;
         delete combinedImageSamplerDescriptorSet;
-        delete ktxTexture;
-        delete imageTexture;
 
         // The base class destructor Shader::~Shader() is automatically called after this
     }

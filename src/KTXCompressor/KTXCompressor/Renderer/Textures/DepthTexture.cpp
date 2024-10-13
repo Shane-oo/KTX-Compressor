@@ -38,6 +38,8 @@ namespace KTXCompressor {
 
     DepthTexture::~DepthTexture() {
         cout << "Destroying Depth Texture" << endl;
+
+        CleanUpImageView();
     }
 
     // #endregion

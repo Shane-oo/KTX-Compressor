@@ -105,7 +105,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif ()
 
 find_package(Ktx CONFIG REQUIRED)
-target_link_libraries(KTXCompressor PRIVATE KTX::ktx KTX::astcenc-avx2-static)
+target_link_libraries(KTXCompressor PRIVATE KTX::ktx)
 
 # Find OpenImageIO
 find_package(OpenImageIO CONFIG REQUIRED)

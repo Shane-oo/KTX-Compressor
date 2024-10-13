@@ -47,8 +47,6 @@ namespace KTXCompressor {
 
         ModelViewProjectionDescriptorSet *modelViewProjectionDescriptorSet;
         CombinedImageSamplerDescriptorSet *combinedImageSamplerDescriptorSet;
-        KTXTexture *ktxTexture;
-        ImageTexture *imageTexture;
 
     public:
         const char *GetVertexEntryPointName() override;

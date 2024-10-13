@@ -17,7 +17,7 @@ namespace KTXCompressor {
     public:
         Texture(LogicalDevice *logicalDevice, PhysicalDevice *physicalDevice);
 
-        ~Texture();
+        virtual ~Texture() = default;
 
         virtual VkSampler GetSampler() = 0;
 
@@ -39,6 +39,8 @@ namespace KTXCompressor {
                          const void *pixels);
 
         VkSampler CreateTextureSampler();
+        
+        void CleanUpImageView();
 
     private:
 
