@@ -61,9 +61,9 @@ namespace KTXCompressor {
         // Convert the narrow character string to a wide character string
         mbstowcs(wNewFileName, newFileName.c_str(), len + 1);
 
-        FILE *file;
+      
         // broken with Linux
-        //FILE *file = _wfopen(wNewFileName, L"wb");
+        FILE *file = _wfopen(wNewFileName, L"wb");
         delete[] wNewFileName;  // Clean up
 
         if (!file) {
@@ -86,7 +86,7 @@ namespace KTXCompressor {
         // set all createInfo's bytes to 0, prevents uninitialized memory usage
         memset(&createInfo, 0, sizeof(createInfo));
 
-        createInfo.vkFormat = VK_FORMAT_R8G8B8_SRGB;
+        createInfo.vkFormat = VK_FORMAT_R8G8B8A8_SRGB;
         createInfo.numFaces = 1; // 6 for cube maps, 1 otherwise
         createInfo.numLayers = 1;// number of array layers , will throw if 0
         createInfo.isArray = false; // not an array
@@ -194,12 +194,11 @@ namespace KTXCompressor {
 
         CompressTexture();
 
-        imageInput->close();
+        //imageInput->close();
         //ktx_size_t writtenSize;
         //auto compressedPixels = GetCompressedPixelsFromKtxTexture(writtenSize);
 
         WriteNewKtx2Image("myNewKtx2Texture1.ktx2");
-
     }
 
 

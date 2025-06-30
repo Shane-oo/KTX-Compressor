@@ -28,8 +28,7 @@ namespace KTXCompressor {
         Texture *texture;
 
         if (imagePath.substr(imagePath.size() - 5) == ".ktx2") {
-            texture = new KTXTexture(imagePath, logicalDevice,
-                                     physicalDevice); // Use imagePath instead of hardcoded path
+            texture = new KTXTexture(imagePath, logicalDevice, physicalDevice);
         } else {
             texture = new ImageTexture(imagePath, logicalDevice, physicalDevice);
         }

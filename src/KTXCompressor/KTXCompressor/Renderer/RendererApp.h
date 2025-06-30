@@ -39,7 +39,7 @@ namespace KTXCompressor {
 
         void DrawFrame();
 
-        void CompressImage(const string &newValue);
+        void CompressImage(const string &imageFileName);
     };
 } // KTXCompressor
 

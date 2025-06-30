@@ -7,18 +7,22 @@
 #include "Graphics/SimpleTriangle/SimpleTriangleGraphicsPipeline.h"
 #include "RendererConstants.h"
 #include "Graphics/ImGui/ImGuiGraphicsPipeline.h"
+#include "../TextureOld.h"
 
 namespace KTXCompressor {
 
     // #region Private Methods
 
-    void RendererApp::CompressImage(const string &newValue) {
+    void RendererApp::CompressImage(const string &imageFileName) {
+        
+        auto* foo = new TextureOld(imageFileName);  
+        
         newGraphicsPipeline = new SimpleTriangleGraphicsPipeline(physicalDevice,
                                                                  logicalDevice,
                                                                  swapChain,
                                                                  false,
                                                                  false,
-                                                                 newValue);
+                                                                 "myNewKtx2Texture1.ktx2");
 
 
     }
